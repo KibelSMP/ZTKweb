@@ -1,0 +1,279 @@
+/* Styl dla podstrony eksportu */
+
+.link-plain {
+    text-decoration: none;
+}
+
+.export-layout {
+    display: grid;
+    grid-template-columns: 360px 1fr;
+    gap: 16px;
+    align-items: start;
+}
+
+@media (max-width: 980px) {
+    .export-layout {
+        grid-template-columns: 1fr;
+    }
+}
+
+.export-controls {
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 12px;
+    box-shadow: var(--shadow);
+}
+
+.export-controls h2 {
+    margin: 4px 0 12px;
+    font-size: 16px;
+}
+
+.controls-form label {
+    display: block;
+    margin-bottom: 10px;
+}
+
+.controls-form input[type="text"],
+.controls-form input[type="number"],
+.controls-form select {
+    width: 100%;
+    padding: 8px 10px;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    background: var(--control-bg);
+    color: var(--control-text);
+}
+
+.controls-form .row {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+    flex-wrap: wrap;
+}
+
+.controls-form .row.wrap {
+    flex-wrap: wrap;
+}
+
+.controls-form .check {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.controls-form .check input[type="checkbox"] {
+    width: 16px;
+    height: 16px;
+    accent-color: var(--accent);
+}
+
+.controls-form select {
+    width: 100%;
+}
+
+.controls-form fieldset {
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 8px 10px;
+}
+
+.controls-form legend {
+    padding: 0 4px;
+    color: var(--muted);
+}
+
+.controls-form .row.wrap {
+    gap: 8px 12px;
+}
+
+.hint {
+    color: var(--muted);
+    font-size: 12px;
+    margin-top: 8px;
+}
+
+.export-preview {
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 12px;
+    box-shadow: var(--shadow);
+}
+
+/* A4 preview page area */
+.preview-page {
+    display: grid;
+    place-content: start center;
+}
+
+.page-inner {
+    width: 210mm;
+    height: 297mm;
+    background: #fff;
+    color: #111;
+    border: none;
+    border-radius: 0;
+    padding: 12mm 12mm 10mm;
+    display: grid;
+    grid-template-rows: auto 1fr auto auto;
+    gap: 6mm;
+    justify-items: center;
+    /* wyśrodkuj elementy w poziomie */
+    /* lokalny jasny motyw */
+    --bg: #ffffff;
+    --panel: #ffffff;
+    --text: #111111;
+    --muted: #555555;
+    --border: #e0e0e0;
+    --map-bg: #ffffff;
+    --map-frame: #a80000;
+    --label-bg: rgba(255, 255, 255, 0.85);
+    --label-text: #111111;
+}
+
+/* W podglądzie zawsze wymuszamy jasny motyw (białe tło i ciemny tekst) */
+
+.print-title {
+    font-size: 16px;
+    font-weight: 700;
+}
+
+.preview-viewport {
+    width: 100%;
+    /* wysokość będzie ustawiana skryptem, ale wymuszamy proporcje jako kwadrat */
+    aspect-ratio: 1 / 1;
+    background: var(--map-bg);
+    border: none;
+    border-radius: 0;
+    overflow: hidden;
+    position: relative;
+    box-shadow: none;
+}
+
+/* Mapa w podglądzie wypełnia kwadrat */
+.preview-viewport #map {
+    width: 100%;
+    height: 100%;
+    border: none !important;
+}
+
+/* W podglądzie eksportu wyłącz cienie na markerach i etykietach dla czystości wydruku */
+.preview-viewport .station-marker,
+.preview-viewport .station-marker::after,
+.preview-viewport .station-label,
+.preview-viewport canvas {
+    box-shadow: none !important;
+    filter: none !important;
+}
+
+.preview-viewport .station-label {
+    text-shadow: none !important;
+}
+
+.print-legend {
+    border-top: none;
+    padding-top: 6mm;
+    background: #fff;
+    justify-self: center;
+    /* wyśrodkuj legendę */
+}
+
+.print-footer {
+    font-size: 10px;
+    color: var(--muted);
+}
+
+/* Podgląd powinien zawsze mieścić całą mapę – używamy fit-to-bounds na starcie. */
+
+/* Primary button for export actions */
+.btn-primary {
+    border: 1px solid var(--accent);
+    background: var(--accent);
+    color: #fff;
+    border-radius: 8px;
+    padding: 8px 12px;
+    cursor: pointer;
+}
+
+.btn-primary:hover {
+    background: var(--accent-hover);
+}
+
+/* ====== Print-only rules ====== */
+@page {
+    size: A4 portrait;
+    margin: 0;
+}
+
+@media print {
+    html, body {
+        background: #fff !important;
+    }
+
+    /* Ukryj wszystko poza podglądem */
+    .topbar,
+    .export-controls,
+    .site-footer {
+        display: none !important;
+    }
+
+    /* Rozciągnij kontener i usuń ograniczenia */
+    .container {
+        max-width: none !important;
+        width: 100% !important;
+        padding: 0 !important;
+    }
+
+    .export-layout {
+        display: block !important;
+    }
+
+    .export-preview {
+        padding: 0 !important;
+    }
+
+    .preview-page {
+        display: block !important;
+    }
+
+    .page-inner,
+    .page-inner.print-mode {
+        width: 210mm !important;
+        height: 297mm !important;
+        margin: 0 auto !important;
+        box-shadow: none !important;
+        border: none !important;
+        background: #fff !important;
+        -webkit-print-color-adjust: exact;
+        print-color-adjust: exact;
+        padding: 10mm 10mm 8mm !important;
+        /* mniejsze marginesy wewnętrzne w druku */
+        gap: 4mm !important;
+        /* mniejsze odstępy między sekcjami w druku */
+        grid-template-rows: 12mm 1fr auto 8mm !important;
+        /* tytuł, mapa, legenda, stopka */
+    }
+
+    .preview-viewport {
+        margin: 0 auto !important;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        overflow: visible;
+    }
+
+    /* Szerokość kwadratu mapy ograniczona wymiarami strony po odjęciu paddingów i odstępów */
+    .preview-viewport #map {
+        width: min(calc(210mm - 22mm), calc(297mm - (10mm + 8mm) - (12mm + 38mm) - (2 * 4mm))) !important;
+        height: auto !important;
+        aspect-ratio: 1 / 1 !important;
+    }
+
+    /* minimalne zmniejszenie typografii legendy w druku i limit wysokości */
+    .print-legend {
+        font-size: 0.95em !important;
+        overflow: visible;
+    }
+}

@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Panel edytora linii</title>
+  <link rel="stylesheet" href="../assets/app.css" />
+  <link rel="icon" href="data:," />
+  <meta name="robots" content="noindex" />
+  <meta name="referrer" content="no-referrer" />
+  <style>body{margin:0}</style>
+</head>
+<body>
+  <header class="topbar">
+    <div class="container topbar-inner">
+      <div class="brand">
+        <img class="logo" src="../assets/logo_ztk.png" alt="ZTK" />
+        <span class="title">ZTKweb<span class="beta">BETA</span> — Panel edytora linii</span>
+      </div>
+      <div class="topbar-actions">
+  <a class="btn-secondary link-plain" href="https://github.com/KibelSMP/ZTKweb/issues/new?template=bug_report.yml" target="_blank" rel="noopener noreferrer" title="Zgłoś błąd w repozytorium">🐞 Zgłoś błąd</a>
+        <a class="btn" href="./stations.html" title="Przejdź do edytora stacji">Edytor stacji</a>
+        <button id="theme-toggle" class="theme-toggle" aria-label="Przełącz motyw" title="Przełącz motyw">
+          <span class="theme-icon" data-light>☀️</span>
+          <span class="theme-icon" data-dark>🌙</span>
+        </button>
+      </div>
+    </div>
+  </header>
+  <main class="container">
+    <div id="editor-blocker" aria-hidden="true" role="dialog" aria-modal="true">
+      <div class="panel">
+        <div class="title">Edytor niedostępny na tym urządzeniu</div>
+        <div class="desc">Edytor wymaga myszy/trackpada i większego ekranu. Otwórz na komputerze z myszą i szerokością co najmniej 700px.</div>
+      </div>
+    </div>
+    <div class="content">
+    <div id="annotator-panel">
+      <div class="annotator-title">Edytuj połączenia linii</div>
+      <div class="annotator-row">
+        <label for="line-search" class="sr-only">Szukaj linii</label>
+        <input id="line-search" type="text" placeholder="Szukaj linii…" />
+        <label for="line-select" class="sr-only">Wybierz linię</label>
+        <select id="line-select" title="Wybierz linię"></select>
+      </div>
+      <div class="annotator-row">
+        <label for="conn-add" class="sr-only">Dodaj stację do linii</label>
+        <input id="conn-add" type="text" list="stations-list" placeholder="Dodaj stację (nazwa lub ID)" />
+        <datalist id="stations-list"></datalist>
+        <button id="btn-add-conn" class="btn btn-success">Dodaj na koniec</button>
+      </div>
+      <div class="line-props" id="line-props">
+        <div class="props-title">Właściwości linii</div>
+        <div class="props-grid">
+          <label>ID
+            <input id="prop-id" type="text" disabled />
+          </label>
+          <label>Kategoria
+            <select id="prop-category">
+              <option value="">(brak)</option>
+              <option value="REGIO">REGIO</option>
+              <option value="METRO">METRO</option>
+              <option value="IC">IC</option>
+              <option value="ON_DEMAND">ON_DEMAND</option>
+            </select>
+          </label>
+          <label>Kolor (nazwa)
+            <input id="prop-color" type="text" placeholder="np. Red" />
+          </label>
+          <label>HEX dla jasnego trybu
+            <div class="hex-row">
+              <input id="prop-hex-light" type="text" placeholder="#RRGGBB" />
+              <div class="color-picker">
+                <div id="prop-hex-light-swatch" class="swatch" aria-hidden="true"></div>
+                <input id="prop-hex-light-color" type="color" aria-label="Wybierz kolor (jasny)" />
+              </div>
+            </div>
+          </label>
+          <label>HEX dla ciemnego trybu
+            <div class="hex-row">
+              <input id="prop-hex-dark" type="text" placeholder="#RRGGBB" />
+              <div class="color-picker">
+                <div id="prop-hex-dark-swatch" class="swatch" aria-hidden="true"></div>
+                <input id="prop-hex-dark-color" type="color" aria-label="Wybierz kolor (ciemny)" />
+              </div>
+            </div>
+          </label>
+        </div>
+        <label>Relacja (pierwsza linia używana w wynikach)
+          <textarea id="prop-relation" rows="2" placeholder="np. A — B — C"></textarea>
+        </label>
+      </div>
+      <div class="annotator-actions">
+        <button id="btn-import-lines" class="btn btn-info">Importuj lines.json</button>
+        <button id="btn-clear-conns" class="btn btn-danger">Wyczyść połączenia</button>
+        <button id="btn-download-lines" class="btn btn-success">Pobierz lines.json</button>
+        <button id="btn-import-stations" class="btn">Importuj stations.json</button>
+  <button id="btn-upload-bg" class="btn" title="Załaduj obraz jako tło mapy">Załaduj tło mapy</button>
+  <button id="btn-clear-bg" class="btn" title="Usuń wgrane tło mapy">Usuń tło mapy</button>
+        <input id="file-import-stations" type="file" accept="application/json,.json" hidden />
+        <input id="file-import-lines" type="file" accept="application/json,.json" hidden />
+  <input id="bg-upload" type="file" accept="image/*" hidden />
+      </div>
+      <div class="annotator-status" id="line-editor-status">Ładowanie danych…</div>
+      <div class="line-editor-list" id="connections"></div>
+  </div>
+
+  <section class="map-section" aria-label="Mapa (edytor linii)">
+      <div id="map-viewport">
+        <div id="map"></div>
+        <div id="map-controls">
+          <button id="zoom-in" class="zoom-btn" aria-label="Przybliż">+</button>
+          <button id="zoom-out" class="zoom-btn" aria-label="Oddal">−</button>
+          <button id="zoom-reset" class="zoom-btn" aria-label="Reset">⤿</button>
+        </div>
+      </div>
+    </section>
+  </div>
+  </main>
+  <script src="../assets/map-zoom.js"></script>
+  <script src="../assets/lines-editor.js"></script>
+  <script src="../assets/theme-toggle.js"></script>
+  <script>
+    (function(){
+      const prefersFine = window.matchMedia('(any-pointer: fine)').matches;
+      const wideEnough = window.matchMedia('(min-width: 700px)').matches;
+      const shouldBlock = !(prefersFine && wideEnough);
+      const blocker = document.getElementById('editor-blocker');
+      if (!blocker) return;
+      function setBlocked(b){
+        blocker.setAttribute('aria-hidden', b ? 'false' : 'true');
+        document.body.style.overflow = b ? 'hidden' : '';
+      }
+      if (shouldBlock) {
+        setBlocked(true);
+        try { document.getElementById('map').style.pointerEvents = 'none'; } catch {}
+      }
+      const mqPointer = window.matchMedia('(any-pointer: fine)');
+      const mqWidth = window.matchMedia('(min-width: 700px)');
+      function reevaluate(){ setBlocked(!(mqPointer.matches && mqWidth.matches)); }
+      mqPointer.addEventListener?.('change', reevaluate);
+      mqWidth.addEventListener?.('change', reevaluate);
+      window.addEventListener('orientationchange', ()=> setTimeout(reevaluate, 150));
+    })();
+  </script>
+</body>
+</html>

@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Wybierz edytor — ZTKweb</title>
+  <link rel="stylesheet" href="../assets/app.css" />
+  <link rel="icon" href="data:," />
+  <meta name="robots" content="noindex" />
+  <meta name="referrer" content="no-referrer" />
+  <style>body{margin:0}</style>
+</head>
+<body>
+  <header class="topbar">
+    <div class="container topbar-inner">
+      <div class="brand">
+        <img class="logo" src="../assets/logo_ztk.png" alt="ZTK" />
+        <span class="title">ZTKweb<span class="beta">BETA</span> — Panele edytora</span>
+      </div>
+      <div class="topbar-actions">
+        <button id="theme-toggle" class="theme-toggle" aria-label="Przełącz motyw" title="Przełącz motyw">
+          <span class="theme-icon" data-light>☀️</span>
+          <span class="theme-icon" data-dark>🌙</span>
+        </button>
+  <a class="btn-secondary link-plain" href="https://github.com/KibelSMP/ZTKweb/issues/new?template=bug_report.yml" target="_blank" rel="noopener noreferrer" title="Zgłoś błąd w repozytorium">🐞 Zgłoś błąd</a>
+      </div>
+    </div>
+  </header>
+  <main class="container">
+    <section id="editor-chooser" class="map-section chooser" aria-label="Wybór edytora">
+      <h1>Wybierz edytor</h1>
+      <div class="results-grid chooser-grid">
+        <article class="itinerary chooser-stations">
+          <header class="itinerary-header">
+            <div>Edytor stacji</div>
+          </header>
+          <div class="itinerary-meta">Dodawaj, pozycjonuj i oznaczaj typy stacji.</div>
+          <footer class="itinerary-footer">
+            <a class="btn-choose" href="./stations.html" title="Przejdź do edytora stacji">Otwórz</a>
+          </footer>
+        </article>
+        <article class="itinerary chooser-lines">
+          <header class="itinerary-header">
+            <div>Edytor linii</div>
+          </header>
+          <div class="itinerary-meta">Układaj kolejność stacji i kształtuj odcinki.</div>
+          <footer class="itinerary-footer">
+            <a class="btn-choose" href="./lines.html" title="Przejdź do edytora linii">Otwórz</a>
+          </footer>
+        </article>
+      </div>
+    </section>
+  </main>
+  <script src="../assets/theme-toggle.js"></script>
+  <script src="../assets/map-zoom.js"></script>
+  </body>
+  </html>

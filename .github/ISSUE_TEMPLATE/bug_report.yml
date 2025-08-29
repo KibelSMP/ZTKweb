@@ -1,0 +1,90 @@
+name: Zgłoszenie błędu
+description: Zgłoś błąd w ZTKweb, abyśmy mogli go szybko naprawić.
+title: "[BUG] Krótki opis problemu"
+labels:
+  - bug
+assignees: []
+body:
+  - type: checkboxes
+    id: checks
+    attributes:
+      label: Wstępne sprawdzenia
+      options:
+        - label: Sprawdziłem(am), że zgłoszenie nie duplikuje istniejącego
+          required: true
+  - type: textarea
+    id: description
+    attributes:
+      label: Opis błędu
+      description: Jasno opisz, co się stało i jaki był efekt.
+      placeholder: Opisz błąd...
+    validations:
+      required: true
+  - type: textarea
+    id: steps
+    attributes:
+      label: Kroki do odtworzenia
+      description: Wypisz kroki prowadzące do błędu.
+      placeholder: |
+        1. Wejdź na stronę ...
+        2. Kliknij ...
+        3. Zobacz błąd ...
+    validations:
+      required: true
+  - type: input
+    id: expected
+    attributes:
+      label: Oczekiwane zachowanie
+      placeholder: Co miało się stać?
+    validations:
+      required: true
+  - type: input
+    id: actual
+    attributes:
+      label: Rzeczywiste zachowanie
+      placeholder: Co stało się faktycznie?
+    validations:
+      required: true
+  - type: textarea
+    id: screenshots
+    attributes:
+      label: Zrzuty ekranu / nagrania
+      description: Dodaj obrazy lub nagrania ilustrujące problem (opcjonalnie).
+    validations:
+      required: false
+  - type: input
+    id: url
+    attributes:
+      label: Adres/sekcja strony (jeśli dotyczy)
+      placeholder: Np. /export.html
+    validations:
+      required: false
+  - type: input
+    id: browser
+    attributes:
+      label: Przeglądarka i wersja
+      placeholder: Np. Chrome 126, Safari 17, Firefox 128
+    validations:
+      required: true
+  - type: input
+    id: os
+    attributes:
+      label: System operacyjny
+      placeholder: Np. macOS 14.5, Windows 11, Ubuntu 24.04
+    validations:
+      required: true
+  - type: textarea
+    id: logs
+    attributes:
+      label: Logi/konsola (jeśli są)
+      description: Wklej istotne logi z konsoli przeglądarki (z cenzurą wrażliwych danych).
+      render: shell
+    validations:
+      required: false
+  - type: textarea
+    id: context
+    attributes:
+      label: Dodatkowy kontekst
+      description: Inne informacje, sugestie lub hipotezy.
+    validations:
+      required: false

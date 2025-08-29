@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ZTKweb – Eksport</title>
+  <link rel="stylesheet" href="assets/app.css" />
+  <link rel="stylesheet" href="assets/export-page.css" />
+</head>
+<body>
+  <header class="topbar">
+    <div class="container topbar-inner">
+      <div class="brand">
+        <img class="logo" src="assets/logo_ztk.png" alt="ZTK" />
+        <span class="title">ZTKweb<span class="beta">BETA</span> – Eksport</span>
+      </div>
+      <div class="topbar-actions">
+        <button id="theme-toggle" class="theme-toggle" aria-label="Przełącz motyw" title="Przełącz motyw">
+          <span class="theme-icon" data-light>☀️</span>
+          <span class="theme-icon" data-dark>🌙</span>
+        </button>
+  <a class="btn-secondary link-plain" href="https://github.com/KibelSMP/ZTKweb/issues/new?template=bug_report.yml" target="_blank" rel="noopener noreferrer" title="Zgłoś błąd w repozytorium">🐞 Zgłoś błąd</a>
+        <a class="btn-secondary link-plain" href="index.html">← Powrót</a>
+      </div>
+    </div>
+  </header>
+  <main class="container">
+    <div class="export-layout">
+      <section class="export-controls" aria-label="Ustawienia eksportu">
+        <h2>Ustawienia</h2>
+        <form id="export-form" class="controls-form">
+          <label>
+            Tytuł na wydruku
+            <input type="text" name="title" placeholder="np. ZTK – mapa połączeń" />
+          </label>
+          <div class="row">
+            <label class="check"><input type="checkbox" name="sat" /> Widok satelitarny</label>
+            <label class="check"><input type="checkbox" name="legend" checked /> Pokaż legendę</label>
+          </div>
+          <fieldset>
+            <legend>Typy linii</legend>
+            <div class="row wrap">
+              <label class="check"><input type="checkbox" name="types" value="IC" checked /> IC</label>
+              <label class="check"><input type="checkbox" name="types" value="REGIO" checked /> REGIO</label>
+              <label class="check"><input type="checkbox" name="types" value="METRO" checked /> METRO</label>
+              <label class="check"><input type="checkbox" name="types" value="ON_DEMAND" checked /> NA ŻĄDANIE</label>
+            </div>
+          </fieldset>
+          <label>
+            Skala legendy
+            <select name="legendScale">
+              <option value="1">100%</option>
+              <option value="0.9">90%</option>
+              <option value="0.8" selected>80%</option>
+              <option value="0.7">70%</option>
+              <option value="0.6">60%</option>
+            </select>
+          </label>
+          <div class="row">
+            <button type="button" id="refresh" class="btn-primary">Odśwież podgląd</button>
+            <button type="button" id="pdf" class="btn-secondary">Pobierz PDF</button>
+          </div>
+        </form>
+      </section>
+      <section class="export-preview" aria-label="Podgląd">
+        <div class="preview-page">
+          <div class="page-inner">
+            <header id="print-title" class="print-title" aria-live="polite"></header>
+            <div id="map-viewport" class="preview-viewport">
+              <div id="map"></div>
+            </div>
+            <footer id="legend" class="print-legend"></footer>
+            <div id="print-footer" class="print-footer">NKaczowskie Wydawnictwo Kartograficzne. Wygenerowano za pomocą ZTKweb Beta.</div>
+          </div>
+        </div>
+      </section>
+    </div>
+  </main>
+  <script src="assets/map-zoom.js"></script>
+  <script src="assets/map-renderer.js"></script>
+  <script src="assets/legend-renderer.js"></script>
+  <script src="assets/theme-toggle.js"></script>
+  <script src="assets/vendor/html2pdf.bundle.min.js"></script>
+  <script src="assets/export-page.js"></script>
+</body>
+</html>

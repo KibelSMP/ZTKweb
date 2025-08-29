@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Panel edytora stacji</title>
+  <link rel="stylesheet" href="../assets/app.css" />
+  <link rel="icon" href="data:," />
+  <meta name="robots" content="noindex" />
+  <meta name="referrer" content="no-referrer" />
+  <style>body{margin:0}</style>
+    </head>
+  <body>
+    <header class="topbar">
+      <div class="container topbar-inner">
+        <div class="brand">
+          <img class="logo" src="../assets/logo_ztk.png" alt="ZTK" />
+          <span class="title">ZTKweb<span class="beta">BETA</span> — Panel edytora stacji</span>
+        </div>
+  <div class="topbar-actions">
+          <a class="btn-secondary link-plain" href="https://github.com/KibelSMP/ZTKweb/issues/new?template=bug_report.yml" target="_blank" rel="noopener noreferrer" title="Zgłoś błąd w repozytorium">🐞 Zgłoś błąd</a>
+          <a class="btn" href="./lines.html" title="Przejdź do edytora linii">Edytor linii</a>
+          <button id="theme-toggle" class="theme-toggle" aria-label="Przełącz motyw" title="Przełącz motyw">
+            <span class="theme-icon" data-light>☀️</span>
+            <span class="theme-icon" data-dark>🌙</span>
+          </button>
+        </div>
+      </div>
+    </header>
+  <main class="container">
+    <div id="editor-blocker" aria-hidden="true" role="dialog" aria-modal="true">
+      <div class="panel">
+        <div class="title">Edytor niedostępny na tym urządzeniu</div>
+        <div class="desc">Edytor wymaga myszy/trackpada i większego ekranu. Otwórz na komputerze z myszą i szerokością co najmniej 700px.</div>
+      </div>
+    </div>
+      <div id="annotator-panel">
+    <div class="annotator-title">Przypisz współrzędne i typ stacji</div>
+    <div class="annotator-row">
+      <label for="station-search" class="sr-only">Szukaj stacji</label>
+      <input id="station-search" type="text" placeholder="Szukaj stacji..." />
+      <label for="station-select" class="sr-only">Wybierz stację</label>
+      <select id="station-select" title="Wybierz stację"></select>
+      <label for="station-type" class="sr-only">Typ stacji</label>
+      <select id="station-type" title="Typ stacji">
+        <option value="">(bez zmiany)</option>
+        <option value="passenger">Pasażerska</option>
+        <option value="hub">Węzeł (hub)</option>
+  <option value="end">Portal do End</option>
+  <option value="metro">Przesiadka na metro</option>
+      </select>
+    </div>
+    <div class="annotator-row">
+      <label for="new-station-id" class="sr-only">ID nowej stacji</label>
+      <input id="new-station-id" type="text" placeholder="ID nowej stacji (np. ABC)" title="ID nowej stacji" />
+      <label for="new-station-name" class="sr-only">Nazwa nowej stacji</label>
+      <input id="new-station-name" type="text" placeholder="Nazwa nowej stacji" title="Nazwa nowej stacji" />
+      <button id="btn-add-station" class="btn btn-success" title="Dodaj stację">Dodaj stację</button>
+    </div>
+    <div class="annotator-hint">Kliknij na mapie, aby przypisać wybranej stacji pozycję (w %). Punkty zostaną oznaczone na mapie.</div>
+    <div class="annotator-actions">
+      <button id="btn-import" class="btn btn-info">Importuj stations.json</button>
+      <button id="btn-clear-one" class="btn">Usuń współrzędne stacji</button>
+      <button id="btn-delete-station" class="btn btn-danger" title="Usuń bieżącą stację">Usuń stację</button>
+      <button id="btn-clear-all" class="btn btn-danger">Wyczyść wszystkie</button>
+      <button id="btn-download-stations" class="btn btn-success">Pobierz stations.json</button>
+      <button id="btn-upload-bg" class="btn btn-info" title="Wgraj tło mapy (obraz)">Wgraj tło mapy</button>
+      <button id="btn-clear-bg" class="btn" title="Usuń tło mapy">Usuń tło</button>
+      <input id="bg-upload" type="file" accept="image/*" hidden />
+    </div>
+    <div id="annotator-status" class="annotator-status">Ładowanie danych…</div>
+      </div>
+
+  <section class="map-section" aria-label="Mapa (panel edytora)">
+        <div id="map-viewport">
+          <div id="map"></div>
+          <div id="map-controls">
+            <button id="zoom-in" class="zoom-btn" aria-label="Przybliż">+</button>
+            <button id="zoom-out" class="zoom-btn" aria-label="Oddal">−</button>
+            <button id="zoom-reset" class="zoom-btn" aria-label="Reset">⤿</button>
+          </div>
+        </div>
+      </section>
+
+  </main>
+  <script src="../assets/map-zoom.js"></script>
+  <script src="../assets/stations.js"></script>
+  <script src="../assets/theme-toggle.js"></script>
+  <script>
+    (function(){
+      // Warunki blokady: brak wsparcia dla precyzyjnego wskaźnika (touch-only) lub wąski ekran
+      const prefersFine = window.matchMedia('(any-pointer: fine)').matches;
+      const wideEnough = window.matchMedia('(min-width: 700px)').matches;
+      const shouldBlock = !(prefersFine && wideEnough);
+      const blocker = document.getElementById('editor-blocker');
+      if (!blocker) return;
+      function setBlocked(b){
+        blocker.setAttribute('aria-hidden', b ? 'false' : 'true');
+        document.body.style.overflow = b ? 'hidden' : '';
+      }
+      // Jeśli blokujemy, zatrzymaj interakcje z mapą i panelem
+      if (shouldBlock) {
+        setBlocked(true);
+        // Opcjonalnie: zdejmij nasłuchy z mapy (chroni przed przypadkowym użyciem w dotyku)
+        try { document.getElementById('map').style.pointerEvents = 'none'; } catch {}
+      }
+      // Przyciski / reagowanie na zmianę rozmiaru/urządzenia
+      const mqPointer = window.matchMedia('(any-pointer: fine)');
+      const mqWidth = window.matchMedia('(min-width: 700px)');
+      function reevaluate(){ setBlocked(!(mqPointer.matches && mqWidth.matches)); }
+      mqPointer.addEventListener?.('change', reevaluate);
+      mqWidth.addEventListener?.('change', reevaluate);
+      window.addEventListener('orientationchange', ()=> setTimeout(reevaluate, 150));
+    })();
+  </script>
+</body>
+</html>

@@ -1,0 +1,43 @@
+name: Prośba o funkcję
+description: Zaproponuj nową funkcję lub usprawnienie w ZTKweb.
+title: "[FR] Krótki opis propozycji"
+labels:
+  - enhancement
+assignees: []
+body:
+  - type: checkboxes
+    id: checks
+    attributes:
+      label: Wstępne sprawdzenia
+      options:
+        - label: Sprawdziłem(am), że podobna propozycja już nie istnieje
+          required: true
+  - type: textarea
+    id: problem
+    attributes:
+      label: Jaki problem rozwiązuje ta funkcja?
+      placeholder: Opis problemu lub potrzeby...
+    validations:
+      required: true
+  - type: textarea
+    id: solution
+    attributes:
+      label: Opis proponowanego rozwiązania
+      description: Jak ma działać funkcja?
+      placeholder: Opisz preferowane rozwiązanie...
+    validations:
+      required: true
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: Rozważane alternatywy
+      description: Jakie inne podejścia brałeś(aś) pod uwagę?
+    validations:
+      required: false
+  - type: textarea
+    id: context
+    attributes:
+      label: Dodatkowy kontekst / makiety
+      description: Linki do makiet, szkice, referencje.
+    validations:
+      required: false
