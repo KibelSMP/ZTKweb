@@ -1,0 +1,47 @@
+# OS junk
+.DS_Store
+Thumbs.db
+
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+*.pyc
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.coverage
+.coverage.*
+htmlcov/
+.pyre/
+.pytype/
+
+# Virtual envs
+.venv/
+venv/
+ENV/
+env/
+
+# Node/Web (future-proof)
+node_modules/
+dist/
+build/
+.cache/
+.parcel-cache/
+*.log
+*.map
+
+# Editors/IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Local tooling/data backups
+*.bak
+*.tmp
+*.temp
+
+# Other
+/tools

@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ZTKweb</title>
+    <link rel="stylesheet" href="assets/app.css">
+</head>
+<body>
+    <header class="topbar">
+        <div class="container topbar-inner">
+            <div class="brand">
+                <img class="logo" src="assets/logo_ztk.png" alt="ZTK" />
+                <span class="title">ZTKweb<span class="beta">BETA</span></span>
+            </div>
+            <div class="topbar-actions">
+                <a class="btn-secondary link-plain" href="export.html" title="Eksport">Eksport</a>
+                <a class="btn-secondary link-plain" href="https://github.com/KibelSMP/ZTKweb/issues/new?template=bug_report.yml" target="_blank" rel="noopener noreferrer" title="Zgłoś błąd w repozytorium (otworzy się w nowej karcie)">🐞 Zgłoś błąd</a>
+                <button id="theme-toggle" class="theme-toggle" aria-label="Przełącz motyw" title="Przełącz motyw">
+                    <span class="theme-icon" data-light>☀️</span>
+                    <span class="theme-icon" data-dark>🌙</span>
+                </button>
+            </div>
+        </div>
+    </header>
+    <main class="container">
+        <div class="content">
+            <section id="search-panel" aria-label="Wyszukiwarka połączeń">
+                <datalist id="stations-list"></datalist>
+                <div class="station-search-row" aria-label="Szukaj stacji">
+                    <div class="field">
+                        <label for="station"><span class="label-icon" aria-hidden="true">🔎</span>Szukaj stacji</label>
+                        <input id="station" list="stations-list" placeholder="Nazwa lub ID stacji" />
+                    </div>
+                    <button id="station-clear" class="btn-clear" title="Wyczyść" aria-label="Wyczyść">✕</button>
+                    <button id="station-search" class="btn-station-search" title="Pokaż na mapie" aria-label="Pokaż na mapie">Pokaż</button>
+                </div>
+                <div class="or-divider" role="separator" aria-label="Oddziela wyszukiwarki"><span>albo</span></div>
+        <div class="search-row">
+                    <div class="field">
+            <label for="from"><span class="label-icon" aria-hidden="true">➡️</span>Skąd</label>
+                        <input id="from" list="stations-list" placeholder="Stacja początkowa (nazwa lub ID)" />
+                    </div>
+                    <button id="swap" class="btn-swap" title="Zamień kierunek" aria-label="Zamień kierunek">⇄</button>
+                    <div class="field">
+            <label for="to"><span class="label-icon" aria-hidden="true">➡️</span>Dokąd</label>
+                        <input id="to" list="stations-list" placeholder="Stacja docelowa (nazwa lub ID)" />
+                    </div>
+                    <button id="route-clear" class="btn-clear" title="Wyczyść" aria-label="Wyczyść">✕</button>
+                    <button id="search" class="btn-search">Szukaj</button>
+                </div>
+                <div id="type-filters" aria-label="Filtr typów tras">
+                    <div class="filters-row">
+                        <label title="InterCity"><input type="checkbox" class="line-type" data-type="IC" checked> InterCity</label>
+                        <label title="Regionalne"><input type="checkbox" class="line-type" data-type="REGIO" checked> Regionalne</label>
+                        <label title="Metro"><input type="checkbox" class="line-type" data-type="METRO" checked> Metro</label>
+                        <label title="Na żądanie"><input type="checkbox" class="line-type" data-type="ON_DEMAND" checked> Na żądanie</label>
+                    </div>
+                </div>
+                <div id="search-results" aria-live="polite"></div>
+                <aside class="ad-slot ad-below-search" role="complementary" aria-label="Reklama">
+                    <a id="ad-link" href="https://discord.com/channels/865183769626279966/940688602667569202" target="_blank" rel="noopener noreferrer" aria-label="Miejsce na Twoją reklamę. Kliknij, aby otworzyć Discorda. Zwróć się do gracza Miersetnik.">
+                        <picture>
+                            <img src="assets/ad.png" alt="Reklama">
+                        </picture>
+                    </a>
+                </aside>
+                <div id="mc-status" class="mc-status" aria-live="polite">
+                    <span class="dot" aria-hidden="true"></span>
+                    <span class="text">Sprawdzanie statusu…</span>
+                </div>
+            </section>
+            <section class="map-section" aria-label="Mapa i połączenia">
+                <div id="map-viewport">
+                    <div id="map"></div>
+                    <div id="map-tools-top">
+                        <button id="sat-toggle" class="toggle-btn" aria-label="Przełącz widok satelitarny" title="Widok satelitarny" aria-pressed="false">🛰️</button>
+                    </div>
+                    <div id="map-controls">
+                        <button id="zoom-in" class="zoom-btn" aria-label="Przybliż">+</button>
+                        <button id="zoom-out" class="zoom-btn" aria-label="Oddal">−</button>
+                        <button id="zoom-reset" class="zoom-btn" aria-label="Reset">⤿</button>
+                    </div>
+                </div>
+                <footer id="legend"></footer>
+            </section>
+        </div>
+    </main>
+        <footer class="site-footer" role="contentinfo">
+            <div class="container footer-inner">
+                <div class="footer-left">Aplikację stworzył Miersetnik.<br>Mapy dostarczył NKacz.</div>
+                <div class="footer-right">Strona nie jest w żaden sposób powiązana z firmą Microsoft, Mojang lub grą Minecraft.</div>
+            </div>
+        </footer>
+    <script src="assets/map-zoom.js"></script>
+        <script src="assets/map-renderer.js"></script>
+        <script src="assets/route-search.js"></script>
+        <script src="assets/legend-renderer.js"></script>
+        <script src="assets/mc-status.js"></script>
+    <script src="assets/theme-toggle.js"></script>
+</body>
+</html>

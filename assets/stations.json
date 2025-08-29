@@ -1,0 +1,770 @@
+{
+    "ABN": {
+        "name": "Bida z Nędzą",
+        "voivodeship": "Bideckie",
+        "coordinates": [68.39, 73.28],
+        "type": "metro"
+    },
+    "AKG": {
+        "name": "Krowodrza Górka",
+        "voivodeship": "Bideckie",
+        "coordinates": [69.1, 66.57],
+        "type": "metro"
+    },
+    "AKA": {
+        "name": "Kanarowice",
+        "voivodeship": "Bideckie",
+        "coordinates": [68.59, 68.99],
+        "type": "passenger"
+    },
+    "APC": {
+        "name": "Perkelin Centrum Handlowe",
+        "voivodeship": "Bideckie",
+        "coordinates": [70.91, 66.29],
+        "type": "passenger"
+    },
+    "APG": {
+        "name": "Perkelin Główny",
+        "voivodeship": "Bideckie",
+        "coordinates": [71.71, 65.54],
+        "type": "passenger"
+    },
+    "APL": {
+        "name": "Perkelin Port Lotniczy",
+        "voivodeship": "Bideckie",
+        "coordinates": null,
+        "type": "metro"
+    },
+    "ATA": {
+        "name": "Tasmańsk",
+        "voivodeship": "Bideckie",
+        "coordinates": [62.7, 68.09],
+        "type": "passenger"
+    },
+    "ARE": {
+        "name": "Różewo",
+        "voivodeship": "Bideckie",
+        "coordinates": [69.78, 79.57],
+        "type": "passenger"
+    },
+    "ASN": {
+        "name": "Bida Sąd Najwyższy",
+        "voivodeship": "Bideckie",
+        "coordinates": null,
+        "type": "passenger"
+    },
+    "ANI": {
+        "name": "Bida Nikiszowiec",
+        "voivodeship": "Bideckie",
+        "coordinates": [69.98, 75.17],
+        "type": "passenger"
+    },
+    "ABC": {
+        "name": "Bida Centrum",
+        "voivodeship": "Bideckie",
+        "coordinates": [68.79, 74.38],
+        "type": "passenger"
+    },
+    "ABD": {
+        "name": "Bida Dworzec Główny",
+        "voivodeship": "Bideckie",
+        "coordinates": null,
+        "type": "passenger"
+    },
+    "AKM": {
+        "name": "Krowodrza Górka Metro",
+        "voivodeship": "Bideckie",
+        "coordinates": null,
+        "type": "passenger"
+    },
+    "APM": {
+        "name": "Perkelin Miasto",
+        "voivodeship": "Bideckie",
+        "coordinates": [71.28, 64.85],
+        "type": "passenger"
+    },
+    "APP": {
+        "name": "Perkelin Port Lotniczy",
+        "voivodeship": "Bideckie",
+        "coordinates": [72.18, 63.49],
+        "type": "passenger"
+    },
+    "BBL": {
+        "name": "Brzozowy Las",
+        "voivodeship": "Brzóskie",
+        "coordinates": [59.0, 70.78],
+        "type": "passenger"
+    },
+    "BCH": {
+        "name": "Chodorów",
+        "voivodeship": "Brzóskie",
+        "coordinates": [41.03, 69.68],
+        "type": "passenger"
+    },
+    "BDR": {
+        "name": "Draków",
+        "voivodeship": "Brzóskie",
+        "coordinates": [54.41, 70.98],
+        "type": "passenger"
+    },
+    "BFL": {
+        "name": "Fluszewo",
+        "voivodeship": "Brzóskie",
+        "coordinates": [45.92, 72.88],
+        "type": "passenger"
+    },
+    "DBO": {
+        "name": "Bordalowice",
+        "voivodeship": "Międzywódzkie",
+        "coordinates": [67.99, 58.5],
+        "type": "end"
+    },
+    "DGF": {
+        "name": "Górka Flaterska",
+        "voivodeship": "Międzywódzkie",
+        "coordinates": [72.58, 58.5],
+        "type": "passenger"
+    },
+    "DKO": {
+        "name": "Kotkowice",
+        "voivodeship": "Międzywódzkie",
+        "coordinates": [65.59, 66.69],
+        "type": "passenger"
+    },
+    "DPR": {
+        "name": "Przedbagnie",
+        "voivodeship": "Międzywódzkie",
+        "coordinates": [70.38, 62.8],
+        "type": "passenger"
+    },
+    "DRY": {
+        "name": "Ryśkowice Miasto",
+        "voivodeship": "Międzywódzkie",
+        "coordinates": [72.08, 53.71],
+        "type": "passenger"
+    },
+    "DWY": {
+        "name": "Wyścigi",
+        "voivodeship": "Międzywódzkie",
+        "coordinates": [73.98, 58.9],
+        "type": "passenger"
+    },
+    "GBA": {
+        "name": "Baraharad",
+        "voivodeship": "Grzegórzeckie",
+        "coordinates": [51.41, 21.86],
+        "type": "hub"
+    },
+    "GBB": {
+        "name": "Baraharad Bór",
+        "voivodeship": "Grzegórzeckie",
+        "coordinates": [53.31, 20.97],
+        "type": "passenger"
+    },
+    "GBC": {
+        "name": "Baraharad Centrum",
+        "voivodeship": "Grzegórzeckie",
+        "coordinates": [51.41, 17.77],
+        "type": "passenger"
+    },
+    "GBM": {
+        "name": "Baraharad Metro",
+        "voivodeship": "Grzegórzeckie",
+        "coordinates": null,
+        "type": "passenger"
+    },
+    "GBD": {
+        "name": "Baraharad Metro Dworzec",
+        "voivodeship": "Grzegórzeckie",
+        "coordinates": null,
+        "type": "passenger"
+    },
+    "GBT": {
+        "name": "Baraharad Techniczny",
+        "voivodeship": "Grzegórzeckie",
+        "coordinates": null,
+        "type": "passenger"
+    },
+    "GBL": {
+        "name": "Baraharad Leśniowice",
+        "voivodeship": "Grzegórzeckie",
+        "coordinates": [50.12, 14.98],
+        "type": "passenger"
+    },
+    "GBO": {
+        "name": "Brzozewo",
+        "voivodeship": "Grzegórzeckie",
+        "coordinates": [46.72, 11.88],
+        "type": "passenger"
+    },
+    "GPA": {
+        "name": "Pandziochowo",
+        "voivodeship": "Grzegórzeckie",
+        "coordinates": [47.62, 7.49],
+        "type": "passenger"
+    },
+    "GSD": {
+        "name": "Śróddżungle Dżungli",
+        "voivodeship": "Grzegórzeckie",
+        "coordinates": [48.62, 3.29],
+        "type": "passenger"
+    },
+    "GPN": {
+        "name": "Przylądek Nadziei",
+        "voivodeship": "Grzegórzeckie",
+        "coordinates": [49.42, 0.7],
+        "type": "passenger"
+    },
+    "GBS": {
+        "name": "Bagnisko Schrecksa",
+        "voivodeship": "Grzegórzeckie",
+        "coordinates": [66.09, 4.69],
+        "type": "passenger"
+    },
+    "GWK": {
+        "name": "Wysoki Kącik",
+        "voivodeship": "Grzegórzeckie",
+        "coordinates": [65.39, 7.49],
+        "type": "hub"
+    },
+    "GBZ": {
+        "name": "Bliski Zachód",
+        "voivodeship": "Grzegórzeckie",
+        "coordinates": [66.29, 1.7],
+        "type": "passenger"
+    },
+    "GSZ": {
+        "name": "Śpiulkowice-Zdrój",
+        "voivodeship": "Grzegórzeckie",
+        "coordinates": [48.02, 24.06],
+        "type": "passenger"
+    },
+    "GWI": {
+        "name": "Wilkowyje",
+        "voivodeship": "Grzegórzeckie",
+        "coordinates": [45.12, 23.66],
+        "type": "passenger"
+    },
+    "KBC": {
+        "name": "Borg Cube",
+        "voivodeship": "Kresowickie",
+        "coordinates": [32.45, 81.56],
+        "type": "passenger"
+    },
+    "KKU": {
+        "name": "Kuktosów",
+        "voivodeship": "Kresowickie",
+        "coordinates": [36.64, 73.08],
+        "type": "passenger"
+    },
+    "KNT": {
+        "name": "Nowy Tasmańsk",
+        "voivodeship": "Kresowickie",
+        "coordinates": [38.54, 76.37],
+        "type": "passenger"
+    },
+    "KWS": {
+        "name": "Wschodzie",
+        "voivodeship": "Kresowickie",
+        "coordinates": [39.33, 78.17],
+        "type": "passenger"
+    },
+    "KZG": {
+        "name": "Zgagóra",
+        "voivodeship": "Kresowickie",
+        "coordinates": [36.44, 81.66],
+        "type": "passenger"
+    },
+    "LZK": {
+        "name": "Zakład Karyny",
+        "voivodeship": "Złowieckie",
+        "coordinates": [19.47, 17.67],
+        "type": "passenger"
+    },
+    "LZI": {
+        "name": "Ziemiokoty",
+        "voivodeship": "Złowieckie",
+        "coordinates": [25.66, 24.16],
+        "type": "passenger"
+    },
+    "LNI": {
+        "name": "Niewiedź",
+        "voivodeship": "Złowieckie",
+        "coordinates": [27.35, 33.94],
+        "type": "passenger"
+    },
+    "LCD": {
+        "name": "Codochujowice",
+        "voivodeship": "Złowieckie",
+        "coordinates": [17.67, 10.58],
+        "type": "passenger"
+    },
+    "LDE": {
+        "name": "Dedgierz",
+        "voivodeship": "Złowieckie",
+        "coordinates": [10.48, 10.98],
+        "type": "passenger"
+    },
+    "LPM": {
+        "name": "Przedmorze",
+        "voivodeship": "Złowieckie",
+        "coordinates": [6.59, 9.68],
+        "type": "passenger"
+    },
+    "LPO": {
+        "name": "Północnik",
+        "voivodeship": "Złowieckie",
+        "coordinates": [3.39, 8.79],
+        "type": "passenger"
+    },
+    "MCP": {
+        "name": "Ciechocinek Północ",
+        "voivodeship": "Międzyrzeckie",
+        "coordinates": [66.59, 38.14],
+        "type": "passenger"
+    },
+    "MCT": {
+        "name": "Ciechocinek Tartak",
+        "voivodeship": "Międzyrzeckie",
+        "coordinates": null,
+        "type": "passenger"
+    },
+    "MGS": {
+        "name": "Góra Skryciulska",
+        "voivodeship": "Międzyrzeckie",
+        "coordinates": [64.89, 30.05],
+        "type": "passenger"
+    },
+    "MKZ": {
+        "name": "Kawarda Zdrój",
+        "voivodeship": "Międzyrzeckie",
+        "coordinates": [56.71, 47.92],
+        "type": "passenger"
+    },
+    "MKT": {
+        "name": "Kuria Toruńska",
+        "voivodeship": "Międzyrzeckie",
+        "coordinates": [65.89, 33.64],
+        "type": "passenger"
+    },
+    "MML": {
+        "name": "Międzylesie",
+        "voivodeship": "Międzyrzeckie",
+        "coordinates": [61.0, 49.42],
+        "type": "passenger"
+    },
+    "MMZ": {
+        "name": "Międzyrzecze Zachód",
+        "voivodeship": "Międzyrzeckie",
+        "coordinates": [52.21, 29.25],
+        "type": "end"
+    },
+    "MNI": {
+        "name": "Nilplep",
+        "voivodeship": "Międzyrzeckie",
+        "coordinates": [52.11, 42.03],
+        "type": "passenger"
+    },
+    "MNL": {
+        "name": "Nilplep Las",
+        "voivodeship": "Międzyrzeckie",
+        "coordinates": null,
+        "type": "passenger"
+    },
+    "MNP": {
+        "name": "Nilplep Podzamcze",
+        "voivodeship": "Międzyrzeckie",
+        "coordinates": [52.11, 45.42],
+        "type": "passenger"
+    },
+    "MPO": {
+        "name": "Podgórze",
+        "voivodeship": "Międzyrzeckie",
+        "coordinates": [52.21, 39.43],
+        "type": "passenger"
+    },
+    "MKI": {
+        "name": "Kisusy",
+        "voivodeship": "Międzyrzeckie",
+        "coordinates": [69.68, 53.41],
+        "type": "passenger"
+    },
+    "MPR": {
+        "name": "Przemytnica",
+        "voivodeship": "Międzyrzeckie",
+        "coordinates": [67.39, 52.61],
+        "type": "hub"
+    },
+    "MSP": {
+        "name": "Spawnowice",
+        "voivodeship": "Międzyrzeckie",
+        "coordinates": [49.72, 47.72],
+        "type": "passenger"
+    },
+    "MSU": {
+        "name": "Susy",
+        "voivodeship": "Międzyrzeckie",
+        "coordinates": [53.51, 47.82],
+        "type": "metro"
+    },
+    "MWI": {
+        "name": "Plac Wilsona",
+        "voivodeship": "Międzyrzeckie",
+        "coordinates": [66.99, 43.93],
+        "type": "passenger"
+    },
+    "PWO": {
+        "name": "Wolvenhol",
+        "voivodeship": "Pyrskie",
+        "coordinates": [73.48, 72.38],
+        "type": "passenger"
+    },
+    "PHE": {
+        "name": "Hertzburg",
+        "voivodeship": "Pyrskie",
+        "coordinates": [75.87, 74.68],
+        "type": "passenger"
+    },
+    "PDO": {
+        "name": "Dolina Szwajcarska",
+        "voivodeship": "Pyrskie",
+        "coordinates": [79.17, 74.48],
+        "type": "passenger"
+    },
+    "PKL": {
+        "name": "Krzywy Las",
+        "voivodeship": "Pyrskie",
+        "coordinates": [86.16, 71.48],
+        "type": "passenger"
+    },
+    "PFD": {
+        "name": "Fartodolina",
+        "voivodeship": "Pyrskie",
+        "coordinates": [89.55, 76.37],
+        "type": "passenger"
+    },
+    "PSM": {
+        "name": "Smreków",
+        "voivodeship": "Pyrskie",
+        "coordinates": [90.15, 81.46],
+        "type": "passenger"
+    },
+    "PDZ": {
+        "name": "Dentgino Zachodnie",
+        "voivodeship": "Pyrskie",
+        "coordinates": [89.45, 84.06],
+        "type": "passenger"
+    },
+    "PDW": {
+        "name": "Dentgino Wschodnie",
+        "voivodeship": "Pyrskie",
+        "coordinates": [90.25, 87.05],
+        "type": "hub"
+    },
+    "PDD": {
+        "name": "Dentgino Dolne",
+        "voivodeship": "Pyrskie",
+        "coordinates": null,
+        "type": "passenger"
+    },
+    "PNA": {
+        "name": "Narządnik",
+        "voivodeship": "Pyrskie",
+        "coordinates": [90.75, 89.65],
+        "type": "passenger"
+    },
+    "PRO": {
+        "name": "Równica",
+        "voivodeship": "Pyrskie",
+        "coordinates": [89.85, 94.84],
+        "type": "passenger"
+    },
+    "PWP": {
+        "name": "Wyspa Puci",
+        "voivodeship": "Pyrskie",
+        "coordinates": [94.74, 96.94],
+        "type": "passenger"
+    },
+    "PDL": {
+        "name": "Dziady Leśne",
+        "voivodeship": "Pyrskie",
+        "coordinates": [98.54, 97.34],
+        "type": "passenger"
+    },
+    "PPS": {
+        "name": "Prawdopodobieństwo Stoczniowców",
+        "voivodeship": "Pyrskie",
+        "coordinates": [69.88, 82.16],
+        "type": "passenger"
+    },
+    "PES": {
+        "name": "Endownice - Sucharowice",
+        "voivodeship": "Pyrskie",
+        "coordinates": [72.88, 94.74],
+        "type": "end"
+    },
+    "PZB": {
+        "name": "Żwirownia Bocznica",
+        "voivodeship": "Pyrskie",
+        "coordinates": null,
+        "type": "passenger"
+    },
+    "PZM": {
+        "name": "Żwirownia \"Żwirow & Muchomorow\"",
+        "voivodeship": "Pyrskie",
+        "coordinates": [89.55, 72.38],
+        "type": "passenger"
+    },
+    "SSO": {
+        "name": "Savannah Osada",
+        "voivodeship": "Somsiedzkie",
+        "coordinates": [18.37, 53.31],
+        "type": "passenger"
+    },
+    "SSP": {
+        "name": "Stara Paqownia",
+        "voivodeship": "Somsiedzkie",
+        "coordinates": [19.87, 61.8],
+        "type": "passenger"
+    },
+    "STG": {
+        "name": "Tomhetowo Górne",
+        "voivodeship": "Somsiedzkie",
+        "coordinates": [17.17, 70.88],
+        "type": "passenger"
+    },
+    "STW": {
+        "name": "Tomhetowo Wookskie",
+        "voivodeship": "Somsiedzkie",
+        "coordinates": [19.67, 69.18],
+        "type": "passenger"
+    },
+    "SWI": {
+        "name": "Wiśniówka",
+        "voivodeship": "Somsiedzkie",
+        "coordinates": [3.89, 90.15],
+        "type": "passenger"
+    },
+    "SCB": {
+        "name": "Czarny Brzeg",
+        "voivodeship": "Somsiedzkie",
+        "coordinates": [6.59, 85.86],
+        "type": "passenger"
+    },
+    "SLE": {
+        "name": "Leoben",
+        "voivodeship": "Somsiedzkie",
+        "coordinates": [9.68, 75.27],
+        "type": "hub"
+    },
+    "SGR": {
+        "name": "Grzybolandia",
+        "voivodeship": "Somsiedzkie",
+        "coordinates": [7.19, 62.4],
+        "type": "passenger"
+    },
+    "SBL": {
+        "name": "Blabno",
+        "voivodeship": "Somsiedzkie",
+        "coordinates": [5.59, 51.31],
+        "type": "passenger"
+    },
+    "SNI": {
+        "name": "Niemogusin",
+        "voivodeship": "Somsiedzkie",
+        "coordinates": [6.39, 46.72],
+        "type": "passenger"
+    },
+    "SLD": {
+        "name": "Leśny Dwór",
+        "voivodeship": "Somsiedzkie",
+        "coordinates": [2.3, 42.13],
+        "type": "passenger"
+    },
+    "SWZ": {
+        "name": "Wzgórzyn",
+        "voivodeship": "Somsiedzkie",
+        "coordinates": [15.67, 75.47],
+        "type": "passenger"
+    },
+    "SBO": {
+        "name": "Bromberg",
+        "voivodeship": "Somsiedzkie",
+        "coordinates": [4.39, 73.78],
+        "type": "passenger"
+    },
+    "SBF": {
+        "name": "Bromberg Fabryczny",
+        "voivodeship": "Somsiedzkie",
+        "coordinates": [3.19, 74.78],
+        "type": "passenger"
+    },
+    "SGK": {
+        "name": "Granicznik Kolonia Wybudowanie B",
+        "voivodeship": "Somsiedzkie",
+        "coordinates": [1.7, 76.27],
+        "type": "passenger"
+    },
+    "SZA": {
+        "name": "Zamesie",
+        "voivodeship": "Somsiedzkie",
+        "coordinates": [19.17, 50.12],
+        "type": "passenger"
+    },
+    "UFA": {
+        "name": "Farmownica",
+        "voivodeship": "Suchomeskie",
+        "coordinates": [27.45, 68.39],
+        "type": "passenger"
+    },
+    "UNP": {
+        "name": "Nowa Paqownia",
+        "voivodeship": "Suchomeskie",
+        "coordinates": [35.34, 67.99],
+        "type": "hub"
+    },
+    "UPS": {
+        "name": "Piaszczyna",
+        "voivodeship": "Suchomeskie",
+        "coordinates": [35.04, 62.2],
+        "type": "passenger"
+    },
+    "UPI": {
+        "name": "Piramidowiec",
+        "voivodeship": "Suchomeskie",
+        "coordinates": [26.56, 66.29],
+        "type": "end"
+    },
+    "USD": {
+        "name": "Śmieszna Dziura",
+        "voivodeship": "Suchomeskie",
+        "coordinates": [21.86, 49.72],
+        "type": "passenger"
+    },
+    "WBA": {
+        "name": "Łachowo",
+        "voivodeship": "Wielkokabaczckie",
+        "coordinates": [29.35, 43.83],
+        "type": "passenger"
+    },
+    "WBU": {
+        "name": "Busz",
+        "voivodeship": "Wielkokabaczckie",
+        "coordinates": [25.66, 47.52],
+        "type": "passenger"
+    },
+    "WDG": {
+        "name": "Dzika Górka",
+        "voivodeship": "Wielkokabaczckie",
+        "coordinates": [32.55, 35.64],
+        "type": "passenger"
+    },
+    "WGP": {
+        "name": "Gorzyca",
+        "voivodeship": "Wielkokabaczckie",
+        "coordinates": [46.72, 46.12],
+        "type": "passenger"
+    },
+    "WJJ": {
+        "name": "Jajecznica",
+        "voivodeship": "Wielkokabaczckie",
+        "coordinates": [37.24, 27.65],
+        "type": "passenger"
+    },
+    "WJU": {
+        "name": "Jusznica",
+        "voivodeship": "Wielkokabaczckie",
+        "coordinates": [35.54, 39.23],
+        "type": "hub"
+    },
+    "WJT": {
+        "name": "Jusznica Techniczna",
+        "voivodeship": "Wielkokabaczckie",
+        "coordinates": null,
+        "type": "passenger"
+    },
+    "WKE": {
+        "name": "Kerfusiowo",
+        "voivodeship": "Wielkokabaczckie",
+        "coordinates": [44.03, 42.83],
+        "type": "passenger"
+    },
+    "WPA": {
+        "name": "Pawiański Gaj",
+        "voivodeship": "Wielkokabaczckie",
+        "coordinates": [35.44, 52.01],
+        "type": "passenger"
+    },
+    "WPO": {
+        "name": "Polanica",
+        "voivodeship": "Wielkokabaczckie",
+        "coordinates": [37.64, 43.33],
+        "type": "passenger"
+    },
+    "WPD": {
+        "name": "Przeddżungle Dżungli",
+        "voivodeship": "Wielkokabaczckie",
+        "coordinates": [35.14, 49.72],
+        "type": "passenger"
+    },
+    "WRO": {
+        "name": "Rokietownik",
+        "voivodeship": "Wielkokabaczckie",
+        "coordinates": [35.94, 46.32],
+        "type": "passenger"
+    },
+    "ZBA": {
+        "name": "Bagno",
+        "voivodeship": "Zasiedmiogórskie",
+        "coordinates": [61.1, 22.46],
+        "type": "passenger"
+    },
+    "ZGZ": {
+        "name": "Granice Zachodnie",
+        "voivodeship": "Zasiedmiogórskie",
+        "coordinates": [64.09, 18.57],
+        "type": "passenger"
+    },
+    "ZKD": {
+        "name": "Kaźmirz Dolny",
+        "voivodeship": "Zasiedmiogórskie",
+        "coordinates": [70.08, 22.26],
+        "type": "passenger"
+    },
+    "ZPO": {
+        "name": "Podkazie",
+        "voivodeship": "Zasiedmiogórskie",
+        "coordinates": [67.19, 25.16],
+        "type": "hub"
+    },
+    "ZWI": {
+        "name": "Wioksal",
+        "voivodeship": "Zasiedmiogórskie",
+        "coordinates": [80.27, 21.66],
+        "type": "hub"
+    },
+    "ZWK": {
+        "name": "Wklejalin",
+        "voivodeship": "Zasiedmiogórskie",
+        "coordinates": [79.97, 13.38],
+        "type": "passenger"
+    },
+    "ZWP": {
+        "name": "Wklejalin Przystanek",
+        "voivodeship": "Zasiedmiogórskie",
+        "coordinates": [80.47, 15.57],
+        "type": "passenger"
+    },
+    "ZWL": {
+        "name": "Wklejalin Plaża",
+        "voivodeship": "Zasiedmiogórskie",
+        "coordinates": [79.67, 10.28],
+        "type": "passenger"
+    },
+    "ZZD": {
+        "name": "Zagłębie Dziury",
+        "voivodeship": "Zasiedmiogórskie",
+        "coordinates": [65.59, 20.87],
+        "type": "passenger"
+    }
+}
