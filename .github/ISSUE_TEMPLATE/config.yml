@@ -1,4 +1,4 @@
-blank_issues_enabled: false
+blank_issues_enabled: true
 contact_links:
   - name: Pytania ogólne / dyskusje
     url: https://discord.com/channels/865183769626279966/906826197508435968
