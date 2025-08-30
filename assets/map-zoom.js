@@ -23,17 +23,16 @@
   }
 
   function zoomAt(factor, cx, cy) {
-    const newScale = Math.max(minScale, Math.min(maxScale, scale * factor));
-    if (newScale === scale) return;
-    // przeskaluj względem punktu (cx, cy) w viewport
-    const rect = map.getBoundingClientRect();
-    const mx = cx - rect.left;
-    const my = cy - rect.top;
-    const k = newScale / scale;
-    tx = cx - k * (cx - tx);
-    ty = cy - k * (cy - ty);
-    scale = newScale;
-    applyTransform();
+  const newScale = Math.max(minScale, Math.min(maxScale, scale * factor));
+  if (newScale === scale) return;
+  // Przelicz pozycję kursora względem mapy (przed zmianą skali)
+  const mapX = (cx - tx) / scale;
+  const mapY = (cy - ty) / scale;
+  scale = newScale;
+  // Po zmianie skali ustaw przesunięcie tak, by punkt pod kursorem pozostał pod kursorem
+  tx = cx - mapX * scale;
+  ty = cy - mapY * scale;
+  applyTransform();
   }
 
   function centerOn(percentTop, percentLeft, opts = {}) {
@@ -78,7 +77,10 @@
   viewport.addEventListener('wheel', (e) => {
     if (!e.ctrlKey && !e.metaKey) {
       const factor = e.deltaY < 0 ? 1.1 : 1/1.1;
-      zoomAt(factor, e.clientX, e.clientY);
+      const rect = viewport.getBoundingClientRect();
+      const x = e.clientX - rect.left;
+      const y = e.clientY - rect.top;
+      zoomAt(factor, x, y);
       e.preventDefault();
     }
   }, { passive: false });
