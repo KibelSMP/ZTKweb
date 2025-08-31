@@ -8,8 +8,9 @@
       fetch('assets/stations.json', { cache: 'no-store' }),
       fetch('assets/lines.json', { cache: 'no-store' })
     ]);
-    const stations = await stRes.json();
-    const lines = await lnRes.json();
+  if (!stRes.ok || !lnRes.ok) throw new Error('HTTP ' + stRes.status + '/' + lnRes.status);
+  const stations = await stRes.json();
+  const lines = await lnRes.json();
     const canvas = document.createElement('canvas');
     canvas.width = mapEl.clientWidth;
     canvas.height = mapEl.clientHeight;
@@ -67,7 +68,7 @@
     window.addEventListener('lines:visibility', (ev) => { const arr = ev?.detail?.allowed; if (Array.isArray(arr) && arr.length) { allowedTypes = new Set(arr); drawLines(); } });
     Object.entries(stations).forEach(([id, st]) => {
       if (!st || !Array.isArray(st.coordinates)) return; const [top, left] = st.coordinates; const el = document.createElement('div'); const t = st.type; const isHub = t === 'hub'; const extra = [isHub ? 'hub' : null, t ? `type-${t}` : null].filter(Boolean).join(' ');
-      el.className = 'station-marker view-only' + (extra ? ' ' + extra : ''); el.dataset.stationId = id; el.style.top = `${top}%`; el.style.left = `${left}%`; el.title = `${st.name || id} (${id})`;
+  el.className = 'station-marker view-only' + (extra ? ' ' + extra : ''); el.dataset.stationId = id; el.style.top = `${top}%`; el.style.left = `${left}%`; el.title = `${st.name || id}`;
       const lab = document.createElement('div'); lab.className = 'station-label'; lab.textContent = st.name || id; el.appendChild(lab); mapEl.appendChild(el);
     });
 
@@ -132,5 +133,12 @@
     ro.observe(mapEl);
     const mo2 = new MutationObserver(relayoutSoon);
     mo2.observe(document.documentElement, { attributes: true, attributeFilter: ['data-theme'] });
-  } catch (e) { console.error('Nie udało się wczytać stations.json/lines.json', e); }
+  } catch (e) {
+    console.error('Nie udało się wczytać stations.json/lines.json', e);
+    const alert = document.getElementById('data-error');
+    if (alert) {
+      alert.textContent = 'Nie udało się wczytać danych mapy (stations/lines). Odśwież stronę lub sprawdź połączenie.';
+      alert.classList.remove('hidden');
+    }
+  }
 })();

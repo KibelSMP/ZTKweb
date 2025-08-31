@@ -4,6 +4,24 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>ZTKweb</title>
+    <meta name="description" content="Mapa połączeń świata KibelSMP: stacje, linie REGIO/METRO/IC, wyszukiwanie tras i podgląd legendy.">
+    <link rel="canonical" href="https://ztk.otworz.se/" />
+    <meta property="og:type" content="website">
+    <meta property="og:title" content="ZTKweb – mapa połączeń świata KibelSMP">
+    <meta property="og:description" content="Stacje i linie (REGIO, METRO, IC), wyszukiwanie tras i legenda.">
+    <meta property="og:url" content="https://ztk.otworz.se/">
+    <meta property="og:image" content="https://ztk.otworz.se/assets/logo_ztk.png">
+    <meta name="twitter:card" content="summary">
+    <meta name="twitter:title" content="ZTKweb – mapa połączeń świata KibelSMP">
+    <meta name="twitter:description" content="Stacje i linie (REGIO, METRO, IC), wyszukiwanie tras i legenda.">
+    <meta name="theme-color" content="#2e7d32" media="(prefers-color-scheme: light)">
+    <meta name="theme-color" content="#0f1115" media="(prefers-color-scheme: dark)">
+    <link rel="manifest" href="/manifest.json">
+    <link rel="apple-touch-icon" href="assets/icons/ios/180.png" sizes="180x180">
+    <link rel="apple-touch-icon" href="assets/icons/ios/167.png" sizes="167x167">
+    <link rel="apple-touch-icon" href="assets/icons/ios/152.png" sizes="152x152">
+    <link rel="preload" as="fetch" href="assets/stations.json" crossorigin="anonymous">
+    <link rel="preload" as="fetch" href="assets/lines.json" crossorigin="anonymous">
     <link rel="stylesheet" href="assets/app.css">
     <link rel="icon" type="image/png" href="assets/favicon.png">
 </head>
@@ -24,14 +42,20 @@
             </div>
         </div>
     </header>
+    <noscript>
+        <div class="container" role="alert" style="margin-top:12px">
+            Ta strona wymaga JavaScript do działania (render mapy, wyszukiwarka tras). Włącz JS w przeglądarce.
+        </div>
+    </noscript>
     <main class="container">
         <div class="content">
+            <div id="data-error" class="alert hidden" role="alert" aria-live="assertive"></div>
             <section id="search-panel" aria-label="Wyszukiwarka połączeń">
                 <datalist id="stations-list"></datalist>
                 <div class="station-search-row" aria-label="Szukaj stacji">
                     <div class="field">
-                        <label for="station"><span class="label-icon" aria-hidden="true">🔎</span>Szukaj stacji</label>
-                        <input id="station" list="stations-list" placeholder="Nazwa lub ID stacji" />
+                        <label for="station"><span class="label-icon" aria-hidden="true"></span>Szukaj stacji</label>
+                        <input id="station" list="stations-list" placeholder="Nazwa stacji" />
                     </div>
                     <button id="station-clear" class="btn-clear" title="Wyczyść" aria-label="Wyczyść">✕</button>
                     <button id="station-search" class="btn-station-search" title="Pokaż na mapie" aria-label="Pokaż na mapie">Pokaż</button>
@@ -39,13 +63,13 @@
                 <div class="or-divider" role="separator" aria-label="Oddziela wyszukiwarki"><span>albo</span></div>
         <div class="search-row">
                     <div class="field">
-            <label for="from"><span class="label-icon" aria-hidden="true">➡️</span>Skąd</label>
-                        <input id="from" list="stations-list" placeholder="Stacja początkowa (nazwa lub ID)" />
+            <label for="from"><span class="label-icon" aria-hidden="true"></span>Skąd</label>
+                        <input id="from" list="stations-list" placeholder="Stacja początkowa (nazwa)" />
                     </div>
                     <button id="swap" class="btn-swap" title="Zamień kierunek" aria-label="Zamień kierunek">⇄</button>
                     <div class="field">
-            <label for="to"><span class="label-icon" aria-hidden="true">➡️</span>Dokąd</label>
-                        <input id="to" list="stations-list" placeholder="Stacja docelowa (nazwa lub ID)" />
+            <label for="to"><span class="label-icon" aria-hidden="true"></span>Dokąd</label>
+                        <input id="to" list="stations-list" placeholder="Stacja docelowa (nazwa)" />
                     </div>
                     <button id="route-clear" class="btn-clear" title="Wyczyść" aria-label="Wyczyść">✕</button>
                     <button id="search" class="btn-search">Szukaj</button>
@@ -99,5 +123,13 @@
     <script src="assets/legend-renderer.js"></script>
     <script src="assets/mc-status.js"></script>
     <script src="assets/theme-toggle.js"></script>
+    <script src="assets/pwa-install.js"></script>
+        <script>
+            if ('serviceWorker' in navigator) {
+                window.addEventListener('load', () => {
+                    navigator.serviceWorker.register('/sw.js').catch(()=>{});
+                });
+            }
+        </script>
 </body>
 </html>

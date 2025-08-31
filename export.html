@@ -4,6 +4,24 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>ZTKweb – Eksport</title>
+  <meta name="description" content="Eksport podglądu mapy połączeń KibelSMP do PDF: tytuł, widok satelitarny, filtry typów, skala legendy.">
+  <link rel="canonical" href="https://ztk.otworz.se/export.html" />
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="ZTKweb – Eksport PDF mapy KibelSMP">
+  <meta property="og:description" content="Skonfiguruj podgląd (tytuł, satelita, typy, legenda) i pobierz PDF.">
+  <meta property="og:url" content="https://ztk.otworz.se/export.html">
+  <meta property="og:image" content="https://ztk.otworz.se/assets/logo_ztk.png">
+  <meta name="twitter:card" content="summary">
+  <meta name="twitter:title" content="ZTKweb – Eksport PDF mapy KibelSMP">
+  <meta name="twitter:description" content="Skonfiguruj podgląd i pobierz PDF.">
+  <meta name="theme-color" content="#2e7d32" media="(prefers-color-scheme: light)">
+  <meta name="theme-color" content="#0f1115" media="(prefers-color-scheme: dark)">
+  <link rel="manifest" href="/manifest.json" />
+  <link rel="apple-touch-icon" href="assets/icons/ios/180.png" sizes="180x180" />
+  <link rel="apple-touch-icon" href="assets/icons/ios/167.png" sizes="167x167" />
+  <link rel="apple-touch-icon" href="assets/icons/ios/152.png" sizes="152x152" />
+  <link rel="preload" as="fetch" href="assets/stations.json" crossorigin="anonymous">
+  <link rel="preload" as="fetch" href="assets/lines.json" crossorigin="anonymous">
   <link rel="stylesheet" href="assets/app.css" />
   <link rel="stylesheet" href="assets/export-page.css" />
   <link rel="icon" type="image/png" href="assets/favicon.png" />
@@ -25,6 +43,11 @@
       </div>
     </div>
   </header>
+  <noscript>
+    <div class="container" role="alert" style="margin-top:12px">
+      Ta strona wymaga JavaScript do działania (podgląd i eksport PDF). Włącz JS w przeglądarce.
+    </div>
+  </noscript>
   <main class="container">
     <div class="export-layout">
       <section class="export-controls" aria-label="Ustawienia eksportu">
@@ -81,7 +104,15 @@
   <script src="assets/map-renderer.js"></script>
   <script src="assets/legend-renderer.js"></script>
   <script src="assets/theme-toggle.js"></script>
+  <script src="assets/pwa-install.js"></script>
   <script src="assets/vendor/html2pdf.bundle.min.js"></script>
   <script src="assets/export-page.js"></script>
+  <script>
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register('/sw.js').catch(()=>{});
+      });
+    }
+  </script>
 </body>
 </html>
