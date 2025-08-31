@@ -74,14 +74,15 @@
 
 	// build datalist (both name and id)
 	const items = Object.entries(stations).map(([id, st]) => ({ id, name: st.name || id })).sort((a,b)=>a.name.localeCompare(b.name,'pl'));
-	list.innerHTML = items.map(({id, name}) => `<option value="${name} (${id})"></option>`).join('');
+	// Nie pokazuj ID w podpowiedziach
+	list.innerHTML = items.map(({id, name}) => `<option value="${name}"></option>`).join('');
 
 	// Pomocnicze: format wartości pola wejściowego jako "Name (ID)"
 	function formatStationValue(id) {
 		if (!id) return '';
 		const st = stations[id];
 		const name = st?.name || id;
-		return `${name} (${id})`;
+		return `${name}`;
 	}
 
 	// URL helpers
@@ -293,7 +294,7 @@
 
 	function renderResults(routes) {
 		if (!routes.length) { resultsEl.textContent = 'Brak połączenia.'; return; }
-		const fmtStation = (id) => `${stations[id]?.name || id} (${id})`;
+		const fmtStation = (id) => `${stations[id]?.name || id}`;
 		const fmtLeg = (leg) => {
 			const line = lines[leg.lineId] || {};
 			let rel = line.relation || '';
@@ -334,9 +335,9 @@
 			}).join('');
 			const isSel = idx === selectedIndex;
 			const footer = `<div class=\"itinerary-footer\">\n        <button class=\"btn-choose\" data-index=\"${idx}\" aria-pressed=\"${isSel}\">${isSel ? 'Wybrano' : 'Wybierz'}</button>\n      </div>`;
-			return `<div class=\"itinerary${isSel ? ' selected' : ''}\" data-index=\"${idx}\" style=\"--route-color:${routeColor}\">${header}${body}${footer}</div>`;
+			return `<div class=\"itinerary${isSel ? ' selected' : ''}\" data-index=\"${idx}\" style=\"--route-color:${routeColor}\" role=\"button\" tabindex=\"0\" aria-pressed=\"${isSel}\">${header}${body}${footer}</div>`;
 		}).join('');
-		resultsEl.innerHTML = `<div class=\"results-grid\">${htmlCards}</div>`;
+		resultsEl.innerHTML = `<div class=\"results-grid\" role=\"list\">${htmlCards}</div>`;
 		// Pokoloruj kropki w pigułkach zgodnie z kolorem danej linii
 		resultsEl.querySelectorAll('.leg .line .line-pill').forEach((pill) => {
 			const id = pill.getAttribute('data-line-id');
@@ -504,6 +505,30 @@
 				renderResults(currentRoutes);
 				updateURL(sp => { sp.set('sel', String(idx)); });
 			}
+		}
+	});
+
+	// Klawiatura: Enter/Space wybierają kartę; strzałki zmieniają wybór
+	resultsEl.addEventListener('keydown', (e) => {
+		const card = e.target && e.target.closest ? e.target.closest('.itinerary') : null;
+		if (!card) return;
+		const idx = Number(card.getAttribute('data-index'));
+		if (!Number.isFinite(idx)) return;
+		if (e.key === 'Enter' || e.key === ' ') {
+			e.preventDefault();
+			selectRoute(idx);
+			renderResults(currentRoutes);
+			updateURL(sp => { sp.set('sel', String(idx)); });
+		} else if (e.key === 'ArrowDown' || e.key === 'ArrowRight') {
+			e.preventDefault();
+			const next = Math.min(currentRoutes.length - 1, idx + 1);
+			const el = resultsEl.querySelector(`.itinerary[data-index="${next}"]`);
+			if (el) el.focus();
+		} else if (e.key === 'ArrowUp' || e.key === 'ArrowLeft') {
+			e.preventDefault();
+			const prev = Math.max(0, idx - 1);
+			const el = resultsEl.querySelector(`.itinerary[data-index="${prev}"]`);
+			if (el) el.focus();
 		}
 	});
 

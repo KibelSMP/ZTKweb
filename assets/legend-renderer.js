@@ -70,7 +70,7 @@
 			section('Linie REGIO', groups.REGIO),
 			section('Linie METRO', groups.METRO),
 			section('Linie NA ŻĄDANIE', groups.ON_DEMAND),
-			section('LINIE INTERCITY', groups.IC)
+			section('Linie INTERCITY', groups.IC)
 		].join('');
 		el.innerHTML = html;
 	}

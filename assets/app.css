@@ -529,6 +529,11 @@ main {
     box-shadow: 0 0 0 1px color-mix(in oklab, var(--route-color, var(--accent)) 16%, transparent), 0 0 0 4px color-mix(in oklab, var(--route-color, var(--accent)) 10%, transparent), 0 0 22px 0 color-mix(in oklab, var(--route-color, var(--accent)) 24%, transparent);
 }
 
+.itinerary[tabindex]:focus-visible {
+    outline: none;
+    box-shadow: 0 0 0 2px var(--accent-ring);
+}
+
 .itinerary-header {
     display: flex;
     align-items: center;
@@ -670,6 +675,17 @@ main {
     accent-color: var(--accent);
 }
 
+/* Alerts */
+.alert {
+    margin-top: 10px;
+    padding: 10px 12px;
+    border: 1px solid #f1b0b0;
+    background: color-mix(in oklab, #f1b0b0 14%, var(--panel));
+    color: #5a1b1b;
+    border-radius: 10px;
+}
+.hidden { display: none !important; }
+
 /* Legend & sections */
 #legend {
     margin-top: 12px;
@@ -806,30 +822,7 @@ main {
 .station-marker.view-only.type-end { background-color: #7b1fa2; }
 .station-marker.view-only.type-metro { background-color: #d32f2f; }
 
-/* Editor shared UI */
-#annotator-panel {
-    background: var(--panel);
-    padding: 12px;
-    border: 1px solid var(--border);
-    border-radius: 12px;
-    font-size: 14px;
-    width: 100%;
-    box-shadow: var(--shadow);
-    margin-bottom: 12px;
-}
-
-.annotator-title {
-    font-weight: 600;
-    margin-bottom: 6px;
-}
-
-.annotator-row {
-    display: flex;
-    gap: 6px;
-    align-items: center;
-    flex-wrap: wrap;
-    margin-bottom: 6px;
-}
+/* (Editor panels removed) */
 
 .btn {
     padding: 6px 10px;
@@ -881,334 +874,18 @@ main {
     border: 0;
 }
 
-/* Editor: shape handles and toolbar */
-#shape-layer {
-    position: absolute;
-    inset: 0;
-    pointer-events: none;
-    z-index: 1000;
-}
-
-.shape-handle {
-    position: absolute;
-    width: 14px;
-    height: 14px;
-    margin-left: -7px;
-    margin-top: -7px;
-    border: 2px solid #fff;
-    background: #1976d2;
-    border-radius: 50%;
-    box-shadow: 0 0 0 2px rgba(0, 0, 0, 0.25);
-    cursor: grab;
-    pointer-events: auto;
-    transform: translate(-50%, -50%) scale(calc(1 / var(--map-scale, 1)));
-    transform-origin: center center;
-}
-
-.shape-handle:active {
-    cursor: grabbing;
-}
-
-.shape-toolbar {
-    position: absolute;
-    left: 12px;
-    right: 12px;
-    bottom: 12px;
-    background: rgba(0, 0, 0, 0.7);
-    color: #fff;
-    padding: 8px 10px;
-    border-radius: 8px;
-    display: none;
-    z-index: 2000;
-    /* above zoom */
-}
-
-.shape-toolbar .shape-toolbar-row {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 12px;
-    flex-wrap: wrap;
-    row-gap: 8px;
-}
-
-.shape-toolbar #shape-help {
-    flex: 1 1 auto;
-    min-width: 0;
-}
-
-.shape-toolbar .shape-toolbar-actions {
-    display: flex;
-    gap: 8px;
-    flex-wrap: wrap;
-    justify-content: flex-end;
-}
-
-.shape-toolbar .btn {
-    border: none;
-}
-
-@media (max-width: 640px) {
-    .shape-toolbar .shape-toolbar-actions {
-        width: 100%;
-    }
-}
+/* (Editor shape overlay removed) */
 
 /* Editor: missing refinements for rows/inputs/actions */
-.annotator-actions {
-    display: flex;
-    gap: 8px;
-    flex-wrap: wrap;
-    min-width: 0;
-}
+/* (Editor inputs and rows removed) */
 
-.annotator-row>input[type="text"],
-.annotator-row>select,
-.annotator-row>button {
-    max-width: 100%;
-    min-width: 0;
-}
+/* (Editor generated markers removed) */
 
-.annotator-row input[type="text"],
-.annotator-row select {
-    padding: 6px 8px;
-    border: 1px solid var(--border);
-    border-radius: 8px;
-    background: var(--panel);
-    color: var(--text);
-    min-height: 34px;
-}
+/* (Editor line list UI removed) */
 
-#new-station-id, #new-station-name {
-    flex: 1 1 160px;
-}
+/* (Editor line properties removed) */
 
-#station-search {
-    flex: 1 1 160px;
-}
-
-#station-select {
-    flex: 1 1 140px;
-}
-
-#station-type {
-    flex: 0 1 160px;
-}
-
-#line-search, #line-select {
-    flex: 1 1 160px;
-}
-
-#conn-add {
-    flex: 1 1 200px;
-}
-
-.annotator-status {
-    margin-top: 8px;
-    font-size: 12px;
-    color: var(--muted);
-}
-
-/* Editor: generated markers (distinct look in editors) */
-.station-marker.generated {
-    background-color: #ff3b30;
-    border-color: #111;
-}
-
-.station-marker.generated.hub {
-    width: 10px;
-    height: 10px;
-}
-
-/* Editor: lists and controls for line editor */
-.line-editor-list {
-    margin-top: 10px;
-}
-
-.conn-list {
-    display: grid;
-    gap: 6px;
-}
-
-.conn-item {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 10px;
-    padding: 6px 8px;
-    border: 1px solid var(--border);
-    border-radius: 8px;
-    background: var(--panel);
-    min-width: 0;
-}
-
-.conn-item.skipped {
-    opacity: 0.6;
-    text-decoration: line-through;
-}
-
-.conn-name {
-    font-size: 14px;
-    flex: 1 1 auto;
-    min-width: 0;
-    overflow-wrap: anywhere;
-    word-break: break-word;
-}
-
-.conn-actions {
-    display: inline-flex;
-    gap: 6px;
-    flex: 0 0 auto;
-    flex-wrap: wrap;
-}
-
-.btn-sm {
-    padding: 4px 8px;
-    border-radius: 6px;
-    font-size: 12px;
-}
-
-.seg-link {
-    color: var(--accent);
-    cursor: pointer;
-    text-decoration: underline dotted;
-    font-size: 12px;
-    align-self: center;
-}
-
-.seg-link:hover {
-    text-decoration: underline;
-}
-
-.conn-sep {
-    display: grid;
-    grid-template-columns: 1fr auto 1fr;
-    align-items: center;
-    gap: 8px;
-    color: var(--muted);
-}
-
-.conn-sep::before, .conn-sep::after {
-    content: "";
-    height: 1px;
-    background: var(--border);
-}
-
-.conn-sep .seg-link {
-    padding: 2px 8px;
-    border: 1px solid var(--border);
-    border-radius: 999px;
-    background: var(--control-bg);
-    color: var(--control-text);
-    text-decoration: none;
-}
-
-.conn-sep .seg-link:hover {
-    background: color-mix(in oklab, var(--accent) 10%, var(--control-bg));
-    color: #fff;
-    border-color: var(--accent);
-}
-
-/* Editor: line properties form */
-.line-props {
-    margin-top: 10px;
-    padding-top: 8px;
-    border-top: 1px dashed var(--border);
-}
-
-.line-props .props-title {
-    font-weight: 600;
-    margin-bottom: 6px;
-}
-
-.line-props .props-grid {
-    display: grid;
-    grid-template-columns: repeat(2, minmax(120px, 1fr));
-    gap: 8px;
-    margin-bottom: 8px;
-    min-width: 0;
-}
-
-@media (max-width: 560px) {
-    .line-props .props-grid {
-        grid-template-columns: 1fr;
-    }
-}
-
-.line-props label {
-    display: grid;
-    gap: 4px;
-    font-size: 13px;
-    color: var(--muted);
-}
-
-.line-props input, .line-props select, .line-props textarea {
-    padding: 6px 8px;
-    border: 1px solid var(--border);
-    border-radius: 8px;
-    background: var(--panel);
-    color: var(--text);
-    width: 100%;
-    min-width: 0;
-}
-
-.line-props .hex-row {
-    display: grid;
-    grid-template-columns: auto auto;
-    gap: 6px;
-    align-items: center;
-}
-
-.line-props .color-picker {
-    position: relative;
-    display: inline-block;
-}
-
-.line-props .color-picker .swatch {
-    width: 34px;
-    height: 34px;
-    border-radius: 8px;
-    border: 1px solid var(--border);
-    box-shadow: var(--shadow) inset;
-    background: linear-gradient(135deg, rgba(0, 0, 0, .1), rgba(255, 255, 255, .1));
-}
-
-.line-props .color-picker input[type="color"] {
-    position: absolute;
-    inset: 0;
-    opacity: 0;
-    cursor: pointer;
-}
-
-#prop-hex-light, #prop-hex-dark {
-    width: 9.5ch;
-    min-width: 0;
-    font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
-    padding: 4px 6px;
-}
-
-/* Editor chooser page tweaks */
-.chooser {
-    max-width: 800px;
-    margin: 0 auto;
-}
-
-.chooser>h1 {
-    margin: 0 0 10px;
-    font-size: 20px;
-}
-
-.chooser-grid {
-    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
-}
-
-.chooser-stations {
-    --route-color: #2e7d32;
-}
-
-.chooser-lines {
-    --route-color: #1976d2;
-}
+/* (Editor chooser removed) */
 
 /* Server status widget */
 .mc-status {
@@ -1236,53 +913,91 @@ main {
     background: #c62828;
 }
 
-/* Editor blocker overlay (touch-only or small screens) */
-#editor-blocker {
+/* (Editor blocker removed) */
+
+/* PWA install banner */
+.pwa-banner {
     position: fixed;
-    inset: 0;
-    z-index: 4000;
-    display: none;
-    align-items: center;
-    justify-content: center;
-    padding: 16px;
-    background: rgba(0, 0, 0, 0.5);
-    -webkit-backdrop-filter: blur(2px);
-    backdrop-filter: blur(2px);
-}
-
-#editor-blocker[aria-hidden="false"] {
-    display: flex;
-}
-
-#editor-blocker .panel {
-    background: var(--panel);
+    left: 12px;
+    right: 12px;
+    bottom: 12px;
+    z-index: 1100; /* ponad map-controls (1001) i topbar (100) */
+    /* półprzezroczyste tło + rozmycie tła strony */
+    background: rgba(255, 255, 255, 0.85);
     color: var(--text);
     border: 1px solid var(--border);
     border-radius: 12px;
-    width: min(92vw, 560px);
     box-shadow: var(--shadow);
-    padding: 16px;
-    text-align: center;
+    transition: transform .2s ease, opacity .2s ease;
+    -webkit-backdrop-filter: saturate(180%) blur(10px);
+    backdrop-filter: saturate(180%) blur(10px);
+}
+.pwa-banner.hide { opacity: 0; transform: translateY(8px); }
+.pwa-banner-content { display: flex; gap: 12px; align-items: center; padding: 12px 16px; }
+.pwa-banner-text { flex: 1; }
+.pwa-banner-desc { opacity: .9; font-size: .95em; margin-top: 2px; }
+.pwa-banner-how { opacity: .9; font-size: .9em; margin-top: 6px; }
+.pwa-banner-actions { display: flex; align-items: center; gap: 8px; }
+.pwa-banner-never { font-size: .9em; opacity: .9; display: flex; align-items: center; gap: 6px; }
+.pwa-banner-never input[type="checkbox"] { accent-color: var(--accent); width: 16px; height: 16px; }
+.pwa-banner-close { position: absolute; inset: 6px 8px auto auto; background: transparent; color: inherit; border: 0; font-size: 20px; cursor: pointer; }
+
+/* Mobile: układ i dokowanie na dole */
+@media (max-width: 520px) {
+    .pwa-banner {
+        left: 0;
+        right: 0;
+        bottom: 0;
+        border-radius: 12px 12px 0 0; /* dolne rogi proste */
+        border-bottom-left-radius: 0;
+        border-bottom-right-radius: 0;
+    }
+    .pwa-banner-content { flex-direction: column; align-items: flex-start; }
+    .pwa-banner-actions { width: 100%; justify-content: space-between; }
 }
 
-#editor-blocker .title {
-    font-weight: 700;
-    font-size: 18px;
-    margin-bottom: 6px;
+/* Desktop – kompaktowe okienko w prawym górnym rogu */
+@media (min-width: 981px) {
+    .pwa-banner {
+        top: 16px;
+        right: 16px;
+        left: auto;
+        bottom: auto;
+        width: auto;
+        max-width: 360px;
+    }
+    .pwa-banner-content {
+        flex-direction: column;
+        align-items: stretch;
+        padding: 12px 14px 10px;
+        gap: 10px;
+    }
+    .pwa-banner-actions { justify-content: space-between; }
 }
 
-#editor-blocker .desc {
-    color: var(--muted);
-    font-size: 14px;
+/* Desktop: ukryj tekstowy przycisk zamknij, pokazuj krzyżyk */
+@media (min-width: 521px) {
+    .pwa-close-text { display: none; }
 }
 
-#editor-blocker .actions {
-    display: inline-flex;
-    gap: 8px;
-    flex-wrap: wrap;
-    justify-content: center;
+/* Mobile: pokazuj przycisk zamknij, ukryj krzyżyk */
+@media (max-width: 520px) {
+    .pwa-banner-close { display: none; }
 }
 
-#editor-blocker .actions .btn {
+/* Dark theme – bardziej przejrzyste, ciemne tło */
+html[data-theme="dark"] .pwa-banner {
+    background: rgba(23, 26, 33, 0.70);
+}
+
+/* Primary button (used in PWA banner) */
+.btn-primary {
+    border: 1px solid var(--accent);
+    background: var(--accent);
+    color: #fff;
     padding: 8px 12px;
+    border-radius: 8px;
+    cursor: pointer;
 }
+.btn-primary:hover { background: var(--accent-hover); border-color: var(--accent-hover); }
+.btn-primary:focus-visible { outline: none; box-shadow: 0 0 0 2px var(--accent-ring); }

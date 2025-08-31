@@ -109,7 +109,7 @@
   el.className = 'station-marker generated' + (extra ? ' ' + extra : '');
       el.style.top = `${top}%`;
       el.style.left = `${left}%`;
-      el.title = `${data.stations[id]?.name || id} (${id})`;
+  el.title = `${data.stations[id]?.name || id}`;
       const lab = document.createElement('div');
       lab.className = 'station-label';
       lab.textContent = data.stations[id]?.name || id;
