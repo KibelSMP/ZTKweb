@@ -38,7 +38,7 @@
         const now = nowUTC();
         const active = items.filter((it) => isActive(it, now));
         if (!active.length) return null;
-    // posortuj po priority malejąco, przy remisie po najpóźniejszym endsAt, a potem po id
+    // sort by priority descending, then by latest endsAt, then by id
         active.sort((a, b) => {
             const pa = Number(a.priority ?? 0),
                 pb = Number(b.priority ?? 0);
