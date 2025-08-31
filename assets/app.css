@@ -19,7 +19,7 @@
     --control-text: #111;
 }
 
-.ad-slot a {
+.promo-slot a {
     display: grid;
     place-items: center;
     width: 100%;
@@ -757,7 +757,7 @@ main {
 }
 
 /* Ads */
-.ad-slot {
+.promo-slot {
     background: var(--panel);
     border: 1px dashed var(--border);
     border-radius: 10px;
@@ -767,7 +767,7 @@ main {
     box-shadow: var(--shadow);
     overflow: hidden;
 }
-.ad-slot picture, .ad-slot img {
+.promo-slot picture, .promo-slot img {
     max-width: 100%;
     max-height: 100%;
     width: auto;
@@ -776,7 +776,7 @@ main {
     object-fit: contain;
 }
 
-.ad-below-search {
+.promo-below-search {
     margin-top: 12px;
 }
 
