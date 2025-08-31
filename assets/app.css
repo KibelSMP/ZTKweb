@@ -854,6 +854,32 @@ main {
     color: var(--control-text);
 }
 
+/* Topbar-only: minimalistyczny wygląd akcji (bez tła/ramki, spójne odstępy) */
+.topbar .btn-secondary,
+.topbar .link-plain {
+    padding: 6px 8px;
+    border-radius: 8px;
+    background: transparent;
+    border-color: transparent;
+}
+.topbar .theme-toggle {
+    background: transparent;
+    border: none;
+    padding: 6px 8px;
+}
+.topbar .btn-secondary:hover,
+.topbar .link-plain:hover,
+.topbar .theme-toggle:hover {
+    background: var(--accent-soft-bg);
+}
+.topbar .btn-secondary:focus-visible,
+.topbar .link-plain:focus-visible,
+.topbar .theme-toggle:focus-visible {
+    outline: none;
+    box-shadow: 0 0 0 2px var(--accent-ring);
+    border-radius: 8px;
+}
+
 .btn-warning {
     border-color: #f6c453;
     background: color-mix(in oklab, #f6c453 14%, transparent);
