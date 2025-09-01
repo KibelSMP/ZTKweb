@@ -103,7 +103,6 @@ html, body {
     letter-spacing: 0.2px;
 }
 
-/* Small note (e.g., BETA) next to the title, aligned to the top text line */
 .title .beta {
     font-size: 0.6em;
     line-height: 1;
@@ -262,10 +261,10 @@ html[data-theme="dark"] .station-marker {
     background-color: var(--label-bg);
     padding: 2px 5px;
     border-radius: 3px;
-        font-size: var(--station-label-font-size, 11px);
+    font-size: var(--station-label-font-size, 11px);
     white-space: nowrap;
     /* default position above the marker; can be overridden by label-pos-* */
-        transform: translate(-50%, calc(-1 * var(--station-label-offset, 120%)));
+    transform: translate(-50%, calc(-1 * var(--station-label-offset, 120%)));
     pointer-events: none;
     box-shadow: 0 0 5px rgba(0, 0, 0, 0.2);
     opacity: 0.6;
@@ -388,6 +387,7 @@ html[data-theme="dark"] .station-marker {
     -webkit-user-select: none;
     user-select: none;
 }
+
 html[data-theme="dark"] #map-controls {
     background: rgba(23, 26, 33, 0.70);
 }
@@ -417,6 +417,7 @@ html[data-theme="dark"] #map-controls {
     background: var(--accent-soft-hover);
     border-color: var(--accent);
 }
+
 .zoom-btn:focus-visible {
     outline: none;
     box-shadow: 0 0 0 2px var(--accent-ring);
@@ -869,8 +870,6 @@ main {
     color: var(--muted);
 }
 
-/* (export modal and print styles removed) */
-
 /* Cards and wrappers */
 .map-section {
     background: var(--panel);
@@ -1035,18 +1034,182 @@ main {
     border: 0;
 }
 
-/* (Editor shape overlay removed) */
+/* Contributors modal */
+.modal-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.4);
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity .2s ease-in-out;
+    z-index: 1300;
+}
 
-/* Editor: missing refinements for rows/inputs/actions */
-/* (Editor inputs and rows removed) */
+.modal-overlay.open {
+    opacity: 1;
+    pointer-events: auto;
+}
 
-/* (Editor generated markers removed) */
+.modal {
+    position: fixed;
+    inset: 0;
+    display: grid;
+    place-items: center;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity .2s ease-in-out;
+    z-index: 1301;
+    /* above overlay */
+    padding: 16px;
+}
 
-/* (Editor line list UI removed) */
+.modal.open {
+    opacity: 1;
+    pointer-events: auto;
+}
 
-/* (Editor line properties removed) */
+.modal-content {
+    width: min(720px, 100%);
+    max-height: min(80vh, 100%);
+    background: rgba(255, 255, 255, 0.85);
+    color: var(--text);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    box-shadow: var(--shadow);
+    -webkit-backdrop-filter: saturate(180%) blur(10px);
+    backdrop-filter: saturate(180%) blur(10px);
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+}
 
-/* (Editor chooser removed) */
+.modal-content .modal-header {
+    background: transparent;
+}
+
+html[data-theme="dark"] .modal-content {
+    background: rgba(23, 26, 33, 0.70);
+}
+
+.modal-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 12px 16px;
+    border-bottom: 1px solid var(--border);
+}
+
+.modal-title {
+    margin: 0;
+    font-size: 18px;
+    line-height: 1.2;
+}
+
+.modal-close {
+    width: 24px;
+    height: 24px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    align-self: center;
+    background: var(--control-bg);
+    color: var(--control-text);
+    border: 1px solid var(--border);
+    border-radius: 50%;
+    cursor: pointer;
+    font-size: 16px;
+    line-height: 1;
+    padding: 0;
+    -webkit-appearance: none;
+    appearance: none;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
+    -webkit-tap-highlight-color: transparent;
+    transition: background-color 140ms ease, border-color 140ms ease, box-shadow 140ms ease, color 140ms ease;
+}
+
+.modal-close:hover {
+    background: var(--accent-soft-hover);
+    border-color: var(--accent);
+}
+
+.modal-close:focus-visible {
+    outline: none;
+    box-shadow: 0 0 0 2px var(--accent-ring), 0 2px 6px rgba(0, 0, 0, 0.15);
+}
+
+/* On mobile keep a larger touch target */
+@media (max-width: 520px) {
+    .modal-close {
+        width: 32px;
+        height: 32px;
+        font-size: 18px;
+    }
+}
+
+.modal-body {
+    padding: 16px 20px 14px 20px;
+    overflow: auto;
+}
+
+.modal-body #contributors-content {
+    background: var(--panel);
+    color: inherit;
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    box-shadow: var(--shadow);
+    padding: 14px 16px;
+}
+
+.modal-body #contributors-content p {
+    margin: 0 0 8px;
+}
+
+.modal-body #contributors-content ul {
+    margin: 8px 0 0 18px;
+}
+
+.modal-body #contributors-content li {
+    margin: 4px 0;
+}
+
+.modal-body h2 {
+    font-size: 16px;
+    margin: 8px 0;
+}
+
+.modal-body h3 {
+    font-size: 14px;
+    margin: 6px 0;
+    opacity: .9;
+}
+
+.no-scroll {
+    overflow: hidden;
+}
+
+/* Footer contributors trigger — make it look like a subtle link */
+.site-footer .btn-secondary,
+.site-footer .link-plain {
+    padding: 0;
+    background: transparent;
+    border: none;
+    color: var(--muted);
+    text-decoration: underline;
+    border-radius: 0;
+}
+
+.site-footer .btn-secondary:hover,
+.site-footer .link-plain:hover {
+    color: var(--text);
+    text-decoration-color: var(--text);
+}
+
+.site-footer .btn-secondary:focus-visible,
+.site-footer .link-plain:focus-visible {
+    outline: none;
+    box-shadow: 0 0 0 2px var(--accent-ring);
+    border-radius: 6px;
+}
 
 /* Server status widget */
 .mc-status {
@@ -1073,8 +1236,6 @@ main {
 .mc-status.offline .dot {
     background: #c62828;
 }
-
-/* (Editor blocker removed) */
 
 /* PWA install banner */
 .pwa-banner {
@@ -1160,7 +1321,7 @@ main {
         right: 0;
         bottom: 0;
         border-radius: 12px 12px 0 0;
-    /* square bottom corners */
+        /* square bottom corners */
         border-bottom-left-radius: 0;
         border-bottom-right-radius: 0;
     }
