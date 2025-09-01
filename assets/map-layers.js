@@ -79,5 +79,15 @@
     apply(next);
     saveState(next);
   writeURLLayers(next);
+    // Update packed q if present and both endpoints are set
+    try {
+      const url = new URL(window.location.href);
+      const q = url.searchParams.get('q');
+      const f = url.searchParams.get('f') || url.searchParams.get('from');
+      const t = url.searchParams.get('t') || url.searchParams.get('to');
+      if (q || (f && t)) {
+        window.dispatchEvent(new CustomEvent('layers:changed'));
+      }
+    } catch {}
   });
 })();

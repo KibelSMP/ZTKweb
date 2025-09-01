@@ -10,10 +10,31 @@
 	const stationClearBtn = document.getElementById('station-clear');
 	const resultsEl = document.getElementById('search-results');
 	const typeCheckboxes = Array.from(document.querySelectorAll('#type-filters .line-type'));
+	const prioTransfers = /** @type {HTMLInputElement|null} */ (document.getElementById('prio-transfers'));
+	const prioStops = /** @type {HTMLInputElement|null} */ (document.getElementById('prio-stops'));
+	const typeFiltersSummary = /** @type {HTMLElement|null} */ (document.getElementById('type-filters-summary'));
+	const prioritySummary = /** @type {HTMLElement|null} */ (document.getElementById('priority-summary'));
+	const layersMenu = /** @type {HTMLElement|null} */ (document.getElementById('map-layers-menu'));
 	if (!fromInput || !toInput || !list || !resultsEl) return;
 	// Routes state and selection
 	let currentRoutes = [];
 	let selectedIndex = 0;
+	/** @type {'transfers'|'stops'} */
+	let priority = 'transfers';
+
+	function setPriorityFromUI(){
+		if (prioStops && prioStops.checked) priority = 'stops';
+		else priority = 'transfers';
+	}
+	function getPriority(){ return priority; }
+	function setPriorityFromParam(val){
+		const v = String(val || '').toLowerCase();
+		if (v === 'stops' || v === 'transfers') {
+			priority = v;
+			if (prioStops) prioStops.checked = (v === 'stops');
+			if (prioTransfers) prioTransfers.checked = (v === 'transfers');
+		}
+	}
 
 	// Load stations and lines independently
 	const [stRes, lnRes] = await Promise.all([
@@ -94,9 +115,139 @@
 		url.search = sp.toString();
 		window.history.replaceState({}, '', url.toString());
 	}
-	function csvSelectedTypes() {
-		const set = new Set(typeCheckboxes.filter(cb => cb.checked).map(cb => cb.dataset.type));
-		return Array.from(set).join(',');
+
+	// Compact type mask encoding: IC=1, REGIO=2, METRO=4, ON_DEMAND=8
+	const typeBitMap = { IC: 1, REGIO: 2, METRO: 4, ON_DEMAND: 8 };
+	function encodeSelectedTypesBits() {
+		let mask = 0;
+		typeCheckboxes.forEach(cb => { if (cb.checked) mask |= (typeBitMap[cb.dataset.type] || 0); });
+		return String(mask);
+	}
+	function applyTypesFromParam(val) {
+		if (!val) return false;
+		// If numeric, treat as bitmask; otherwise treat as CSV list
+		const isNum = /^\d+$/.test(String(val).trim());
+		if (isNum) {
+			const mask = parseInt(String(val), 10);
+			typeCheckboxes.forEach(cb => {
+				const bit = typeBitMap[cb.dataset.type] || 0;
+				cb.checked = (mask & bit) === bit;
+			});
+			return true;
+		}
+		const wanted = new Set(String(val).split(',').map(s => s.trim()).filter(Boolean));
+		if (wanted.size) {
+			typeCheckboxes.forEach(cb => cb.checked = wanted.has(cb.dataset.type));
+			return true;
+		}
+		return false;
+	}
+
+	// Layers helpers: sat=1, pol=2
+	function getLayersMask() {
+		const cbSat = /** @type {HTMLInputElement|null} */ (document.querySelector('#map-layers-menu input[name="map-layer-satellite"]'));
+		const cbPol = /** @type {HTMLInputElement|null} */ (document.querySelector('#map-layers-menu input[name="map-layer-political"]'));
+		let mask = 0;
+		if (cbSat && cbSat.checked) mask |= 1;
+		if (cbPol && cbPol.checked) mask |= 2;
+		return mask;
+	}
+	function writeLayersParamFromMask(mask) {
+		updateURL(sp => {
+			const parts = [];
+			if (mask & 1) parts.push('sat');
+			if (mask & 2) parts.push('pol');
+			if (parts.length) sp.set('layers', parts.join(',')); else sp.delete('layers');
+		});
+	}
+
+	// Base64url helpers
+	function b64urlEncode(str) {
+		// ASCII-only content expected; if needed, upgrade to UTF-8 encoder
+		return btoa(str).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/,'');
+	}
+	function b64urlDecode(str) {
+		let s = String(str).replace(/-/g,'+').replace(/_/g,'/');
+		const pad = s.length % 4; if (pad) s += '='.repeat(4-pad);
+		return atob(s);
+	}
+
+	// Pack/unpack state into single param q (versioned)
+	function encodeRouteStateQ(src, dst) {
+		const maskDec = parseInt(encodeSelectedTypesBits(), 10) || 0;
+		const tyHex = maskDec.toString(16).toUpperCase();
+		const pch = getPriority() === 'stops' ? 's' : 't';
+		const sel = String(selectedIndex || 0);
+		const layersHex = getLayersMask().toString(16).toUpperCase();
+		const payload = `1|${src}|${dst}|${tyHex}|${pch}|${sel}|${layersHex}`;
+		return b64urlEncode(payload);
+	}
+	function encodeStationStateQ(id) {
+		return b64urlEncode(`2|${id}`);
+	}
+	function tryApplyQ(qval) {
+		try {
+			const raw = b64urlDecode(qval);
+			const parts = raw.split('|');
+			if (parts[0] === '1' && parts.length >= 6) {
+				const [, f, t, tyHex, pch, selStr, layersHex] = parts;
+				if (f) fromInput.value = formatStationValue(f);
+				if (t) toInput.value = formatStationValue(t);
+				// apply types from hex mask
+				const mask = parseInt(tyHex, 16);
+				typeCheckboxes.forEach(cb => {
+					const bit = typeBitMap[cb.dataset.type] || 0;
+					cb.checked = (mask & bit) === bit;
+				});
+				// priority
+				const pr = (pch === 's') ? 'stops' : 'transfers';
+				setPriorityFromParam(pr);
+				refreshPrioritySummary();
+				refreshTypeFiltersSummary();
+				// layers (optional)
+				if (layersHex !== undefined) {
+					const lmask = parseInt(layersHex || '0', 16) || 0;
+					writeLayersParamFromMask(lmask);
+				}
+				setTimeout(() => {
+					runSearch();
+					const idx = parseInt(selStr || '0', 10);
+					if (Number.isFinite(idx) && currentRoutes[idx]) {
+						selectRoute(idx);
+						renderResults(currentRoutes);
+					}
+				}, 0);
+				return true;
+			}
+			if (parts[0] === '2' && parts[1]) {
+				const id = parts[1];
+				if (stationInput) stationInput.value = formatStationValue(id);
+				setTimeout(() => focusStation(), 0);
+				return true;
+			}
+			return false;
+		} catch { return false; }
+	}
+
+	function refreshTypeFiltersSummary() {
+		if (!typeFiltersSummary) return;
+		const checked = typeCheckboxes.filter(cb => cb.checked);
+		if (checked.length === typeCheckboxes.length) {
+			typeFiltersSummary.textContent = 'Wszystkie';
+			return;
+		}
+		if (checked.length === 0) {
+			typeFiltersSummary.textContent = '—';
+			return;
+		}
+		const labelByType = new Map(Array.from(document.querySelectorAll('#type-filters .line-type')).map(input => [input.dataset.type, input.parentElement?.textContent?.trim() || input.dataset.type]));
+		const names = checked.map(cb => labelByType.get(cb.dataset.type) || cb.dataset.type);
+		typeFiltersSummary.textContent = names.join(', ');
+	}
+
+	function refreshPrioritySummary() {
+		if (!prioritySummary) return;
+		prioritySummary.textContent = (prioStops && prioStops.checked) ? 'Mniej przystanków' : 'Mniej przesiadek';
 	}
 
 	// helper: parse input into station id (support name or "Name (ID)")
@@ -174,27 +325,52 @@
 		return adj;
 	}
 
+	function better(aTr, aSt, bTr, bSt) {
+		// return true if (aTr,aSt) is strictly better than (bTr,bSt) under selected priority
+		const pr = getPriority();
+		if (pr === 'stops') {
+			return (aSt < bSt) || (aSt === bSt && aTr < bTr);
+		}
+		// default: transfers priority
+		return (aTr < bTr) || (aTr === bTr && aSt < bSt);
+	}
+
+	function dominates(aTr, aSt, bTr, bSt) {
+		// return true if (aTr,aSt) is as good or better than (bTr,bSt) under selected priority
+		const pr = getPriority();
+		if (pr === 'stops') {
+			return (aSt < bSt) || (aSt === bSt && aTr <= bTr);
+		}
+		return (aTr < bTr) || (aTr === bTr && aSt <= bSt);
+	}
+
+	const BIG_M = 1000000;
+	function weightOf(tr, st) {
+		const pr = getPriority();
+		if (pr === 'stops') return st * BIG_M + tr;
+		return tr * BIG_M + st;
+	}
+
 	function findRoutes(src, dst, maxResults=3) {
 		if (!src || !dst || src===dst) return [];
 		const adj = buildGraph();
-		// Dijkstra variant minimizing (transfers, steps)
-		const key = (t,s) => `${t}|${s}`;
-		const pq = []; // min-heap: [transfers, steps, node, prevNode, prevLine]
-		const best = new Map(); // node -> best tuple
-		pq.push([0, 0, src, null, null]);
+		// Dijkstra variant z elastycznym priorytetowaniem (przesiadki vs przystanki)
+		const stateKey = (node, lastLine) => `${node}|${lastLine || ''}`;
+		const pq = []; // min-heap: [weight, transfers, steps, node, prevStateKey, lastLine]
+		const best = new Map(); // stateKey -> bestWeight
+		const parents = new Map(); // stateKey -> { prevKey: string|null, node: string, line: string|null }
+		pq.push([weightOf(0,0), 0, 0, src, null, null]);
 
-		const parents = new Map(); // node -> {prev, line}
 		while (pq.length) {
-			// pop min
-			pq.sort((a,b)=> a[0]-b[0] || a[1]-b[1]);
-			const [tr, stp, u, p, pl] = pq.shift();
-			if (best.has(u)) {
-				const [btr, bstp] = best.get(u);
-				if (btr < tr || (btr === tr && bstp <= stp)) continue;
-			}
-			best.set(u, [tr, stp]);
-			if (p) parents.set(u, { prev: p, line: pl });
-			if (u === dst) break;
+			// pop min według aktywnego priorytetu
+			pq.sort((a,b)=> a[0]-b[0]);
+			const [w, tr, stp, u, prevKey, pl] = pq.shift();
+			const sk = stateKey(u, pl);
+			const curW = best.get(sk);
+			if (curW !== undefined && curW <= w) continue;
+			best.set(sk, w);
+			parents.set(sk, { prevKey, node: u, line: pl });
+			if (u === dst) { var dstKey = sk; break; }
 			const edges = adj.get(u) || [];
 			for (const {to, lineId} of edges) {
 				// Skipped rules: cannot board a line at a skipped station; cannot transfer to/from skipped;
@@ -208,24 +384,27 @@
 				const addTr = (pl && pl !== lineId) ? 1 : 0;
 				const nt = tr + addTr;
 				const ns = stp + 1;
-				const curBest = best.get(to);
-				if (!curBest || nt < curBest[0] || (nt === curBest[0] && ns < curBest[1])) {
-					pq.push([nt, ns, to, u, lineId]);
+				const vKey = stateKey(to, lineId);
+				const nw = weightOf(nt, ns);
+				const vBestW = best.get(vKey);
+				if (vBestW === undefined || nw < vBestW) {
+					pq.push([nw, nt, ns, to, sk, lineId]);
 				}
 			}
 		}
 
-		if (!best.has(dst)) return [];
-		// reconstruct path
+		if (!dstKey) return [];
+		// reconstruct path from dst state back to a source state
 		const path = [];
-		let cur = dst;
-		let lastLine = null;
-		while (cur && cur !== src) {
-			const pr = parents.get(cur);
-			if (!pr) break;
-			path.push({ to: cur, from: pr.prev, lineId: pr.line });
-			cur = pr.prev;
-			lastLine = pr.line;
+		let walkKey = dstKey;
+		while (walkKey) {
+			const nodeInfo = parents.get(walkKey);
+			if (!nodeInfo) break;
+			const prevInfo = nodeInfo.prevKey ? parents.get(nodeInfo.prevKey) : null;
+			if (prevInfo && nodeInfo.line) {
+				path.push({ to: nodeInfo.node, from: prevInfo.node, lineId: nodeInfo.line });
+			}
+			walkKey = nodeInfo.prevKey;
 		}
 		path.reverse();
 
@@ -254,12 +433,14 @@
 			delete lines[lineId];
 			const adj2 = buildGraph();
 			// short dijkstra copy-paste (for simplicity)
-			const pq = [[0,0,src,null,null]]; const best = new Map(); const parents = new Map();
+			const pq = [[weightOf(0,0),0,0,src,null,null]]; const best = new Map(); const parents = new Map();
 			while (pq.length) {
-				pq.sort((a,b)=> a[0]-b[0] || a[1]-b[1]);
-				const [tr, stp, u, p, pl] = pq.shift();
-				if (best.has(u)) { const [btr, bstp]=best.get(u); if (btr<tr || (btr===tr && bstp<=stp)) continue; }
-				best.set(u, [tr, stp]); if (p) parents.set(u, { prev:p, line:pl }); if (u===dst) break;
+				pq.sort((a,b)=> a[0]-b[0]);
+				const [w, tr, stp, u, prevKey, pl] = pq.shift();
+				const sk = stateKey(u, pl);
+				const curW = best.get(sk);
+				if (curW !== undefined && curW <= w) continue;
+				best.set(sk, w); parents.set(sk, { prevKey, node:u, line:pl }); if (u===dst) { var dstKey2 = sk; break; }
 				const edges = adj2.get(u) || [];
 				for (const {to, lineId:lid} of edges) {
 					// apply the same skipped rules for alternatives
@@ -269,12 +450,12 @@
 						if (isSkipped(pl, u) || isSkipped(lid, u)) continue;
 					}
 					if (to === dst && isSkipped(lid, to)) continue;
-					const addTr=(pl&&pl!==lid)?1:0; const nt=tr+addTr; const ns=stp+1; const cur=best.get(to);
-					if (!cur || nt<cur[0] || (nt===cur[0] && ns<cur[1])) pq.push([nt, ns, to, u, lid]);
+					const addTr=(pl&&pl!==lid)?1:0; const nt=tr+addTr; const ns=stp+1; const nw=weightOf(nt,ns); const vKey=stateKey(to,lid); const cb=best.get(vKey);
+					if (cb === undefined || nw < cb) pq.push([nw, nt, ns, to, sk, lid]);
 				}
 			}
-			if (best.has(dst)) {
-				const path=[]; let cur=dst; while (cur && cur!==src) { const pr=parents.get(cur); if(!pr) break; path.push({to:cur, from:pr.prev, lineId:pr.line}); cur=pr.prev; }
+			if (dstKey2) {
+				const path=[]; let w=dstKey2; while (w){ const ni=parents.get(w); if(!ni) break; const pi = ni.prevKey ? parents.get(ni.prevKey) : null; if (pi && ni.line){ path.push({to:ni.node, from:pi.node, lineId:ni.line}); } w = ni.prevKey; }
 				path.reverse();
 				const legs2=[]; let curLeg=null; for (const step of path){ if(!curLeg||curLeg.lineId!==step.lineId){ if(curLeg) legs2.push(curLeg); curLeg={lineId:step.lineId, stations:[step.from, step.to]}; } else { const last=curLeg.stations[curLeg.stations.length-1]; if(last!==step.to) curLeg.stations.push(step.to);} }
 				if (curLeg) legs2.push(curLeg);
@@ -335,7 +516,7 @@
 			}).join('');
 			const isSel = idx === selectedIndex;
 			const footer = `<div class=\"itinerary-footer\">\n        <button class=\"btn-choose\" data-index=\"${idx}\" aria-pressed=\"${isSel}\">${isSel ? 'Wybrano' : 'Wybierz'}</button>\n      </div>`;
-			return `<div class=\"itinerary${isSel ? ' selected' : ''}\" data-index=\"${idx}\" style=\"--route-color:${routeColor}\" role=\"button\" tabindex=\"0\" aria-pressed=\"${isSel}\">${header}${body}${footer}</div>`;
+			return `<div class=\"itinerary${isSel ? ' selected' : ''}\" id=\"itinerary-${idx}\" data-index=\"${idx}\" style=\"--route-color:${routeColor}\" role=\"listitem\" aria-selected=\"${isSel}\" tabindex=\"0\">${header}${body}${footer}</div>`;
 		}).join('');
 		resultsEl.innerHTML = `<div class=\"results-grid\" role=\"list\">${htmlCards}</div>`;
 		// Color the dots in pills according to the line color
@@ -378,6 +559,23 @@
 			const el = document.querySelector(`.station-marker[data-station-id="${id}"]`);
 			if (el) el.classList.add('important');
 		});
+		// Update ARIA selected and selected class on cards
+		resultsEl.querySelectorAll('.itinerary').forEach((el) => {
+			const i = Number(el.getAttribute('data-index'));
+			const isSel = i === selectedIndex;
+			el.classList.toggle('selected', isSel);
+			el.setAttribute('aria-selected', String(isSel));
+		});
+		// Focus selected card without scrolling the list
+		const selCard = resultsEl.querySelector(`.itinerary[data-index="${selectedIndex}"]`);
+		if (selCard) {
+			selCard.focus({ preventScroll: true });
+		}
+		// Smoothly scroll the map section into view for immediate context
+		const mapTarget = document.querySelector('#map-viewport') || document.querySelector('.map-section');
+		if (mapTarget && mapTarget.scrollIntoView) {
+			mapTarget.scrollIntoView({ behavior: 'smooth', block: 'start' });
+		}
 		// Fit the map view to the entire route
 		const coords = [];
 		r.legs.forEach(leg => leg.stations.forEach(sid => {
@@ -406,6 +604,17 @@
 	});
 	moTheme.observe(document.documentElement, { attributes: true, attributeFilter: ['data-theme'] });
 
+	// Update URL when layers change (to keep q and layers in sync)
+	window.addEventListener('layers:changed', () => {
+		const src = parseStation(fromInput.value);
+		const dst = parseStation(toInput.value);
+		const lmask = getLayersMask();
+		writeLayersParamFromMask(lmask);
+		if (src && dst) {
+			updateURL(sp => { sp.set('q', encodeRouteStateQ(src, dst)); });
+		}
+	});
+
 	function runSearch() {
 		const src = parseStation(fromInput.value);
 		const dst = parseStation(toInput.value);
@@ -420,12 +629,10 @@
 		}
 		// update URL (only ids), remove station param
 		updateURL(sp => {
-			sp.set('from', src);
-			sp.set('to', dst);
-			const types = csvSelectedTypes();
-			if (types) sp.set('types', types); else sp.delete('types');
-			sp.set('sel', String(selectedIndex));
-			sp.delete('station');
+			// single packed param
+			sp.set('q', encodeRouteStateQ(src, dst));
+			// cleanup legacy
+			['station','st','from','to','types','prio','sel','f','t','ty','p','s'].forEach(k=>sp.delete(k));
 		});
 	}
 
@@ -439,6 +646,7 @@
 				cb.checked = true;
 				return;
 			}
+			refreshTypeFiltersSummary();
 			// recompute results if both station fields are set
 			// and clear previous important station markings
 			document.querySelectorAll('.station-marker.important').forEach(el => el.classList.remove('important'));
@@ -446,11 +654,18 @@
 			// send event to viewer.js to filter drawing
 			const allowed = new Set(typeCheckboxes.filter(x => x.checked).map(x => x.dataset.type));
 			window.dispatchEvent(new CustomEvent('lines:visibility', { detail: { allowed: Array.from(allowed) } }));
-			// update URL with types
-			updateURL(sp => {
-				const types = Array.from(allowed).join(',');
-				if (types) sp.set('types', types); else sp.delete('types');
-			});
+			// update packed q if both endpoints are present; otherwise keep ty for shareable partial state
+			const src = parseStation(fromInput.value);
+			const dst = parseStation(toInput.value);
+			if (src && dst) {
+				updateURL(sp => { sp.set('q', encodeRouteStateQ(src, dst)); ['ty','types'].forEach(k=>sp.delete(k)); });
+			} else {
+				updateURL(sp => {
+					const ty = encodeSelectedTypesBits();
+					if (ty && ty !== '15') sp.set('ty', ty); else sp.delete('ty');
+					sp.delete('types');
+				});
+			}
 		});
 	});
 	swapBtn?.addEventListener('click', () => {
@@ -459,10 +674,16 @@
 		updateURL(sp => {
 			const src = parseStation(fromInput.value);
 			const dst = parseStation(toInput.value);
-			if (src) sp.set('from', src); else sp.delete('from');
-			if (dst) sp.set('to', dst); else sp.delete('to');
-			sp.delete('station');
-			sp.set('sel', '0');
+			sp.delete('station'); sp.delete('st');
+			if (src && dst) {
+				selectedIndex = 0;
+				sp.set('q', encodeRouteStateQ(src, dst));
+				['f','t','from','to','sel','s'].forEach(k=>sp.delete(k));
+			} else {
+				if (src) sp.set('f', src); else sp.delete('f');
+				if (dst) sp.set('t', dst); else sp.delete('t');
+				sp.set('s', '0'); sp.delete('sel'); sp.delete('from'); sp.delete('to'); sp.delete('q');
+			}
 		});
 	});
 	[fromInput, toInput].forEach(el => el.addEventListener('keydown', (e) => {
@@ -477,7 +698,7 @@
 		// remove station highlight
 		document.querySelectorAll('.station-marker.highlighted-station').forEach(el => el.classList.remove('highlighted-station'));
 		// remove station from URL
-		updateURL(sp => { sp.delete('station'); });
+		updateURL(sp => { sp.delete('station'); sp.delete('st'); sp.delete('q'); });
 	});
 
 	// Delegate click on the "Choose" button
@@ -536,16 +757,21 @@
 	(function applyURLAtLoad() {
 		const url = new URL(window.location.href);
 		const sp = url.searchParams;
+		// packed q has priority
+		const q = sp.get('q');
+		if (q && tryApplyQ(q)) return;
+		// priority
+		const pr = sp.get('p') || sp.get('prio');
+		if (pr) setPriorityFromParam(pr === 's' ? 'stops' : pr === 't' ? 'transfers' : pr);
+		refreshPrioritySummary();
 		// types
-		const typesParam = sp.get('types');
+		const typesParam = sp.get('ty') || sp.get('types');
 		if (typesParam) {
-			const wanted = new Set(typesParam.split(',').map(s => s.trim()).filter(Boolean));
-			if (wanted.size) {
-				typeCheckboxes.forEach(cb => cb.checked = wanted.has(cb.dataset.type));
-			}
+			applyTypesFromParam(typesParam);
 		}
+		refreshTypeFiltersSummary();
 		// station-only
-		const stParam = sp.get('station');
+		const stParam = sp.get('st') || sp.get('station');
 		if (stParam) {
 			const id = parseStation(stParam) || stParam.toUpperCase();
 			if (stations[id]) {
@@ -555,8 +781,8 @@
 			}
 		}
 		// route
-		const f = sp.get('from');
-		const t = sp.get('to');
+		const f = sp.get('f') || sp.get('from');
+		const t = sp.get('t') || sp.get('to');
 		if (f && t) {
 			const fid = parseStation(f) || f.toUpperCase();
 			const tid = parseStation(t) || t.toUpperCase();
@@ -564,7 +790,7 @@
 			if (stations[tid]) toInput.value = formatStationValue(tid); else toInput.value = t;
 			setTimeout(() => {
 				runSearch();
-				const sel = parseInt(sp.get('sel') || '0', 10);
+				const sel = parseInt(sp.get('s') || sp.get('sel') || '0', 10);
 				if (Number.isFinite(sel) && currentRoutes[sel]) {
 					selectRoute(sel);
 					renderResults(currentRoutes);
@@ -587,6 +813,26 @@
 		document.querySelectorAll('.station-marker.highlight-stop').forEach(el => el.classList.remove('highlight-stop'));
 		document.querySelectorAll('.station-marker.important').forEach(el => el.classList.remove('important'));
 		// clear route params in URL (and any station-only param to avoid stale state)
-		updateURL(sp => { sp.delete('from'); sp.delete('to'); sp.delete('sel'); sp.delete('station'); });
+		updateURL(sp => { ['from','to','sel','station','prio','f','t','s','st','p','ty','types'].forEach(k=>sp.delete(k)); });
 	});
+
+	// React to priority changes
+	[prioTransfers, prioStops].forEach((el) => {
+		if (!el) return;
+		el.addEventListener('change', () => {
+			setPriorityFromUI();
+			refreshPrioritySummary();
+			// recompute if both endpoints selected
+			if (fromInput.value && toInput.value) {
+				runSearch();
+			} else {
+				// update URL prio only
+				updateURL(sp => { sp.set('p', getPriority() === 'stops' ? 's' : 't'); sp.delete('prio'); });
+			}
+		});
+	});
+
+	// Init summaries
+	refreshTypeFiltersSummary();
+	refreshPrioritySummary();
 })();

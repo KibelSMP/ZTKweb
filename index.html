@@ -74,14 +74,28 @@
                     <button id="route-clear" class="btn-clear" title="Wyczyść" aria-label="Wyczyść">✕</button>
                     <button id="search" class="btn-search">Szukaj</button>
                 </div>
-                <div id="type-filters" aria-label="Filtr typów tras">
+                <details id="type-filters" class="dropdown" aria-label="Filtr typów tras">
+                    <summary><span class="dropdown-title">Typy tras</span><span class="dropdown-value" id="type-filters-summary">Wszystkie</span></summary>
                     <div class="filters-row">
                         <label title="InterCity"><input type="checkbox" class="line-type" data-type="IC" checked> InterCity</label>
                         <label title="Regionalne"><input type="checkbox" class="line-type" data-type="REGIO" checked> Regionalne</label>
                         <label title="Metro"><input type="checkbox" class="line-type" data-type="METRO" checked> Metro</label>
                         <label title="Na żądanie"><input type="checkbox" class="line-type" data-type="ON_DEMAND" checked> Na żądanie</label>
                     </div>
-                </div>
+                </details>
+                <details id="priority-options" class="dropdown" aria-label="Kryterium wyszukiwania">
+                    <summary><span class="dropdown-title">Priorytet</span><span class="dropdown-value" id="priority-summary">Mniej przesiadek</span></summary>
+                    <div class="filters-row">
+                        <label title="Preferuj mniej przesiadek">
+                            <input type="radio" name="priority" id="prio-transfers" value="transfers" checked>
+                            Mniej przesiadek
+                        </label>
+                        <label title="Preferuj mniej przystanków (krótszą liczbę odcinków)">
+                            <input type="radio" name="priority" id="prio-stops" value="stops">
+                            Mniej przystanków
+                        </label>
+                    </div>
+                </details>
                 <div id="search-results" aria-live="polite"></div>
                 <aside class="promo-slot promo-below-search" role="complementary" aria-label="Informacja sponsorowana">
                     <a id="promo-link" href="https://discord.com/channels/865183769626279966/940688602667569202" target="_blank" rel="noopener noreferrer" aria-label="Miejsce na Twoją promocję. Kliknij, aby otworzyć Discorda. Zwróć się do gracza Miersetnik.">
@@ -134,8 +148,25 @@
     <script src="assets/pwa-install.js"></script>
         <script>
             if ('serviceWorker' in navigator) {
-                window.addEventListener('load', () => {
-                    navigator.serviceWorker.register('/sw.js').catch(()=>{});
+                window.addEventListener('load', async () => {
+                    const isStandalone = window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone === true;
+                    if (isStandalone) {
+                        navigator.serviceWorker.register('/sw.js').catch(() => {});
+                    } else {
+                        // In regular browser: ensure no SW is controlling, to avoid caching side-effects
+                        try {
+                            const regs = await navigator.serviceWorker.getRegistrations();
+                            for (const r of regs) { try { await r.unregister(); } catch {} }
+                        } catch {}
+                        // When the app gets installed or switches to standalone, register SW then
+                        window.addEventListener('appinstalled', () => {
+                            navigator.serviceWorker.register('/sw.js').catch(() => {});
+                        });
+                        const mq = window.matchMedia('(display-mode: standalone)');
+                        const onChange = (ev) => { if (ev.matches) navigator.serviceWorker.register('/sw.js').catch(() => {}); };
+                        if (mq && mq.addEventListener) mq.addEventListener('change', onChange);
+                        else if (mq && mq.addListener) mq.addListener(onChange);
+                    }
                 });
             }
         </script>
