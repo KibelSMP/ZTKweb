@@ -59,15 +59,16 @@
           </label>
           <div class="row">
             <label class="check"><input type="checkbox" name="sat" /> Widok satelitarny</label>
+            <label class="check"><input type="checkbox" name="pol" /> Mapa polityczna</label>
             <label class="check"><input type="checkbox" name="legend" checked /> Pokaż legendę</label>
           </div>
           <fieldset>
             <legend>Typy linii</legend>
             <div class="row wrap">
-              <label class="check"><input type="checkbox" name="types" value="IC" checked /> IC</label>
-              <label class="check"><input type="checkbox" name="types" value="REGIO" checked /> REGIO</label>
-              <label class="check"><input type="checkbox" name="types" value="METRO" checked /> METRO</label>
-              <label class="check"><input type="checkbox" name="types" value="ON_DEMAND" checked /> NA ŻĄDANIE</label>
+              <label class="check" title="InterCity"><input type="checkbox" name="types" value="IC" checked /> InterCity</label>
+              <label class="check" title="Regionalne"><input type="checkbox" name="types" value="REGIO" checked /> Regionalne</label>
+              <label class="check" title="Metro"><input type="checkbox" name="types" value="METRO" checked /> Metro</label>
+              <label class="check" title="Na żądanie"><input type="checkbox" name="types" value="ON_DEMAND" checked /> Na żądanie</label>
             </div>
           </fieldset>
           <label>
@@ -78,11 +79,26 @@
               <option value="0.8" selected>80%</option>
               <option value="0.7">70%</option>
               <option value="0.6">60%</option>
+              <option value="0.5">50%</option>
+              <option value="0.4">40%</option>
+              <option value="0.3">30%</option>
+            </select>
+          </label>
+          <label>
+            Skala etykiet stacji
+            <select name="labelScale">
+              <option value="1" selected>100%</option>
+              <option value="0.9">90%</option>
+              <option value="0.8">80%</option>
+              <option value="0.7">70%</option>
+              <option value="0.6">60%</option>
+              <option value="0.5">50%</option>
+              <option value="0.4">40%</option>
+              <option value="0.3">30%</option>
             </select>
           </label>
           <div class="row">
-            <button type="button" id="refresh" class="btn-primary">Odśwież podgląd</button>
-            <button type="button" id="pdf" class="btn-secondary">Pobierz PDF</button>
+            <button type="button" id="pdf" class="btn-search">Pobierz PDF</button>
           </div>
         </form>
       </section>

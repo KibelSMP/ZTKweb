@@ -1,15 +1,15 @@
 (function () {
-    // Harmonogram promocji: wczytaj JSON i ustaw obrazek/link
+    // Promotions schedule: load JSON and set image/link
     async function loadPromotions() {
         const remoteUrl = "https://raw.githubusercontent.com/KibelSMP/ZTKweb-promotions/refs/heads/main/promotions.json";
-        // 1) Spróbuj zdalny JSON
+    // 1) Try remote JSON first
         try {
             const res = await fetch(remoteUrl, { cache: "no-store" });
             if (!res.ok) throw new Error("HTTP " + res.status);
             const data = await res.json();
             return Array.isArray(data?.items) ? data.items : [];
         } catch (e) {
-            // 2) Fallback do lokalnego pliku (offline lub awaria zdalnego)
+            // 2) Fallback to local file (offline or remote failure)
             try {
                 const resLocal = await fetch("assets/promotions.json", { cache: "no-store" });
                 if (!resLocal.ok) throw new Error("HTTP " + resLocal.status);
@@ -56,7 +56,7 @@
         const img = container ? container.querySelector("img") : null;
         if (!container || !link || !img) return;
         if (!promo) {
-            // fallback do domyślnego pliku (bez wersjonowania)
+            // Fallback to default file (non-versioned)
             img.src = "assets/promo-default.png";
             img.alt = "Promocja";
             link.href =
@@ -74,7 +74,7 @@
         const current = pickActive(items);
         applyPromo(current);
     }
-    // uruchom po załadowaniu DOM
+    // Run after DOM is loaded
     if (document.readyState === "loading") {
         document.addEventListener("DOMContentLoaded", init);
     } else {

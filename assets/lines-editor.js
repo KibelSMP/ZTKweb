@@ -1,4 +1,4 @@
-// Edytor linii: pozwala modyfikować sekwencje stacji dla linii, oznaczać skipped i eksportować/importować lines.json
+// Line editor: allows modifying station sequences for lines, marking stations as skipped, and exporting/importing lines.json
 (function(){
   const mapEl = document.getElementById('map');
   const sel = document.getElementById('line-select');
@@ -14,7 +14,7 @@
   const btnImportStations = document.getElementById('btn-import-stations');
   const fileImportStations = document.getElementById('file-import-stations');
   const fileImportLines = document.getElementById('file-import-lines');
-  // sterowanie tłem mapy
+  // map background controls
   const btnUploadBg = document.getElementById('btn-upload-bg');
   const btnClearBg = document.getElementById('btn-clear-bg');
   const inputBg = document.getElementById('bg-upload');
@@ -34,10 +34,10 @@
   let stations = {};
   /** @type {Record<string, {color?: string|null, category?: string, relation?: string, stations?: string[], skipped?: string[], hexLightMode?: string, hexDarkMode?: string, shapes?: Record<string, Array<[number,number]>>, anchors?: Record<string, [number,number]>}>} */
   let lines = {};
-  // tryb edycji kształtu pojedynczego segmentu
+  // shape edit mode for a single segment
   /** @type {null | {a:string,b:string, idx:number, points: Array<[number,number]>}} */
   let shapeMode = null;
-  let shapeLayer = null; // overlay na mapie dla uchwytów
+  let shapeLayer = null; // overlay on the map for handles
   let shapeToolbar = null;
   let suppressAddPointClick = false;
   let shapeAnchorA = null, shapeAnchorB = null, shapeHelpSpan = null;
@@ -118,21 +118,21 @@
           </span>
         </div>`;
   tb.style.display = 'none';
-  const host = mapEl.parentElement || document.body; // umieść toolbar poza transformowaną mapą
+  const host = mapEl.parentElement || document.body; // place the toolbar outside the transformed map
   host.appendChild(tb);
       shapeToolbar = tb;
       shapeHelpSpan = tb.querySelector('#shape-help');
-  // obsługa przycisków
+  // buttons handling
   tb.querySelector('#shape-save').addEventListener('click', ()=>{
         if (!shapeMode) return;
         const lineId = sel.value; if (!lineId) return;
         const ln = lines[lineId] = lines[lineId] || {};
         const currentPoints = Array.isArray(shapeMode.points) ? shapeMode.points.slice() : [];
-    // shapesDir: kierunkowe A>B
+    // shapesDir: directional A>B
     ln.shapesDir = ln.shapesDir || {};
     const dkey = dirKey(shapeMode.a, shapeMode.b);
     if (!currentPoints.length) delete ln.shapesDir[dkey]; else ln.shapesDir[dkey] = currentPoints;
-    // legacy shapes: bez kierunku
+    // legacy shapes: non-directional
     const key = pairKey(shapeMode.a, shapeMode.b);
     const pts = normalizePtsForStore(shapeMode.a, shapeMode.b, currentPoints);
     ln.shapes = ln.shapes || {};
@@ -143,7 +143,7 @@
         if (!shapeMode) return;
         const lineId = sel.value; if (!lineId) return;
         const ln = lines[lineId] = lines[lineId] || {};
-        // wyczyść punkty dla pary w shapesDir i legacy shapes
+        // clear points for the pair in shapesDir and legacy shapes
         if (ln.shapesDir){ delete ln.shapesDir[dirKey(shapeMode.a, shapeMode.b)]; }
         const key = pairKey(shapeMode.a, shapeMode.b);
         if (ln.shapes){ delete ln.shapes[key]; }
@@ -162,7 +162,7 @@
     const key = pairKey(a,b);
     const arr = ln && ln.shapes && Array.isArray(ln.shapes[key]) ? ln.shapes[key] : [];
     if (!arr.length) return [];
-    // arr jest w kolejności zgodnej z key (posortowanej alfabetycznie). Jeśli rysujemy w odwrotnej, odwróć.
+  // arr is ordered by the key (alphabetically). If drawing in reverse, reverse it.
   return a < b ? arr.slice() : arr.slice().reverse();
   }
   function getPtsForDirection(ln, a, b){
@@ -179,9 +179,9 @@
   return a < b ? pts : pts.slice().reverse();
   }
 
-  // geometra: dystans punkt–odcinek w przestrzeni procentowej (left,top)
+  // geometry: squared distance from point to segment in percentage space (left, top)
   function dist2PointToSeg(p, a, b){
-    // p,a,b: [top,left] w %; przelicz na [x,y] = [left, top]
+    // p,a,b: [top,left] in %; convert to [x,y] = [left, top]
     const px = p[1], py = p[0];
     const ax = a[1], ay = a[0];
     const bx = b[1], by = b[0];
@@ -206,11 +206,11 @@
       const d2 = dist2PointToSeg(newP, nodes[i], nodes[i+1]);
       if (d2 < bestD){ bestD = d2; bestI = i; }
     }
-    // bestI wskazuje segment: nodes[bestI] -> nodes[bestI+1]
-    // indeks wstawienia do pts:
-    //  - jeśli segment A->pts[0] (bestI==0): insert at 0
-    //  - jeśli segment pts[i-1]->pts[i] (1..n-1): insert at i
-    //  - jeśli segment pts[n-1]->B (bestI==n): insert at n (push)
+  // bestI indicates the segment: nodes[bestI] -> nodes[bestI+1]
+  // insertion index into pts:
+  //  - if segment A->pts[0] (bestI==0): insert at 0
+  //  - if segment pts[i-1]->pts[i] (1..n-1): insert at i
+  //  - if segment pts[n-1]->B (bestI==n): insert at n (push)
     const n = pts.length;
     const insertIdx = Math.min(Math.max(bestI, 0), n);
     pts.splice(insertIdx, 0, newP);
@@ -226,7 +226,7 @@
     const seq = Array.isArray(ln.stations)? ln.stations: [];
     const a = seq[idx]; const b = seq[idx+1]; if (!a || !b) return;
     ensureShapeOverlay();
-  // ustaw etykietę kontekstu odcinka
+  // set the segment context label
     if (shapeHelpSpan) {
       const an = stations[a]?.name || a; const bn = stations[b]?.name || b;
       shapeHelpSpan.textContent = `Odcinek: ${an} ⇄ ${bn} — klik: dodaj, przeciągnij: przesuń, dwuklik: usuń`;
@@ -238,18 +238,18 @@
     renderShapeOverlay();
   }
   function renderShapeOverlay(){
-    draw(); // narysuj linię bazową z aktualnymi punktami
+  draw(); // draw the base line with current points
     if (!shapeMode) return;
-    // dodaj uchwyty
+  // add handles
     shapeLayer.innerHTML = '';
     const width = mapEl.clientWidth, height = mapEl.clientHeight;
-    // uchwyty dla punktów pośrednich
+  // handles for intermediate points
     shapeMode.points.forEach((p, i)=>{
       const el = document.createElement('div');
       el.className = 'shape-handle';
       el.style.left = p[1] + '%';
       el.style.top = p[0] + '%';
-      el.title = 'Dwuklik: usuń';
+  el.title = 'Dwuklik: usuń';
       shapeLayer.appendChild(el);
   let dragging = false; let startX=0, startY=0; let moved=false;
       function setPosFromEvent(ev){
@@ -258,14 +258,14 @@
         const top = Math.min(100, Math.max(0, ((ev.clientY - rect.top)/rect.height)*100));
         shapeMode.points[i] = [top, left];
         el.style.left = left + '%'; el.style.top = top + '%';
-        draw(); // odśwież podgląd
+    draw(); // refresh preview
       }
   el.addEventListener('mousedown', (ev)=>{ ev.preventDefault(); ev.stopPropagation(); dragging=true; moved=false; startX=ev.clientX; startY=ev.clientY; document.body.style.userSelect='none'; });
   window.addEventListener('mousemove', (ev)=>{ if(dragging){ if (!moved && (Math.abs(ev.clientX-startX)>2 || Math.abs(ev.clientY-startY)>2)) moved=true; setPosFromEvent(ev); }});
   window.addEventListener('mouseup', ()=>{ if(dragging){ dragging=false; document.body.style.userSelect=''; if (moved) suppressAddPointClick = true; }});
       el.addEventListener('dblclick', (ev)=>{ ev.preventDefault(); ev.stopPropagation(); shapeMode.points.splice(i,1); renderShapeOverlay(); });
     });
-    // klik na mapę dodaje nowy punkt
+  // clicking on the map adds a new point
     shapeLayer.onclick = (ev)=>{
       if (!shapeMode) return;
   if (suppressAddPointClick) { suppressAddPointClick = false; return; }
@@ -283,7 +283,7 @@
     const canvas = ensureCanvas();
     const ctx = canvas.getContext('2d');
     ctx.clearRect(0,0,canvas.width,canvas.height);
-    // rysuj markery stacji (read-only)
+  // draw station markers (read-only)
     const width = mapEl.clientWidth, height = mapEl.clientHeight;
     const dpr = Math.max(1, window.devicePixelRatio||1); const scale = getScale();
   ctx.setTransform(dpr*scale,0,0,dpr*scale,0,0);
@@ -327,7 +327,7 @@
   }
 
   function renderList(){
-    const id = sel.value; const ln = lines[id] || {};
+  const id = sel.value; const ln = lines[id] || {};
     const seq = Array.isArray(ln.stations)? ln.stations: [];
     const skipped = new Set(Array.isArray(ln.skipped)? ln.skipped: []);
     if (!seq.length){ listEl.innerHTML = '<div class="legend-empty">Brak połączeń — dodaj stacje powyżej.</div>'; return; }
@@ -361,7 +361,7 @@
     const id = sel.value; const ln = lines[id] || {};
     propId.value = id || '';
     const rawCat = String(ln.category || '').toUpperCase();
-    // mapowanie luźnych nazw na klucze
+    // map loose names to keys
     let cat = '';
     if (rawCat.includes('METRO')) cat = 'METRO';
     else if (rawCat.includes('IC')) cat = 'IC';
@@ -371,7 +371,7 @@
     propColor.value = ln.color || '';
   propHexLight.value = ln.hexLightMode || '';
   propHexDark.value = ln.hexDarkMode || '';
-  // ustaw pickery, jeśli poprawne hexy
+  // set color pickers if valid hex values
   try { const v = /^#([0-9a-f]{6})$/i.test(propHexLight.value) ? propHexLight.value : '#000000'; propHexLightColor.value = v; if(propHexLightSwatch) propHexLightSwatch.style.background = v; } catch {}
   try { const v = /^#([0-9a-f]{6})$/i.test(propHexDark.value) ? propHexDark.value : '#000000'; propHexDarkColor.value = v; if(propHexDarkSwatch) propHexDarkSwatch.style.background = v; } catch {}
     propRelation.value = ln.relation || '';
@@ -387,7 +387,7 @@
     setStatus('Zapisano właściwości linii.');
   }
 
-  // Interakcje
+  // Interactions
   search.addEventListener('input', ()=>{
     const q = search.value.trim().toLowerCase();
     const opts = Array.from(sel.options);
@@ -412,7 +412,7 @@
   exitShapeMode(); rebuild(); setStatus('Wyczyszczono połączenia.');
   });
   listEl.addEventListener('click', (e)=>{
-    // klik w separator "odcinek"
+    // click on the "segment" separator
     const seg = e.target.closest('.seg-link');
     if (seg) {
       const sep = seg.closest('.conn-sep');
@@ -422,7 +422,7 @@
       if (idx >= 0 && idx < ln.stations.length-1) { enterShapeMode(idx); setStatus('Edycja kształtu odcinka.'); }
       return;
     }
-    // inne akcje przycisków w wierszu stacji
+    // other button actions in the station row
     const btn = e.target.closest('button'); if (!btn) return;
     const item = e.target.closest('.conn-item'); if (!item) return;
     const act = btn.dataset.act; const idx = Number(item.dataset.idx); const id = sel.value; const ln = lines[id];
@@ -465,7 +465,7 @@
     input.click();
   });
 
-  // Tło mapy wgrywane przez użytkownika (dzielone z edytorem stacji)
+  // User-uploaded map background (shared with the stations editor)
   function applyBgFromStorage() {
     try {
       const url = localStorage.getItem('editor.mapBg');
@@ -480,7 +480,7 @@
     } catch {}
   }
 
-  // Upload/wyczyszczenie tła mapy
+  // Upload/clear the map background
   btnUploadBg && btnUploadBg.addEventListener('click', () => { inputBg && inputBg.click(); });
   inputBg && inputBg.addEventListener('change', async () => {
     const file = inputBg.files && inputBg.files[0];
@@ -504,7 +504,7 @@
   });
 
   function loadData(){
-    setStatus('Ładowanie stations.json/lines.json…');
+  setStatus('Ładowanie stations.json/lines.json…');
     return Promise.all([
       fetch('../assets/stations.json', {cache:'no-store'}).then(r=>r.json()).then(j=>{stations=j}),
       fetch('../assets/lines.json', {cache:'no-store'}).then(r=>r.json()).then(j=>{lines=j}),
@@ -513,14 +513,14 @@
     }).catch(e=> setStatus('Błąd ładowania: '+e));
   }
 
-  // Rysowanie przy zmianach skali/okna oraz zapis propsów przy zmianie pól
+  // Redraw on scale/window changes and save props on field changes
   window.addEventListener('resize', draw);
   const mo = new MutationObserver(draw); mo.observe(mapEl, {attributes:true, attributeFilter:['style']});
   [propCategory, propColor, propHexLight, propHexDark, propRelation].forEach(el=>{
     el && el.addEventListener('change', saveProps);
     el && el.addEventListener('blur', saveProps);
   });
-  // synchronizacja pól tekstowych z color pickers
+  // synchronize text fields with color pickers
   if (propHexLightColor && propHexLight) {
     propHexLightColor.addEventListener('input', ()=>{ const v = propHexLightColor.value.toUpperCase(); propHexLight.value = v; if(propHexLightSwatch) propHexLightSwatch.style.background = v; saveProps(); });
     propHexLight.addEventListener('input', ()=>{

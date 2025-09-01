@@ -60,7 +60,10 @@
       ctx.globalAlpha = 1; lastScale = scale;
     }
     drawLines();
-    window.addEventListener('resize', drawLines);
+  window.addEventListener('resize', drawLines);
+  // Redraw lines when the map element size changes (e.g., during export capture)
+  const roLines = new ResizeObserver(() => drawLines());
+  roLines.observe(mapEl);
     const mo = new MutationObserver(() => { const s = getScale(); if (s !== lastScale) drawLines(); });
     mo.observe(mapEl, { attributes: true, attributeFilter: ['style'] });
     const moTheme = new MutationObserver(drawLines); moTheme.observe(document.documentElement, { attributes: true, attributeFilter: ['data-theme'] });
@@ -68,17 +71,17 @@
     window.addEventListener('lines:visibility', (ev) => { const arr = ev?.detail?.allowed; if (Array.isArray(arr) && arr.length) { allowedTypes = new Set(arr); drawLines(); } });
     Object.entries(stations).forEach(([id, st]) => {
       if (!st || !Array.isArray(st.coordinates)) return; const [top, left] = st.coordinates; const el = document.createElement('div'); const t = st.type; const isHub = t === 'hub'; const extra = [isHub ? 'hub' : null, t ? `type-${t}` : null].filter(Boolean).join(' ');
-  el.className = 'station-marker view-only' + (extra ? ' ' + extra : ''); el.dataset.stationId = id; el.style.top = `${top}%`; el.style.left = `${left}%`; el.title = `${st.name || id}`;
+  el.className = 'station-marker' + (extra ? ' ' + extra : ''); el.dataset.stationId = id; el.style.top = `${top}%`; el.style.left = `${left}%`; el.title = `${st.name || id}`;
       const lab = document.createElement('div'); lab.className = 'station-label'; lab.textContent = st.name || id; el.appendChild(lab); mapEl.appendChild(el);
     });
 
-    // Unikanie kolizji etykiet
+  // Label collision avoidance
     function computeLabelRects(marker) {
       const lab = marker.querySelector('.station-label');
       if (!lab) return null;
-      // Pozycje kandydujące: top (domyślna), right, left, bottom
+  // Candidate positions: top (default), right, left, bottom
       const rectMarker = marker.getBoundingClientRect();
-      // Zresetuj klasy pozycji
+  // Reset position classes
       lab.classList.remove('label-pos-top','label-pos-right','label-pos-left','label-pos-bottom','label-hidden');
       const positions = [
         { cls: 'label-pos-top' },
@@ -92,7 +95,7 @@
     function layoutLabelsAvoidingOverlap() {
       const markers = Array.from(mapEl.querySelectorAll('.station-marker.view-only'));
       const used = [];
-      // szybka funkcja kolizji AABB
+  // Fast AABB collision test
       const isColliding = (a,b) => !(a.right <= b.left || a.left >= b.right || a.bottom <= b.top || a.top >= b.bottom);
       for (const m of markers) {
         const data = computeLabelRects(m);
@@ -100,16 +103,16 @@
         const { lab, positions } = data;
         let placed = false;
         for (const p of positions) {
-          // zastosuj klasę i zmierz
+          // apply class and measure
           lab.classList.remove('label-pos-top','label-pos-right','label-pos-left','label-pos-bottom','label-hidden');
           lab.classList.add(p.cls);
           const r = lab.getBoundingClientRect();
-          // odrzuć jeśli wychodzi poza kontener mapy
+          // discard if outside the map container
           const mapR = mapEl.getBoundingClientRect();
           if (r.left < mapR.left || r.right > mapR.right || r.top < mapR.top || r.bottom > mapR.bottom) {
             continue;
           }
-          // sprawdź kolizje z już ułożonymi
+          // check against already placed labels
           let ok = true;
           for (const u of used) { if (isColliding(r, u)) { ok = false; break; } }
           if (ok) {
@@ -119,18 +122,18 @@
           }
         }
         if (!placed) {
-          // jeśli nie da się ułożyć, ukryj
+          // if cannot place without overlap, hide
           lab.classList.add('label-hidden');
         }
       }
     }
 
-    // Uruchom po początkowym renderze i przy zmianach rozmiaru/zoom/motyw
+  // Run after initial render and on resize/zoom/theme changes
     function relayoutSoon() { requestAnimationFrame(() => layoutLabelsAvoidingOverlap()); }
     relayoutSoon();
     window.addEventListener('resize', relayoutSoon);
-    const ro = new ResizeObserver(relayoutSoon);
-    ro.observe(mapEl);
+  const ro = new ResizeObserver(relayoutSoon);
+  ro.observe(mapEl);
     const mo2 = new MutationObserver(relayoutSoon);
     mo2.observe(document.documentElement, { attributes: true, attributeFilter: ['data-theme'] });
   } catch (e) {

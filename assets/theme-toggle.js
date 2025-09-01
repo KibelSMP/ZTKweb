@@ -29,7 +29,7 @@
 		}
 	} catch {}
 })();
-// Przełącznik widoku satelitarnego mapy
+// Satellite map view toggle (legacy)
 (function(){
 	const btn = document.getElementById('sat-toggle');
 	const map = document.getElementById('map');

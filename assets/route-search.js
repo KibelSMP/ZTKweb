@@ -11,11 +11,11 @@
 	const resultsEl = document.getElementById('search-results');
 	const typeCheckboxes = Array.from(document.querySelectorAll('#type-filters .line-type'));
 	if (!fromInput || !toInput || !list || !resultsEl) return;
-	// Stan tras i wyboru
+	// Routes state and selection
 	let currentRoutes = [];
 	let selectedIndex = 0;
 
-	// Wczytaj niezależnie stacje i linie
+	// Load stations and lines independently
 	const [stRes, lnRes] = await Promise.all([
 		fetch('assets/stations.json', { cache: 'no-store' }),
 		fetch('assets/lines.json', { cache: 'no-store' })
@@ -24,12 +24,12 @@
 	const stations = await stRes.json();
 	/** @type {Record<string, {color?:string|null, category?:string, relation?:string, stations?:string[]}>} */
 	const lines = await lnRes.json();
-	// helper: sprawdź czy dana stacja jest oznaczona jako pomijana na danej linii
+	// helper: check if a station is marked as skipped on a given line
 	function isSkipped(lineId, stationId) {
 		const arr = lines?.[lineId]?.skipped;
 		return Array.isArray(arr) && arr.includes(stationId);
 	}
-	// Mapowanie nazw kolorów na CSS (jak w viewer.js)
+	// Map color names to CSS (same as in viewer.js)
 	const colorMapLight = {
 		Red: '#d32f2f', Pink: '#e91e63', Blue: '#1976d2', Green: '#388e3c', White: '#ffffff', Black: '#000000',
 		Grey: '#757575', Gray: '#757575', Brown: '#6d4c41', Lime: '#cddc39', Yellow: '#fbc02d', Cyan: '#00bcd4',
@@ -57,7 +57,7 @@
 		return (c && map[c]) ? map[c] : (dark ? '#bdbdbd' : '#555');
 	};
 
-	// Typy linii i ich etykiety
+	// Line types and their labels
 	const typeLabelMap = {
 		IC: 'InterCity',
 		REGIO: 'Regionalne',
@@ -74,10 +74,10 @@
 
 	// build datalist (both name and id)
 	const items = Object.entries(stations).map(([id, st]) => ({ id, name: st.name || id })).sort((a,b)=>a.name.localeCompare(b.name,'pl'));
-	// Nie pokazuj ID w podpowiedziach
+	// Do not show IDs in suggestions
 	list.innerHTML = items.map(({id, name}) => `<option value="${name}"></option>`).join('');
 
-	// Pomocnicze: format wartości pola wejściowego jako "Name (ID)"
+	// Helper: format input field value as "Name (ID)"
 	function formatStationValue(id) {
 		if (!id) return '';
 		const st = stations[id];
@@ -90,7 +90,7 @@
 		const url = new URL(window.location.href);
 		const sp = url.searchParams;
 		mutator(sp);
-		// unikaj pustego ?
+		// avoid empty ?
 		url.search = sp.toString();
 		window.history.replaceState({}, '', url.toString());
 	}
@@ -112,25 +112,25 @@
 		return found ? found.id : null;
 	}
 
-	// wyszukaj pojedynczą stację i wycentruj mapę
+	// find a single station and center the map
 	function focusStation() {
 		const id = parseStation(stationInput?.value || '');
 		if (!id || !stations[id] || !Array.isArray(stations[id].coordinates)) return;
 		const [top, left] = stations[id].coordinates.map(Number);
-		// wyślij event do zoom.js, by wycentrował i lekko przybliżył
+		// send event to zoom.js to center and slightly zoom in
 		window.dispatchEvent(new CustomEvent('center-on-station', { detail: { top, left, scale: 2.5 } }));
-		// zdejmij poprzednie podświetlenie
+		// remove previous highlight
 		document.querySelectorAll('.station-marker.highlighted-station').forEach(el => el.classList.remove('highlighted-station'));
-		// nadaj podświetlenie wskazanej stacji
+		// add highlight to the selected station
 		const el = document.querySelector(`.station-marker[data-station-id="${id}"]`);
 		if (el) {
 			el.classList.add('highlighted-station');
-			// automatycznie wygasz po kilku sekundach, pozostaw etykietę widoczną przy hover
+			// auto-fade after a few seconds; keep label visible on hover
 			setTimeout(() => {
 				el.classList.remove('highlighted-station');
 			}, 3500);
 		}
-		// zaktualizuj URL, usuń parametry trasy
+		// update URL, remove route params
 		updateURL(sp => {
 			sp.set('station', id);
 			sp.delete('from');
@@ -139,19 +139,19 @@
 		});
 	}
 
-	// utrzymuj zestaw aktywnych typów linii (IC/REGIO/METRO/ON_DEMAND)
+	// maintain a set of active line types (IC/REGIO/METRO/ON_DEMAND)
 	function currentTypes() {
 		const set = new Set(typeCheckboxes.filter(cb => cb.checked).map(cb => cb.dataset.type));
-		// minimum jeden musi być zaznaczony; jeśli nie, przywróć poprzedni stan pierwszego
+		// at least one must be checked; if not, restore previous state for the first
 		if (set.size === 0 && typeCheckboxes.length) {
-			// włącz pierwszy i dodaj do seta
+			// enable the first and add to the set
 			typeCheckboxes[0].checked = true;
 			set.add(typeCheckboxes[0].dataset.type);
 		}
 		return set;
 	}
 
-	// Build graph: nodes=stations, edges=rides along lines with attribute lineId and hop cost, z filtrem typów
+	// Build graph: nodes=stations, edges=rides along lines with attribute lineId and hop cost, with type filtering
 	// We allow staying on the same line for 0 transfer cost; changing line incurs +1 transfer.
 	function buildGraph() {
 		const adj = new Map(); // id -> Array<{to, lineId}>
@@ -197,14 +197,14 @@
 			if (u === dst) break;
 			const edges = adj.get(u) || [];
 			for (const {to, lineId} of edges) {
-				// Zasady skipped: nie wolno wsiadać na linii na stacji pomijanej; nie wolno się przesiadać na/ze skipped;
-				// oraz nie wolno kończyć na dst, jeśli dst jest pomijana na tej linii.
+				// Skipped rules: cannot board a line at a skipped station; cannot transfer to/from skipped;
+				// and cannot end at dst if dst is skipped on that line.
 				if (pl === null) {
-					if (isSkipped(lineId, u)) continue; // start nie może być skipped dla wybranej linii
+					if (isSkipped(lineId, u)) continue; // start cannot be skipped for the chosen line
 				} else if (pl !== lineId) {
-					if (isSkipped(pl, u) || isSkipped(lineId, u)) continue; // nie przesiadamy się na/ze skipped
+					if (isSkipped(pl, u) || isSkipped(lineId, u)) continue; // no transfer to/from skipped
 				}
-				if (to === dst && isSkipped(lineId, to)) continue; // nie można wysiąść na dst pomijanej przez linię
+				if (to === dst && isSkipped(lineId, to)) continue; // cannot alight at dst skipped by the line
 				const addTr = (pl && pl !== lineId) ? 1 : 0;
 				const nt = tr + addTr;
 				const ns = stp + 1;
@@ -243,17 +243,17 @@
 		}
 		if (curLeg) legs.push(curLeg);
 		const first = { transfers: legs.length - 1, steps: path.length, legs };
-		// prosta heurystyka: generuj do (maxResults-1) alternatyw przez wykluczanie kolejno linii z pierwszej trasy
+		// simple heuristic: generate up to (maxResults-1) alternatives by excluding lines from the first route
 		const alts = [];
-		// zbuduj zbiór linii z pierwszej trasy
+		// build a set of lines from the first route
 		const firstLines = new Set(first.legs.map(l => l.lineId));
 		for (const lineId of Array.from(firstLines)) {
 			if (alts.length >= maxResults - 1) break;
-			// tymczasowo wyklucz tę linię i przelicz
+			// temporarily exclude this line and recompute
 			const saved = lines[lineId];
 			delete lines[lineId];
 			const adj2 = buildGraph();
-			// krótki dijkstra copy-paste (dla prostoty)
+			// short dijkstra copy-paste (for simplicity)
 			const pq = [[0,0,src,null,null]]; const best = new Map(); const parents = new Map();
 			while (pq.length) {
 				pq.sort((a,b)=> a[0]-b[0] || a[1]-b[1]);
@@ -262,7 +262,7 @@
 				best.set(u, [tr, stp]); if (p) parents.set(u, { prev:p, line:pl }); if (u===dst) break;
 				const edges = adj2.get(u) || [];
 				for (const {to, lineId:lid} of edges) {
-					// zastosuj te same zasady skipped dla alternatyw
+					// apply the same skipped rules for alternatives
 					if (pl === null) {
 						if (isSkipped(lid, u)) continue;
 					} else if (pl !== lid) {
@@ -282,7 +282,7 @@
 			}
 			lines[lineId] = saved; // restore
 		}
-		// deduplikacja tras po sekwencji legów i stacji
+		// deduplicate routes by sequence of legs and stations
 		const unique = [];
 		const seen = new Set();
 		for (const r of [first, ...alts]) {
@@ -312,7 +312,7 @@
 			const header = `<div class=\"itinerary-header\">\n        <div>Trasa</div>\n        <div class=\"itinerary-meta\">Przesiadki: ${r.transfers} • Przystanki: ${r.steps}</div>\n      </div>`;
 			const legs = r.legs.map(leg => fmtLeg(leg));
 			const body = legs.map((lg, lidx) => {
-				// Dla IC ukrywamy stacje pośrednie oznaczone jako skipped
+				// For IC, hide intermediate stations marked as skipped
 				const seq = lg.typeKey === 'IC'
 					? lg.stations.filter((s, i) => {
 							const isEnd = (i === 0) || (i === lg.stations.length - 1);
@@ -322,7 +322,7 @@
 				const stationsHtml = seq.map((s, i) => {
 					const label = stations[s]?.name || s;
 					if (lg.typeKey === 'IC') {
-						// dla IC nie wyświetlamy w ogóle skipped, więc bez klasy
+						// For IC we don't render skipped at all, so no class
 						return `<span class=\"station\">${label}</span>`;
 					}
 					const isEnd = (i === 0) || (i === seq.length - 1);
@@ -338,7 +338,7 @@
 			return `<div class=\"itinerary${isSel ? ' selected' : ''}\" data-index=\"${idx}\" style=\"--route-color:${routeColor}\" role=\"button\" tabindex=\"0\" aria-pressed=\"${isSel}\">${header}${body}${footer}</div>`;
 		}).join('');
 		resultsEl.innerHTML = `<div class=\"results-grid\" role=\"list\">${htmlCards}</div>`;
-		// Pokoloruj kropki w pigułkach zgodnie z kolorem danej linii
+		// Color the dots in pills according to the line color
 		resultsEl.querySelectorAll('.leg .line .line-pill').forEach((pill) => {
 			const id = pill.getAttribute('data-line-id');
 			if (!id) return;
@@ -353,32 +353,32 @@
 		const r = currentRoutes[idx];
 		if (!r) return;
 		selectedIndex = idx;
-		// Podświetl wybraną trasę na mapie
+		// Highlight the selected route on the map
 		window.dispatchEvent(new CustomEvent('route:highlight', { detail: { legs: r.legs } }));
-		// Zaznacz przystanki wysiadania
+		// Mark alighting stops
 		document.querySelectorAll('.station-marker.highlight-stop').forEach(el => el.classList.remove('highlight-stop'));
-		// Usuń poprzednie oznaczenia ważnych stacji
+		// Remove previous important station markings
 		document.querySelectorAll('.station-marker.important').forEach(el => el.classList.remove('important'));
 		r.legs.forEach(leg => {
 			const alight = leg.stations[leg.stations.length - 1];
 			const el = document.querySelector(`.station-marker[data-station-id="${alight}"]`);
 			if (el) el.classList.add('highlight-stop');
 		});
-		// Oznacz jako ważne: stacje wsiadania i wysiadania każdego segmentu (przesiadki), oraz skrajne (start/dest)
+		// Mark as important: boarding and alighting stations of each segment (transfers), and endpoints (start/dest)
 		const firstLeg = r.legs[0];
 		const lastLeg = r.legs[r.legs.length - 1];
 		const importantIds = new Set();
 		if (firstLeg) importantIds.add(firstLeg.stations[0]); // start
 		if (lastLeg) importantIds.add(lastLeg.stations[lastLeg.stations.length - 1]); // dest
 		r.legs.forEach(leg => {
-			importantIds.add(leg.stations[0]);   // punkt wsiadania (może być przesiadka lub start)
-			importantIds.add(leg.stations[leg.stations.length - 1]); // punkt wysiadania (może być przesiadka lub dest)
+			importantIds.add(leg.stations[0]);   // boarding point (may be a transfer or start)
+			importantIds.add(leg.stations[leg.stations.length - 1]); // alighting point (may be a transfer or destination)
 		});
 		importantIds.forEach(id => {
 			const el = document.querySelector(`.station-marker[data-station-id="${id}"]`);
 			if (el) el.classList.add('important');
 		});
-		// Dopasuj widok mapy do całej trasy
+		// Fit the map view to the entire route
 		const coords = [];
 		r.legs.forEach(leg => leg.stations.forEach(sid => {
 			const st = stations[sid];
@@ -391,9 +391,9 @@
 		}
 	}
 
-	// gdy zmieni się motyw, przerysuj wyniki (kolory pigułek)
+	// when theme changes, refresh results (pill colors)
 	const moTheme = new MutationObserver(() => {
-		// odśwież aktualnie wyrenderowane wyniki bez zmiany treści (przekoloruj)
+		// refresh currently rendered results without changing content (recolor)
 		resultsEl.querySelectorAll('.leg .line .line-pill').forEach((pill) => {
 			const id = pill.getAttribute('data-line-id');
 			if (!id) return;
@@ -410,7 +410,7 @@
 		const src = parseStation(fromInput.value);
 		const dst = parseStation(toInput.value);
 		if (!src || !dst) { resultsEl.textContent = 'Wybierz poprawne stacje.'; return; }
-		// wyczyść poprzednie oznaczenia ważnych stacji
+		// clear previous important station markings
 		document.querySelectorAll('.station-marker.important').forEach(el => el.classList.remove('important'));
 		currentRoutes = findRoutes(src, dst, 3);
 		selectedIndex = 0;
@@ -418,7 +418,7 @@
 		if (currentRoutes.length) {
 			selectRoute(0);
 		}
-		// zaktualizuj URL (only ids), usuń parametr station
+		// update URL (only ids), remove station param
 		updateURL(sp => {
 			sp.set('from', src);
 			sp.set('to', dst);
@@ -430,23 +430,23 @@
 	}
 
 	searchBtn?.addEventListener('click', runSearch);
-	// reaguj na zmianę filtrów; nie pozwól odznaczyć wszystkich
+	// react to filter changes; don't allow unchecking all
 	typeCheckboxes.forEach(cb => {
 		cb.addEventListener('change', () => {
-			// wymuś min. 1
+			// enforce min. 1
 			const checked = typeCheckboxes.filter(x => x.checked);
 			if (checked.length === 0) {
 				cb.checked = true;
 				return;
 			}
-			// przelicz wyniki jeśli oba pola stacji ustawione
-			// oraz wyczyść poprzednie oznaczenia ważnych stacji
+			// recompute results if both station fields are set
+			// and clear previous important station markings
 			document.querySelectorAll('.station-marker.important').forEach(el => el.classList.remove('important'));
 			if (fromInput.value && toInput.value) runSearch();
-			// wyślij event do viewer.js, aby przefiltrował rysowanie
+			// send event to viewer.js to filter drawing
 			const allowed = new Set(typeCheckboxes.filter(x => x.checked).map(x => x.dataset.type));
 			window.dispatchEvent(new CustomEvent('lines:visibility', { detail: { allowed: Array.from(allowed) } }));
-			// aktualizuj URL z typami
+			// update URL with types
 			updateURL(sp => {
 				const types = Array.from(allowed).join(',');
 				if (types) sp.set('types', types); else sp.delete('types');
@@ -455,7 +455,7 @@
 	});
 	swapBtn?.addEventListener('click', () => {
 		const a = fromInput.value; fromInput.value = toInput.value; toInput.value = a;
-		// zresetuj wybór trasy i URL (station->null, sel->0)
+		// reset route selection and URL (station->null, sel->0)
 		updateURL(sp => {
 			const src = parseStation(fromInput.value);
 			const dst = parseStation(toInput.value);
@@ -469,34 +469,34 @@
 		if (e.key === 'Enter') runSearch();
 	}));
 
-	// Obsługa wyszukiwarki stacji
+	// Station search handling
 	stationSearchBtn?.addEventListener('click', focusStation);
 	stationInput?.addEventListener('keydown', (e) => { if (e.key === 'Enter') focusStation(); });
 	stationClearBtn?.addEventListener('click', () => {
 		if (stationInput) stationInput.value = '';
-		// usuń wyróżnienie stacji
+		// remove station highlight
 		document.querySelectorAll('.station-marker.highlighted-station').forEach(el => el.classList.remove('highlighted-station'));
-		// usuń station z URL
+		// remove station from URL
 		updateURL(sp => { sp.delete('station'); });
 	});
 
-	// Delegacja kliknięcia w przycisk „Wybierz”
+	// Delegate click on the "Choose" button
 	resultsEl.addEventListener('click', (e) => {
 		const target = e.target;
     
-		// klik w przycisk
+		// click on the button
 		const btn = target && target.closest ? target.closest('.btn-choose') : null;
 		if (btn) {
 			const idx = Number(btn.getAttribute('data-index'));
 			if (Number.isFinite(idx)) {
 				selectRoute(idx);
 				renderResults(currentRoutes);
-				// uaktualnij sel w URL
+				// update sel in URL
 				updateURL(sp => { sp.set('sel', String(idx)); });
 			}
 			return;
 		}
-		// klik w kartę
+		// click on the card
 		const card = target && target.closest ? target.closest('.itinerary') : null;
 		if (card && card.hasAttribute('data-index')) {
 			const idx = Number(card.getAttribute('data-index'));
@@ -508,7 +508,7 @@
 		}
 	});
 
-	// Klawiatura: Enter/Space wybierają kartę; strzałki zmieniają wybór
+	// Keyboard: Enter/Space choose a card; arrows change selection
 	resultsEl.addEventListener('keydown', (e) => {
 		const card = e.target && e.target.closest ? e.target.closest('.itinerary') : null;
 		if (!card) return;
@@ -532,11 +532,11 @@
 		}
 	});
 
-	// Parsowanie URL na starcie (route/station/types/sel)
+	// Parse URL at load (route/station/types/sel)
 	(function applyURLAtLoad() {
 		const url = new URL(window.location.href);
 		const sp = url.searchParams;
-		// typy
+		// types
 		const typesParam = sp.get('types');
 		if (typesParam) {
 			const wanted = new Set(typesParam.split(',').map(s => s.trim()).filter(Boolean));
@@ -550,7 +550,7 @@
 			const id = parseStation(stParam) || stParam.toUpperCase();
 			if (stations[id]) {
 				if (stationInput) stationInput.value = formatStationValue(id);
-				// opóźnij focusStation do następnej klatki, aby DOM był gotowy
+				// delay focusStation to next frame so DOM is ready
 				setTimeout(() => focusStation(), 0);
 			}
 		}
@@ -573,20 +573,20 @@
 		}
 	})();
 
-	// Czyszczenie wyszukiwania trasy
+	// Clear route search
 	const routeClearBtn = document.getElementById('route-clear');
 	routeClearBtn?.addEventListener('click', () => {
 		if (fromInput) fromInput.value = '';
 		if (toInput) toInput.value = '';
-		// wyczyść wyniki
+		// clear results
 		currentRoutes = [];
 		selectedIndex = 0;
 		resultsEl.textContent = '';
-		// zdejmij podświetlenia i ważne stacje
+		// remove highlights and important stations
 		window.dispatchEvent(new CustomEvent('route:highlight', { detail: { legs: [] } }));
 		document.querySelectorAll('.station-marker.highlight-stop').forEach(el => el.classList.remove('highlight-stop'));
 		document.querySelectorAll('.station-marker.important').forEach(el => el.classList.remove('important'));
-		// wyczyść parametry trasy w URL
-		updateURL(sp => { sp.delete('from'); sp.delete('to'); sp.delete('sel'); });
+		// clear route params in URL (and any station-only param to avoid stale state)
+		updateURL(sp => { sp.delete('from'); sp.delete('to'); sp.delete('sel'); sp.delete('station'); });
 	});
 })();

@@ -5,10 +5,13 @@
 
 	/** @type {Record<string, {color?:string|null, hexLightMode?:string|null, hexDarkMode?:string|null, category?:string, relation?:string, stations?:string[]}>} */
 	let lines = {};
+	/** @type {Set<string>} */
+	let allowedTypes = new Set(['REGIO','METRO','ON_DEMAND','IC']);
 
 	function isDark(){
 		return document.documentElement.getAttribute('data-theme') === 'dark';
 	}
+
 	function colorFromName(name){
 		const colorMap = {
 			Red: '#d32f2f', Pink: '#e91e63', Blue: '#1976d2', Green: '#388e3c',
@@ -21,11 +24,15 @@
 		};
 		return colorMap[name] || '#999';
 	}
+
 	function getLineColor(line){
 		if (isDark() && line?.hexDarkMode) return String(line.hexDarkMode);
 		if (!isDark() && line?.hexLightMode) return String(line.hexLightMode);
+		if (line?.hexLightMode) return String(line.hexLightMode);
+		if (line?.hexDarkMode) return String(line.hexDarkMode);
 		return colorFromName(line?.color);
 	}
+
 	function typeKeyFor(id, line){
 		const cat = String(line?.category || '').toUpperCase();
 		if (cat.includes('METRO')) return 'METRO';
@@ -34,8 +41,18 @@
 		return 'REGIO';
 	}
 
+	function section(title, arr){
+		const items = arr.map(([id, line]) => {
+			const col = getLineColor(line);
+			let rel = line.relation || '';
+			if (typeof rel === 'string') rel = rel.split(/\n|\r/)[0];
+			return `<div class="legend-item"><span class="legend-line" style="border-top-color:${col}"></span><span>${id}: ${rel}</span></div>`;
+		}).join('');
+		return `<div class="legend-group"><div class="legend-title">${title}</div><div class="legend-row">${items || '<span class="legend-empty">—</span>'}</div></div>`;
+	}
+
 	function render(){
-		// Sekcja stacji
+		// Stations section
 		const stationsGroup = `
 			<div class="legend-group">
 				<div class="legend-title">Stacje</div>
@@ -47,31 +64,20 @@
 				</div>
 			</div>`;
 
-		// Grupuj linie po typie
+		// Group lines by type with filtering based on allowedTypes
 		const groups = { REGIO: [], METRO: [], ON_DEMAND: [], IC: [] };
 		Object.entries(lines).forEach(([id, line]) => {
 			const key = typeKeyFor(id, line);
-			groups[key].push([id, line]);
+			if (allowedTypes.has(key)) groups[key].push([id, line]);
 		});
 		Object.values(groups).forEach(arr => arr.sort((a,b)=> a[0].localeCompare(b[0],'pl')));
 
-		function section(title, arr){
-			const items = arr.map(([id, line]) => {
-				const col = getLineColor(line);
-				let rel = line.relation || '';
-				if (typeof rel === 'string') rel = rel.split(/\n|\r/)[0];
-				return `<div class="legend-item"><span class="legend-line" style="border-top-color:${col}"></span><span>${id}: ${rel}</span></div>`;
-			}).join('');
-			return `<div class="legend-group"><div class="legend-title">${title}</div><div class="legend-row">${items || '<span class="legend-empty">—</span>'}</div></div>`;
-		}
-
-		const html = [
-			stationsGroup,
-			section('Linie REGIO', groups.REGIO),
-			section('Linie METRO', groups.METRO),
-			section('Linie NA ŻĄDANIE', groups.ON_DEMAND),
-			section('Linie INTERCITY', groups.IC)
-		].join('');
+		const parts = [stationsGroup];
+		if (groups.REGIO.length) parts.push(section('Linie REGIO', groups.REGIO));
+		if (groups.METRO.length) parts.push(section('Linie METRO', groups.METRO));
+		if (groups.ON_DEMAND.length) parts.push(section('Linie NA ŻĄDANIE', groups.ON_DEMAND));
+		if (groups.IC.length) parts.push(section('Linie INTERCITY', groups.IC));
+		const html = parts.join('');
 		el.innerHTML = html;
 	}
 
@@ -80,10 +86,20 @@
 		const res = await fetch('assets/lines.json', { cache: 'no-store' });
 		lines = await res.json();
 		render();
-		// Reaguj na zmianę motywu, żeby odświeżyć kolory
+		// React to theme changes to refresh colors
 		const mo = new MutationObserver(render);
 		mo.observe(document.documentElement, { attributes: true, attributeFilter: ['data-theme'] });
+		// React to type filter changes (map and export page broadcast 'lines:visibility')
+		window.addEventListener('lines:visibility', (ev) => {
+			const arr = ev?.detail?.allowed;
+			if (Array.isArray(arr) && arr.length) {
+				allowedTypes = new Set(arr.map(String));
+			} else {
+				allowedTypes = new Set(['REGIO','METRO','ON_DEMAND','IC']);
+			}
+			render();
+		});
 	} catch (e) {
-		// cicho ignoruj
+		// silently ignore
 	}
 })();
