@@ -155,6 +155,7 @@ html[data-theme="dark"] .theme-toggle .theme-icon[data-dark] {
     border-radius: 0;
     box-shadow: none;
     min-width: 0;
+    scroll-margin-top: 72px;
 }
 
 #map {
@@ -636,6 +637,8 @@ main {
     box-shadow: var(--shadow);
     position: relative;
     overflow: hidden;
+    cursor: pointer;
+    transition: background-color 140ms ease, border-color 140ms ease, box-shadow 140ms ease;
 }
 
 .itinerary::before {
@@ -770,7 +773,7 @@ main {
 }
 
 /* Filters */
-#type-filters {
+#type-filters, #priority-options {
     margin-top: 10px;
     margin-bottom: 10px;
 }
@@ -795,6 +798,84 @@ main {
 
 .filters-row input[type="checkbox"] {
     accent-color: var(--accent);
+}
+
+/* Accent and focus for radio as well (priority options) */
+.filters-row input[type="radio"] {
+    accent-color: var(--accent);
+}
+
+.filters-row label:hover {
+    background: var(--accent-soft-hover);
+    border-color: var(--accent);
+}
+
+.filters-row label:focus-within {
+    outline: none;
+    box-shadow: 0 0 0 2px var(--accent-ring);
+    border-color: var(--accent);
+}
+
+/* Dropdowns */
+.dropdown summary {
+    list-style: none;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 0;
+    /* zapewnimy separację CSS-em na value, gap bywa różnie wspierany */
+    padding: 8px 10px;
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    background: var(--control-bg);
+    color: var(--control-text);
+    cursor: pointer;
+    position: relative;
+}
+
+.dropdown summary::after {
+    content: '▾';
+    position: absolute;
+    right: 10px;
+    color: var(--muted);
+}
+
+.dropdown[open] summary {
+    border-bottom-left-radius: 0;
+    border-bottom-right-radius: 0;
+}
+
+.dropdown .filters-row {
+    border: 1px solid var(--border);
+    border-top: 0;
+    border-bottom-left-radius: 10px;
+    border-bottom-right-radius: 10px;
+    padding: 10px;
+    margin-top: 0;
+    display: grid;
+    grid-template-columns: repeat(2, minmax(160px, 1fr));
+    gap: 8px;
+}
+
+.dropdown-title {
+    font-weight: 600;
+}
+
+.dropdown-value {
+    color: var(--muted);
+    font-size: 13px;
+    margin-left: 10px;
+}
+
+.dropdown-value::before {
+    content: '— ';
+    color: var(--muted);
+}
+
+@media (max-width: 520px) {
+    .dropdown .filters-row {
+        grid-template-columns: 1fr;
+    }
 }
 
 /* Alerts */

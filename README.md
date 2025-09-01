@@ -29,5 +29,6 @@ Możesz linkować bezpośrednio do stacji lub wyszukiwania trasy przez parametry
 - `?from=ID&to=ID` – wczyta i uruchomi wyszukiwanie trasy między stacjami.
 - `&sel=0..N` – wybierze trasę o danym indeksie (po uruchomieniu wyszukiwania).
 - `&types=IC,REGIO,METRO,ON_DEMAND` – wstępnie ustawi filtr typów linii.
+- `&prio=transfers|stops` – wybór kryterium wyszukiwania: preferuj mniej przesiadek (transfers) lub mniej przystanków (stops).
 
 W polach „Skąd/Dokąd” zatwierdź Enterem. Autouzupełnianie działa po nazwie stacji (ID nadal wspierane w tle).

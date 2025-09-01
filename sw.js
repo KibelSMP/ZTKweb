@@ -1,4 +1,4 @@
-const CACHE_VERSION = 'ztkweb-v6';
+const CACHE_VERSION = 'ztkweb-v7';
 const STATIC_CACHE = CACHE_VERSION + '-static';
 const DATA_CACHE = CACHE_VERSION + '-data';
 const REMOTE_CACHE = CACHE_VERSION + '-remote';
