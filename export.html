@@ -116,6 +116,25 @@
       </section>
     </div>
   </main>
+  <footer class="site-footer" role="contentinfo">
+    <div class="container footer-inner">
+      <div class="footer-left">
+        <button id="contributors-open" class="link-plain btn-secondary" aria-haspopup="dialog" aria-controls="contributors-modal">Autorzy i wkład</button>
+      </div>
+      <div class="footer-right">Strona nie jest w żaden sposób powiązana z firmą Microsoft, Mojang lub grą Minecraft.</div>
+    </div>
+  </footer>
+  <!-- Contributors modal -->
+  <div id="contributors-overlay" class="modal-overlay" aria-hidden="true"></div>
+  <div id="contributors-modal" class="modal" role="dialog" aria-modal="true" aria-hidden="true" aria-labelledby="contributors-title">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2 id="contributors-title" class="modal-title">Autorzy i wkład</h2>
+        <button id="contributors-close" class="modal-close" aria-label="Zamknij">×</button>
+      </div>
+      <div id="contributors-content" class="modal-body" data-loaded=""></div>
+    </div>
+  </div>
   <script src="assets/map-zoom.js"></script>
   <script src="assets/map-renderer.js"></script>
   <script src="assets/legend-renderer.js"></script>
@@ -123,6 +142,7 @@
   <script src="assets/pwa-install.js"></script>
   <script src="assets/vendor/html2pdf.bundle.min.js"></script>
   <script src="assets/export-page.js"></script>
+  <script src="assets/contributors.js"></script>
   <script>
     if ('serviceWorker' in navigator) {
       window.addEventListener('load', () => {

@@ -19,6 +19,7 @@ const STATIC_ASSETS = [
   '/assets/theme-toggle.js',
   '/assets/map-layers.js',
   '/assets/pwa-install.js',
+  '/assets/contributors.js',
   '/assets/vendor/html2pdf.bundle.min.js',
   '/assets/logo_ztk.png',
   '/assets/favicon.png',
@@ -30,7 +31,8 @@ const STATIC_ASSETS = [
 ];
 const DATA_ASSETS = [
   '/assets/stations.json',
-  '/assets/lines.json'
+  '/assets/lines.json',
+  '/contributors.md'
 ];
 
 self.addEventListener('install', (event) => {
