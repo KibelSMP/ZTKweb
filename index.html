@@ -99,7 +99,13 @@
                 <div id="map-viewport">
                     <div id="map"></div>
                     <div id="map-tools-top">
-                        <button id="sat-toggle" class="toggle-btn" aria-label="Przełącz widok satelitarny" title="Widok satelitarny" aria-pressed="false">🛰️</button>
+                        <div class="map-menu" id="map-layers-menu" aria-label="Warstwy mapy">
+                            <div class="map-menu-row"><strong>Warstwy tła</strong></div>
+                            <div class="map-menu-row" role="group" aria-label="Wybierz warstwy tła">
+                                <label class="map-menu-option"><input type="checkbox" name="map-layer-satellite" value="satellite"> Satelitarna</label>
+                                <label class="map-menu-option"><input type="checkbox" name="map-layer-political" value="political"> Polityczna</label>
+                            </div>
+                        </div>
                     </div>
                     <div id="map-controls">
                         <button id="zoom-in" class="zoom-btn" aria-label="Przybliż">+</button>
@@ -124,6 +130,7 @@
     <script src="assets/mc-status.js"></script>
     <script src="assets/promo.js"></script>
     <script src="assets/theme-toggle.js"></script>
+    <script src="assets/map-layers.js"></script>
     <script src="assets/pwa-install.js"></script>
         <script>
             if ('serviceWorker' in navigator) {

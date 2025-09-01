@@ -1,4 +1,4 @@
-// Nienachalny banner instalacyjny PWA z instrukcjami per system
+// Unobtrusive PWA install banner with per-system instructions
 (() => {
   const NEVER_KEY = 'pwaInstall.never';
   const CLOSED_SESSION_KEY = 'pwaInstall.closedSession';
@@ -24,7 +24,7 @@
     if (isInstalled()) return false;
     if (ls.getItem(NEVER_KEY) === 'true') return false;
     if (sessionStorage.getItem(CLOSED_SESSION_KEY) === 'true') return false;
-    // Nie pokazuj na Firefox (brak natywnego wsparcia instalacji)
+  // Do not show on Firefox (no native install support)
     if (isFirefox) return false;
     return true;
   }
@@ -90,7 +90,7 @@
           if (outcome === 'accepted') {
             hideBanner(true);
           } else {
-            // nic, użytkownik mógł zamknąć — zostawiamy możliwość ponownej próby
+            // no-op, user might have closed — keep option to retry
           }
         } catch {}
       });
@@ -139,7 +139,7 @@
     return banner;
   }
 
-  // Główna logika
+  // Main logic
   if (!shouldShow()) return;
 
   window.addEventListener('appinstalled', () => {
@@ -152,7 +152,7 @@
     if (!document.querySelector('.pwa-banner')) createBanner();
   });
 
-  // Na iOS/Safari i przeglądarkach bez beforeinstallprompt — pokaż po krótkim opóźnieniu
+  // On iOS/Safari and browsers without beforeinstallprompt — show after a short delay
   window.addEventListener('load', () => {
     setTimeout(() => {
       if (!document.querySelector('.pwa-banner') && shouldShow()) {

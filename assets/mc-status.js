@@ -2,10 +2,10 @@
 	const el = document.getElementById('mc-status');
 	if (!el) return;
 	const text = el.querySelector('.text');
-	// Serwer Java – konfiguracja z atrybutów data-*, jeśli podane
+	// Java server – configuration from data-* attributes, if provided
 	const HOST = (el.dataset && el.dataset.host) ? String(el.dataset.host) : 'kibel.csrv.gg';
 	const FORCED_PORT = (el.dataset && el.dataset.port) ? String(el.dataset.port) : null;
-	// Serwer Java – sprawdzamy kilku dostawców oraz wariant z/bez portu
+	// Java server – check multiple providers and variants with/without port
 	const BASE_MCSRVS = 'https://api.mcsrvstat.us/2/';
 	const BASE_MCSTATUS = 'https://api.mcstatus.io/v2/status/java/';
 	function withNoCache(url) {
@@ -50,13 +50,13 @@
 	}
 
 	function pickBest(cands) {
-		// Filtruj dostępne i online
+		// Filter available and online
 		const online = cands.filter(c => c && c.online);
 		if (online.length === 0) return null;
-		// Najpierw odrzuć rekordy z max<=1 (częsty artefakt błędnego pingu), jeśli są inne opcje
+		// First discard records with max<=1 (common bad ping artifact) if other options exist
 		const nonTrivial = online.filter(c => c.maxPlayers === null || c.maxPlayers > 1);
 		const pool = nonTrivial.length ? nonTrivial : online;
-		// Preferuj największe players.online, a przy remisie taki z sensownym max
+		// Prefer highest players.online; if tie, prefer one with sensible max
 		pool.sort((a, b) => {
 			const ao = a.onlinePlayers ?? -1;
 			const bo = b.onlinePlayers ?? -1;
@@ -64,7 +64,7 @@
 			const as = (a.maxPlayers ?? 0) <= 1 ? 0 : 1;
 			const bs = (b.maxPlayers ?? 0) <= 1 ? 0 : 1;
 			if (bs !== as) return bs - as;
-			// prefer mcstatus, potem mcsrvstat
+			// prefer mcstatus, then mcsrvstat
 			const prio = { mcstatus: 2, mcsrvstat: 1 };
 			return (prio[b.source]||0) - (prio[a.source]||0);
 		});
@@ -72,7 +72,7 @@
 	}
 
 	function looksSuspicious(online, max) {
-		if (max !== null && max <= 1) return true; // bardzo mały limit to częsty artefakt
+		if (max !== null && max <= 1) return true; // very small max is a common artifact
 		if (online !== null && max !== null && online > max) return true;
 		return false;
 	}
@@ -96,7 +96,7 @@
 			if (text) text.textContent = 'Sprawdzanie statusu…';
 			el.classList.remove('online','offline');
 
-			// Pobierz równolegle warianty Java (z/bez portu) i wybierz sensowną odpowiedź
+			// Fetch Java variants (with/without port) in parallel and choose a sensible answer
 			const urls = endpointsNow();
 			const results = await Promise.allSettled(urls.map(u => fetchWithTimeout(u)));
 			const normalized = results.map((r, i) => r.status === 'fulfilled' ? normalizeCandidate(r.value, urls[i]) : null);
@@ -123,7 +123,7 @@
 		}
 	}
 
-	// pierwszy strzał + odświeżanie co 60 s
+	// initial check + refresh every 60s
 	check();
 	setInterval(check, 60000);
 })();

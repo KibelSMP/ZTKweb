@@ -11,39 +11,39 @@
   const maxScale = 8;
 
   function applyTransform() {
-    // Zaokrąglij przesunięcia do siatki pikseli urządzenia, aby uniknąć rozmycia przy subpikselach
+  // Snap translations to device pixel grid to avoid blur on subpixels
     const dpr = Math.max(1, window.devicePixelRatio || 1);
     const snappedTx = Math.round(tx * dpr) / dpr;
     const snappedTy = Math.round(ty * dpr) / dpr;
-    // translate3d promuje warstwę i poprawia próbkowanie podczas skalowania
+  // translate3d promotes a layer and improves sampling while scaling
     map.style.transform = `translate3d(${snappedTx}px, ${snappedTy}px, 0) scale(${scale})`;
     map.style.setProperty('--map-scale', String(scale));
-    // ułatwienie dla CSS: próg etykiet przy 2x
+  // convenience for CSS: label threshold at 2x
     map.setAttribute('data-zoom-level', scale >= 2 ? 'gte2' : 'lt2');
   }
 
   function zoomAt(factor, cx, cy) {
   const newScale = Math.max(minScale, Math.min(maxScale, scale * factor));
   if (newScale === scale) return;
-  // Przelicz pozycję kursora względem mapy (przed zmianą skali)
+  // Compute cursor position relative to map (before scale change)
   const mapX = (cx - tx) / scale;
   const mapY = (cy - ty) / scale;
   scale = newScale;
-  // Po zmianie skali ustaw przesunięcie tak, by punkt pod kursorem pozostał pod kursorem
+  // After scaling, adjust translation so the point under cursor stays under cursor
   tx = cx - mapX * scale;
   ty = cy - mapY * scale;
   applyTransform();
   }
 
   function centerOn(percentTop, percentLeft, opts = {}) {
-    // promilowe -> px w ramach viewportu (map ma 100% szer/wys viewportu)
+  // percent -> px within viewport (map fills the viewport)
     const vw = viewport.clientWidth;
     const vh = viewport.clientHeight;
     const xTarget = (percentLeft / 100) * vw;
     const yTarget = (percentTop / 100) * vh;
-    // opcjonalne docelowe powiększenie
+  // optional target zoom
     const targetScale = Math.max(minScale, Math.min(maxScale, opts.scale ?? Math.max(2, scale)));
-    // ustaw absolutnie: punkt (xTarget, yTarget) w przestrzeni mapy ma trafić w środek viewportu
+  // set absolutely: point (xTarget, yTarget) in map space should land at viewport center
     scale = targetScale;
     const cx = vw / 2;
     const cy = vh / 2;
@@ -53,10 +53,10 @@
   }
 
   function fitBounds(bounds) {
-    // bounds: { minTop, minLeft, maxTop, maxLeft } w % mapy
+  // bounds: { minTop, minLeft, maxTop, maxLeft } in map percentages
     const vw = viewport.clientWidth;
     const vh = viewport.clientHeight;
-    const pad = 0.05; // 5% padding
+  const pad = 0.05; // 5% padding
     const minL = Math.min(bounds.minLeft, bounds.maxLeft);
     const maxL = Math.max(bounds.minLeft, bounds.maxLeft);
     const minT = Math.min(bounds.minTop, bounds.maxTop);
@@ -68,7 +68,7 @@
     const targetScale = Math.max(minScale, Math.min(maxScale, Math.min(scaleX, scaleY)));
     const cxPct = (minL + maxL) / 2;
     const cyPct = (minT + maxT) / 2;
-    // resetuj poprzednie przesunięcia, by uniknąć kumulacji
+  // reset previous translations to avoid accumulation
     tx = 0; ty = 0;
     centerOn(cyPct, cxPct, { scale: targetScale });
   }
@@ -89,7 +89,7 @@
   let dragging = false;
   let lx = 0, ly = 0;
   viewport.addEventListener('mousedown', (e) => {
-    if ((e.target).classList && (e.target).classList.contains('station-marker')) return; // nie chwytaj markerów
+  if ((e.target).classList && (e.target).classList.contains('station-marker')) return; // don't grab markers
     dragging = true; lx = e.clientX; ly = e.clientY; e.preventDefault();
   });
   window.addEventListener('mousemove', (e) => {
@@ -108,12 +108,12 @@
 
   viewport.addEventListener('touchstart', (e) => {
     if (e.touches.length === 1) {
-      // Pan start
+  // Pan start
       touchDragging = true;
       lastTouchX = e.touches[0].clientX;
       lastTouchY = e.touches[0].clientY;
     } else if (e.touches.length === 2) {
-      // Pinch start
+  // Pinch start
       pinchZooming = true;
       lastDist = Math.hypot(
         e.touches[0].clientX - e.touches[1].clientX,
@@ -144,7 +144,7 @@
       const factor = dist / lastDist;
       zoomAt(factor, pinchCenter.x, pinchCenter.y);
       lastDist = dist;
-      // pinchCenter aktualizujemy na bieżąco
+  // update pinchCenter continuously
       pinchCenter = {
         x: (e.touches[0].clientX + e.touches[1].clientX) / 2 - viewport.getBoundingClientRect().left,
         y: (e.touches[0].clientY + e.touches[1].clientY) / 2 - viewport.getBoundingClientRect().top
@@ -159,7 +159,7 @@
       pinchZooming = false;
     } else if (e.touches.length === 1) {
       pinchZooming = false;
-      // kontynuuj drag jeśli jeden palec został
+  // continue drag if one finger remains
       lastTouchX = e.touches[0].clientX;
       lastTouchY = e.touches[0].clientY;
       touchDragging = true;
@@ -176,7 +176,7 @@
 
   applyTransform();
 
-  // API przez event: center-on-station z detail: { top:number, left:number, scale?:number }
+  // API via event: center-on-station with detail: { top:number, left:number, scale?:number }
   window.addEventListener('center-on-station', (e) => {
     const d = e && e.detail || {};
     const top = Number(d.top);
@@ -187,7 +187,7 @@
     }
   });
 
-  // API: dopasuj do trasy/obszaru – event fit-to-bounds z detail: { minTop, minLeft, maxTop, maxLeft }
+  // API: fit to route/area – event fit-to-bounds with detail: { minTop, minLeft, maxTop, maxLeft }
   window.addEventListener('fit-to-bounds', (e) => {
     const b = e && e.detail || {};
     if ([b.minTop,b.minLeft,b.maxTop,b.maxLeft].every(v => Number.isFinite(Number(v)))) {

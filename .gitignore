@@ -37,6 +37,7 @@ build/
 .idea/
 *.swp
 *.swo
+.hintrc
 
 # Local tooling/data backups
 *.bak

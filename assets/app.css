@@ -6,7 +6,8 @@
     --muted: #555;
     --border: #e0e0e0;
     --accent: #2e7d32;
-    --accent-hover: #276a2a; /* slightly darker than --accent */
+    --accent-hover: #276a2a;
+    /* slightly darker than --accent */
     --accent-ring: rgba(46, 125, 50, 0.35);
     --accent-soft-bg: rgba(46, 125, 50, 0.12);
     --accent-soft-hover: rgba(46, 125, 50, 0.18);
@@ -58,9 +59,6 @@ html[data-theme="dark"] {
 html, body {
     width: 100%;
     overflow-x: hidden;
-}
-
-body {
     margin: 0;
     font-family: system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
     background: var(--bg);
@@ -99,16 +97,13 @@ body {
 
 .brand {
     display: inline-flex;
-    align-items: center;
-    gap: 8px;
-    font-weight: 700;
 }
 
 .brand .title {
     letter-spacing: 0.2px;
 }
 
-/* Mały dopisek (np. BETA) przy tytule, wyrównany do górnej linii tekstu */
+/* Small note (e.g., BETA) next to the title, aligned to the top text line */
 .title .beta {
     font-size: 0.6em;
     line-height: 1;
@@ -194,11 +189,47 @@ html[data-theme="dark"] #map.satellite-active {
     background-image: url('map_dark.webp');
 }
 
+/* Political overlay: implemented as #map::after (base stays standard/satellite) */
+#map {
+    position: relative;
+}
+
+#map::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    opacity: 0;
+    /* controlled via CSS variable; default is off */
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    z-index: 0;
+    /* below map content */
+}
+
+#map.political-active::after {
+    opacity: var(--political-overlay-opacity, 0);
+}
+
+#map.political-active::after {
+    background-image: url('map_political_light.webp');
+}
+
+html[data-theme="dark"] #map.political-active::after {
+    background-image: url('map_political_dark.webp');
+}
+
 #map>canvas {
     image-rendering: -webkit-optimize-contrast;
     image-rendering: pixelated;
     backface-visibility: hidden;
     will-change: transform;
+    position: absolute;
+    top: 0;
+    left: 0;
+    z-index: 1;
+    /* above political overlay */
 }
 
 .station-marker {
@@ -214,14 +245,37 @@ html[data-theme="dark"] #map.satellite-active {
     transform-origin: center center;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
+    z-index: 1;
+    /* above political overlay */
 }
 
-.station-marker.type-end {
-    /* draw as diamond via pseudo-element; base stays transparent */
-    background-color: transparent;
-    border-color: transparent;
+/* Keep default round marker globally – no special shapes here */
+
+html[data-theme="dark"] .station-marker {
+    border-color: rgba(255, 255, 255, 0.9);
 }
 
+/* No global diamond shape for terminals – keep basic dots */
+
+.station-label {
+    position: absolute;
+    background-color: var(--label-bg);
+    padding: 2px 5px;
+    border-radius: 3px;
+        font-size: var(--station-label-font-size, 11px);
+    white-space: nowrap;
+    /* default position above the marker; can be overridden by label-pos-* */
+        transform: translate(-50%, calc(-1 * var(--station-label-offset, 120%)));
+    pointer-events: none;
+    box-shadow: 0 0 5px rgba(0, 0, 0, 0.2);
+    opacity: 0.6;
+    transition: opacity 120ms ease;
+    color: var(--label-text);
+    z-index: 1;
+    /* above political overlay */
+}
+
+/* Individual station type styles */
 .station-marker.type-metro {
     background-color: #d32f2f;
     width: 12px;
@@ -229,7 +283,7 @@ html[data-theme="dark"] #map.satellite-active {
     border-radius: 2px;
 }
 
-/* hub: square and larger */
+/* hub: square and larger size */
 .station-marker.hub {
     background-color: #444444;
     width: 12px;
@@ -237,13 +291,12 @@ html[data-theme="dark"] #map.satellite-active {
     border-radius: 2px;
 }
 
-/* (legend-matching circular dots – no custom shape overlay) */
-
-html[data-theme="dark"] .station-marker {
-    border-color: rgba(255, 255, 255, 0.9);
+/* terminal: diamond via pseudo-element – base is transparent */
+.station-marker.type-end {
+    background-color: transparent;
+    border-color: transparent;
 }
 
-/* Diamond shape for terminal stations */
 .station-marker.type-end::after {
     content: '';
     position: absolute;
@@ -258,28 +311,26 @@ html[data-theme="dark"] .station-marker {
     transform: translate(-50%, -50%) rotate(45deg);
 }
 
-.station-label {
-    position: absolute;
-    background-color: var(--label-bg);
-    padding: 2px 5px;
-    border-radius: 3px;
-    font-size: 11px;
-    white-space: nowrap;
-    /* domyślna pozycja nad markerem; może zostać nadpisana klasą label-pos-* */
-    transform: translate(-50%, -120%);
-    pointer-events: none;
-    box-shadow: 0 0 5px rgba(0, 0, 0, 0.2);
-    opacity: 0.6;
-    transition: opacity 120ms ease;
-    color: var(--label-text);
+/* Forced label positions to avoid collisions */
+.station-label.label-pos-top {
+    transform: translate(-50%, calc(-1 * var(--station-label-offset, 120%)));
 }
 
-/* Wymuszone pozycje etykiet do unikania kolizji */
-.station-label.label-pos-top { transform: translate(-50%, -120%); }
-.station-label.label-pos-bottom { transform: translate(-50%, 20%); }
-.station-label.label-pos-left { transform: translate(calc(-100% - 6px), -50%); }
-.station-label.label-pos-right { transform: translate(6px, -50%); }
-.station-label.label-hidden { display: none; }
+.station-label.label-pos-bottom {
+    transform: translate(-50%, var(--station-label-bottom-offset, 20%));
+}
+
+.station-label.label-pos-left {
+    transform: translate(calc(-100% - var(--station-label-gap-x, 6px)), -50%);
+}
+
+.station-label.label-pos-right {
+    transform: translate(var(--station-label-gap-x, 6px), -50%);
+}
+
+.station-label.label-hidden {
+    display: none;
+}
 
 #map[data-zoom-level="lt2"] .station-marker.type-passenger:not(.hub):not(.important) .station-label {
     opacity: 0;
@@ -325,6 +376,20 @@ html[data-theme="dark"] .station-marker {
 #map-controls {
     bottom: 12px;
     flex-direction: column;
+    /* styled like mini-menu */
+    background: rgba(255, 255, 255, 0.85);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    box-shadow: var(--shadow);
+    -webkit-backdrop-filter: saturate(180%) blur(10px);
+    backdrop-filter: saturate(180%) blur(10px);
+    padding: 4px;
+    gap: 6px;
+    -webkit-user-select: none;
+    user-select: none;
+}
+html[data-theme="dark"] #map-controls {
+    background: rgba(23, 26, 33, 0.70);
 }
 
 #map-tools-top {
@@ -342,12 +407,64 @@ html[data-theme="dark"] .station-marker {
     cursor: pointer;
     font-size: 18px;
     line-height: 1;
+    -webkit-user-select: none;
+    user-select: none;
+    -webkit-tap-highlight-color: transparent;
+    transition: background-color 140ms ease, border-color 140ms ease, box-shadow 140ms ease, color 140ms ease;
+}
+
+.zoom-btn:hover {
+    background: var(--accent-soft-hover);
+    border-color: var(--accent);
+}
+.zoom-btn:focus-visible {
+    outline: none;
+    box-shadow: 0 0 0 2px var(--accent-ring);
+    border-color: var(--accent);
 }
 
 .toggle-btn[aria-pressed="true"] {
     background: var(--accent);
     color: #fff;
     border-color: var(--accent);
+}
+
+/* Map layers mini-menu (glass, like PWA banner) */
+.map-menu {
+    background: rgba(255, 255, 255, 0.85);
+    color: var(--text);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    box-shadow: var(--shadow);
+    -webkit-backdrop-filter: saturate(180%) blur(10px);
+    backdrop-filter: saturate(180%) blur(10px);
+    padding: 8px 10px;
+    display: grid;
+    gap: 6px;
+    min-width: 160px;
+}
+
+.map-menu-row {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    align-items: flex-start;
+}
+
+.map-menu-option {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 4px 8px;
+}
+
+.map-menu-option input[type="radio"],
+.map-menu-option input[type="checkbox"] {
+    accent-color: var(--accent);
+}
+
+html[data-theme="dark"] .map-menu {
+    background: rgba(23, 26, 33, 0.70);
 }
 
 /* Layout */
@@ -440,18 +557,22 @@ main {
     color: var(--control-text);
     border-color: var(--accent);
 }
+
 .btn-station-search {
     background: var(--accent-soft-bg);
     color: var(--control-text);
     border-color: var(--accent);
 }
+
 .btn-search, .btn-station-search, .itinerary .btn-choose {
     transition: background-color 140ms ease, border-color 140ms ease, box-shadow 140ms ease, color 140ms ease;
 }
+
 .btn-search:hover, .btn-station-search:hover, .itinerary .btn-choose:hover {
     background: var(--accent-soft-hover);
     border-color: var(--accent);
 }
+
 .btn-search:focus-visible, .btn-station-search:focus-visible, .itinerary .btn-choose:focus-visible {
     outline: none;
     box-shadow: 0 0 0 2px var(--accent-ring);
@@ -684,7 +805,10 @@ main {
     color: #5a1b1b;
     border-radius: 10px;
 }
-.hidden { display: none !important; }
+
+.hidden {
+    display: none !important;
+}
 
 /* Legend & sections */
 #legend {
@@ -767,6 +891,7 @@ main {
     box-shadow: var(--shadow);
     overflow: hidden;
 }
+
 .promo-slot picture, .promo-slot img {
     max-width: 100%;
     max-height: 100%;
@@ -819,8 +944,13 @@ main {
 }
 
 /* Ensure type colors win over .view-only defaults (legend matching) */
-.station-marker.view-only.type-end { background-color: #7b1fa2; }
-.station-marker.view-only.type-metro { background-color: #d32f2f; }
+.station-marker.view-only.type-end {
+    background-color: #7b1fa2;
+}
+
+.station-marker.view-only.type-metro {
+    background-color: #d32f2f;
+}
 
 /* (Editor panels removed) */
 
@@ -854,7 +984,7 @@ main {
     color: var(--control-text);
 }
 
-/* Topbar-only: minimalistyczny wygląd akcji (bez tła/ramki, spójne odstępy) */
+/* Topbar-only: minimalist actions (no background/border, consistent spacing) */
 .topbar .btn-secondary,
 .topbar .link-plain {
     padding: 6px 8px;
@@ -862,16 +992,19 @@ main {
     background: transparent;
     border-color: transparent;
 }
+
 .topbar .theme-toggle {
     background: transparent;
     border: none;
     padding: 6px 8px;
 }
+
 .topbar .btn-secondary:hover,
 .topbar .link-plain:hover,
 .topbar .theme-toggle:hover {
     background: var(--accent-soft-bg);
 }
+
 .topbar .btn-secondary:focus-visible,
 .topbar .link-plain:focus-visible,
 .topbar .theme-toggle:focus-visible {
@@ -886,7 +1019,9 @@ main {
     color: #5a3d00;
 }
 
-.link-plain { text-decoration: none; }
+.link-plain {
+    text-decoration: none;
+}
 
 .sr-only {
     position: absolute;
@@ -947,8 +1082,9 @@ main {
     left: 12px;
     right: 12px;
     bottom: 12px;
-    z-index: 1100; /* ponad map-controls (1001) i topbar (100) */
-    /* półprzezroczyste tło + rozmycie tła strony */
+    z-index: 1100;
+    /* above map-controls (1001) and topbar (100) */
+    /* translucent background + backdrop blur */
     background: rgba(255, 255, 255, 0.85);
     color: var(--text);
     border: 1px solid var(--border);
@@ -958,31 +1094,89 @@ main {
     -webkit-backdrop-filter: saturate(180%) blur(10px);
     backdrop-filter: saturate(180%) blur(10px);
 }
-.pwa-banner.hide { opacity: 0; transform: translateY(8px); }
-.pwa-banner-content { display: flex; gap: 12px; align-items: center; padding: 12px 16px; }
-.pwa-banner-text { flex: 1; }
-.pwa-banner-desc { opacity: .9; font-size: .95em; margin-top: 2px; }
-.pwa-banner-how { opacity: .9; font-size: .9em; margin-top: 6px; }
-.pwa-banner-actions { display: flex; align-items: center; gap: 8px; }
-.pwa-banner-never { font-size: .9em; opacity: .9; display: flex; align-items: center; gap: 6px; }
-.pwa-banner-never input[type="checkbox"] { accent-color: var(--accent); width: 16px; height: 16px; }
-.pwa-banner-close { position: absolute; inset: 6px 8px auto auto; background: transparent; color: inherit; border: 0; font-size: 20px; cursor: pointer; }
 
-/* Mobile: układ i dokowanie na dole */
+.pwa-banner.hide {
+    opacity: 0;
+    transform: translateY(8px);
+}
+
+.pwa-banner-content {
+    display: flex;
+    gap: 12px;
+    align-items: center;
+    padding: 12px 16px;
+}
+
+.pwa-banner-text {
+    flex: 1;
+}
+
+.pwa-banner-desc {
+    opacity: .9;
+    font-size: .95em;
+    margin-top: 2px;
+}
+
+.pwa-banner-how {
+    opacity: .9;
+    font-size: .9em;
+    margin-top: 6px;
+}
+
+.pwa-banner-actions {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.pwa-banner-never {
+    font-size: .9em;
+    opacity: .9;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.pwa-banner-never input[type="checkbox"] {
+    accent-color: var(--accent);
+    width: 16px;
+    height: 16px;
+}
+
+.pwa-banner-close {
+    position: absolute;
+    inset: 6px 8px auto auto;
+    background: transparent;
+    color: inherit;
+    border: 0;
+    font-size: 20px;
+    cursor: pointer;
+}
+
+/* Mobile: layout and docking at the bottom */
 @media (max-width: 520px) {
     .pwa-banner {
         left: 0;
         right: 0;
         bottom: 0;
-        border-radius: 12px 12px 0 0; /* dolne rogi proste */
+        border-radius: 12px 12px 0 0;
+    /* square bottom corners */
         border-bottom-left-radius: 0;
         border-bottom-right-radius: 0;
     }
-    .pwa-banner-content { flex-direction: column; align-items: flex-start; }
-    .pwa-banner-actions { width: 100%; justify-content: space-between; }
+
+    .pwa-banner-content {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .pwa-banner-actions {
+        width: 100%;
+        justify-content: space-between;
+    }
 }
 
-/* Desktop – kompaktowe okienko w prawym górnym rogu */
+/* Desktop – compact window in the top-right corner */
 @media (min-width: 981px) {
     .pwa-banner {
         top: 16px;
@@ -992,26 +1186,34 @@ main {
         width: auto;
         max-width: 360px;
     }
+
     .pwa-banner-content {
         flex-direction: column;
         align-items: stretch;
         padding: 12px 14px 10px;
         gap: 10px;
     }
-    .pwa-banner-actions { justify-content: space-between; }
+
+    .pwa-banner-actions {
+        justify-content: space-between;
+    }
 }
 
-/* Desktop: ukryj tekstowy przycisk zamknij, pokazuj krzyżyk */
+/* Desktop: hide text close button, show the cross icon */
 @media (min-width: 521px) {
-    .pwa-close-text { display: none; }
+    .pwa-close-text {
+        display: none;
+    }
 }
 
-/* Mobile: pokazuj przycisk zamknij, ukryj krzyżyk */
+/* Mobile: show text close button, hide the cross icon */
 @media (max-width: 520px) {
-    .pwa-banner-close { display: none; }
+    .pwa-banner-close {
+        display: none;
+    }
 }
 
-/* Dark theme – bardziej przejrzyste, ciemne tło */
+/* Dark theme – more transparent, dark background */
 html[data-theme="dark"] .pwa-banner {
     background: rgba(23, 26, 33, 0.70);
 }
@@ -1025,5 +1227,13 @@ html[data-theme="dark"] .pwa-banner {
     border-radius: 8px;
     cursor: pointer;
 }
-.btn-primary:hover { background: var(--accent-hover); border-color: var(--accent-hover); }
-.btn-primary:focus-visible { outline: none; box-shadow: 0 0 0 2px var(--accent-ring); }
+
+.btn-primary:hover {
+    background: var(--accent-hover);
+    border-color: var(--accent-hover);
+}
+
+.btn-primary:focus-visible {
+    outline: none;
+    box-shadow: 0 0 0 2px var(--accent-ring);
+}
