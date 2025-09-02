@@ -5,12 +5,12 @@
     --text: #111111;
     --muted: #555;
     --border: #e0e0e0;
-    --accent: #2e7d32;
-    --accent-hover: #276a2a;
+    --accent: #3D6CC8;
+    --accent-hover: #355fb0;
     /* slightly darker than --accent */
-    --accent-ring: rgba(46, 125, 50, 0.35);
-    --accent-soft-bg: rgba(46, 125, 50, 0.12);
-    --accent-soft-hover: rgba(46, 125, 50, 0.18);
+    --accent-ring: rgba(61, 108, 200, 0.35);
+    --accent-soft-bg: rgba(61, 108, 200, 0.12);
+    --accent-soft-hover: rgba(61, 108, 200, 0.18);
     --shadow: 0 1px 3px rgba(0, 0, 0, 0.06), 0 4px 12px rgba(0, 0, 0, 0.06);
     --map-bg: #ffffff;
     --map-frame: #a80000;
@@ -42,11 +42,11 @@ html[data-theme="dark"] {
     --text: #e7eaf0;
     --muted: #a6adbb;
     --border: #262a33;
-    --accent: #5bd46d;
-    --accent-hover: #4dcf62;
-    --accent-ring: rgba(91, 212, 109, 0.35);
-    --accent-soft-bg: rgba(91, 212, 109, 0.16);
-    --accent-soft-hover: rgba(91, 212, 109, 0.22);
+    --accent: #6FA0F0;
+    --accent-hover: #5E95E0;
+    --accent-ring: rgba(111, 160, 240, 0.35);
+    --accent-soft-bg: rgba(111, 160, 240, 0.16);
+    --accent-soft-hover: rgba(111, 160, 240, 0.22);
     --shadow: 0 1px 2px rgba(0, 0, 0, 0.5), 0 6px 18px rgba(0, 0, 0, 0.5);
     --map-bg: #0b0d11;
     --map-frame: #222831;
@@ -673,6 +673,149 @@ main {
     font-size: 13px;
 }
 
+/* Timeline-style itinerary layout */
+.itinerary .timeline {
+    margin-top: 8px;
+    display: grid;
+    grid-template-columns: 28px 1fr;
+    position: relative;
+}
+
+.timeline-node {
+    display: contents; /* let children align to grid columns */
+}
+
+.timeline-node .node-icon {
+    grid-column: 1 / 2;
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    background: var(--control-bg);
+    border: 3px solid var(--border);
+    margin: 6px 0;
+    z-index: 1;
+    margin-left: 5px;
+}
+
+.timeline-node .node-label {
+    grid-column: 2 / 3;
+    align-self: center;
+    font-size: 16px;
+    font-weight: 700;
+    padding: 2px 0;
+    margin-left: 4px;
+}
+
+.timeline-node.transfer .node-icon {
+    background: transparent;
+    border-color: var(--node-color, var(--accent));
+    box-shadow: 0 0 0 3px color-mix(in oklab, var(--node-color, var(--accent)) 20%, transparent) inset;
+}
+
+.timeline-node.start .node-icon {
+    background: #00000000;
+    border-color: var(--node-color, var(--accent));
+}
+
+.timeline-node.end .node-icon {
+    background: var(--node-color, var(--accent));
+    border-color: var(--node-color, var(--accent));
+    position: relative;
+}
+
+.timeline-node.end .node-icon::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    margin: auto;
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: #fff;
+}
+
+.timeline-leg {
+    grid-column: 1 / -1;
+    position: relative;
+    padding: 4px 0 8px 0;
+}
+
+.timeline-leg::before {
+    content: '';
+    position: absolute;
+    left: 11px;
+    width: 6px;
+    top: 0;
+    bottom: 0;
+    border-radius: 4px;
+    background: color-mix(in oklab, var(--leg-color, var(--accent)) 38%, transparent);
+    pointer-events: none; /* don't block clicks on details */
+}
+
+.timeline-leg .leg-header {
+    grid-column: 2 / 3;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    padding-left: 8px;
+    margin-left: 24px;
+}
+
+.count-chip {
+    display: block;
+    background: var(--control-bg);
+    color: var(--muted);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 6px 10px;
+    font-size: 13px;
+}
+
+details.leg-details { display: inline-block; }
+
+details.leg-details summary {
+    list-style: none;
+    cursor: pointer;
+    position: relative;
+    display: block;
+}
+
+details.leg-details summary::after {
+    content: '▾';
+    color: var(--muted);
+    margin-left: 8px;
+    float: right;
+}
+
+details.leg-details summary::-webkit-details-marker {
+    display: none;
+}
+
+details.leg-details[open] summary::after {
+    content: '▴';
+}
+
+.leg-stations-box {
+    margin-top: 0;
+    border: 1px solid var(--border);
+    background: var(--panel);
+    color: var(--muted);
+    border-radius: 0 0 10px 10px;
+    padding: 8px 10px;
+}
+
+/* Seamless connection between summary and details content */
+details.leg-details[open] .count-chip {
+    border-bottom-left-radius: 0;
+    border-bottom-right-radius: 0;
+}
+details.leg-details:not([open]) .leg-stations-box { display: none; }
+
+.leg-stations-box .sep {
+    opacity: 0.6;
+    padding: 0 4px;
+}
+
 .leg {
     display: grid;
     grid-template-columns: auto 1fr;
@@ -696,17 +839,7 @@ main {
     font-weight: 600;
 }
 
-.leg .line .type-badge {
-    margin-left: 8px;
-    font-weight: 500;
-    font-size: 12px;
-    padding: 2px 6px;
-    border-radius: 999px;
-    border: 1px solid var(--border);
-    background: var(--control-bg);
-    color: var(--control-text);
-    opacity: 0.9;
-}
+/* (type badge removed from UI) */
 
 .leg .stations {
     color: var(--muted);
@@ -738,7 +871,7 @@ main {
     padding: 4px 8px;
     border-radius: 999px;
     border: 1px solid var(--border);
-    background: color-mix(in oklab, var(--route-color, #ccc) 12%, transparent);
+    background: color-mix(in oklab, var(--route-color, #ccc) 18%, transparent);
 }
 
 .line-dot {
@@ -761,13 +894,13 @@ main {
     padding: 6px 10px;
     border-radius: 8px;
     border: 1px solid var(--accent);
-    background: var(--accent-soft-bg);
+    background: color-mix(in oklab, var(--accent) 10%, var(--control-bg));
     color: var(--control-text);
     cursor: pointer;
 }
 
 .itinerary.selected .btn-choose {
-    background: var(--accent);
+    background: color-mix(in oklab, var(--accent) 22%, var(--control-bg));
     color: #fff;
     border-color: var(--accent);
 }

@@ -144,11 +144,28 @@
   <script src="assets/export-page.js"></script>
   <script src="assets/contributors.js"></script>
   <script>
-    if ('serviceWorker' in navigator) {
-      window.addEventListener('load', () => {
-        navigator.serviceWorker.register('/sw.js').catch(()=>{});
-      });
-    }
+      if ('serviceWorker' in navigator) {
+          window.addEventListener('load', async () => {
+              const isStandalone = window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone === true;
+              if (isStandalone) {
+                  navigator.serviceWorker.register('/sw.js').catch(() => {});
+              } else {
+                  // In regular browser: ensure no SW is controlling, to avoid caching side-effects
+                  try {
+                      const regs = await navigator.serviceWorker.getRegistrations();
+                      for (const r of regs) { try { await r.unregister(); } catch {} }
+                  } catch {}
+                  // When the app gets installed or switches to standalone, register SW then
+                  window.addEventListener('appinstalled', () => {
+                      navigator.serviceWorker.register('/sw.js').catch(() => {});
+                  });
+                  const mq = window.matchMedia('(display-mode: standalone)');
+                  const onChange = (ev) => { if (ev.matches) navigator.serviceWorker.register('/sw.js').catch(() => {}); };
+                  if (mq && mq.addEventListener) mq.addEventListener('change', onChange);
+                  else if (mq && mq.addListener) mq.addListener(onChange);
+              }
+          });
+      }
   </script>
 </body>
 </html>
