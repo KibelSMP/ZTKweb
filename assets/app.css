@@ -18,6 +18,11 @@
     --label-text: #111;
     --control-bg: #ffffff;
     --control-text: #111;
+    /* glass variables */
+    --glass-bg: rgba(255, 255, 255, 0.72);
+    --glass-stroke: rgba(0, 0, 0, 0.06);
+    --glass-blur: 12px;
+    --topbar-offset: 32px;
 }
 
 .promo-slot a {
@@ -54,6 +59,9 @@ html[data-theme="dark"] {
     --label-text: #e7eaf0;
     --control-bg: #1e232b;
     --control-text: #e7eaf0;
+    /* glass variables (dark) */
+    --glass-bg: rgba(23, 26, 33, 0.55);
+    --glass-stroke: rgba(255, 255, 255, 0.08);
 }
 
 html, body {
@@ -63,6 +71,8 @@ html, body {
     font-family: system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
     background: var(--bg);
     color: var(--text);
+    /* space for fixed topbar */
+    padding-top: calc(var(--topbar-offset) + env(safe-area-inset-top, 0px));
 }
 
 .container {
@@ -73,11 +83,16 @@ html, body {
 }
 
 .topbar {
-    position: sticky;
+    position: fixed;
     top: 0;
-    z-index: 100;
-    background: var(--panel);
-    border-bottom: 1px solid var(--border);
+    left: 0;
+    right: 0;
+    z-index: 1200; /* above map controls (~1000-1100), below modals (1300+) */
+    /* glass effect */
+    background: var(--glass-bg);
+    -webkit-backdrop-filter: saturate(1.2) blur(var(--glass-blur));
+    backdrop-filter: saturate(1.2) blur(var(--glass-blur));
+    border-bottom: 1px solid var(--glass-stroke);
     box-shadow: var(--shadow);
 }
 
@@ -1001,7 +1016,7 @@ details.leg-details:not([open]) .leg-stations-box { display: none; }
 }
 
 .dropdown-value::before {
-    content: '— ';
+    content: '';
     color: var(--muted);
 }
 
@@ -1142,30 +1157,6 @@ details.leg-details:not([open]) .leg-stations-box { display: none; }
         align-items: flex-start;
     }
 }
-
-/* Editor-specific pieces (kept for internal pages) */
-.station-marker.view-only {
-    /* keep default gray unless type overrides below */
-    background-color: #808080;
-    border-color: #fff;
-}
-
-.station-marker.view-only.hub {
-    background-color: #444444;
-    width: 12px;
-    height: 12px;
-}
-
-/* Ensure type colors win over .view-only defaults (legend matching) */
-.station-marker.view-only.type-end {
-    background-color: #7b1fa2;
-}
-
-.station-marker.view-only.type-metro {
-    background-color: #d32f2f;
-}
-
-/* (Editor panels removed) */
 
 .btn {
     padding: 6px 10px;
