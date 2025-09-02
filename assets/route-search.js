@@ -14,7 +14,6 @@
 	const prioStops = /** @type {HTMLInputElement|null} */ (document.getElementById('prio-stops'));
 	const typeFiltersSummary = /** @type {HTMLElement|null} */ (document.getElementById('type-filters-summary'));
 	const prioritySummary = /** @type {HTMLElement|null} */ (document.getElementById('priority-summary'));
-	const layersMenu = /** @type {HTMLElement|null} */ (document.getElementById('map-layers-menu'));
 	if (!fromInput || !toInput || !list || !resultsEl) return;
 	// Routes state and selection
 	let currentRoutes = [];
@@ -78,13 +77,6 @@
 		return (c && map[c]) ? map[c] : (dark ? '#bdbdbd' : '#555');
 	};
 
-	// Line types and their labels
-	const typeLabelMap = {
-		IC: 'InterCity',
-		REGIO: 'Regionalne',
-		METRO: 'Metro',
-		ON_DEMAND: 'Na żądanie'
-	};
 	function typeKeyFor(lineId, line) {
 		const cat = String(line?.category || '').toUpperCase();
 		if (cat.includes('METRO')) return 'METRO';
@@ -181,9 +173,6 @@
 		const layersHex = getLayersMask().toString(16).toUpperCase();
 		const payload = `1|${src}|${dst}|${tyHex}|${pch}|${sel}|${layersHex}`;
 		return b64urlEncode(payload);
-	}
-	function encodeStationStateQ(id) {
-		return b64urlEncode(`2|${id}`);
 	}
 	function tryApplyQ(qval) {
 		try {
@@ -325,25 +314,6 @@
 		return adj;
 	}
 
-	function better(aTr, aSt, bTr, bSt) {
-		// return true if (aTr,aSt) is strictly better than (bTr,bSt) under selected priority
-		const pr = getPriority();
-		if (pr === 'stops') {
-			return (aSt < bSt) || (aSt === bSt && aTr < bTr);
-		}
-		// default: transfers priority
-		return (aTr < bTr) || (aTr === bTr && aSt < bSt);
-	}
-
-	function dominates(aTr, aSt, bTr, bSt) {
-		// return true if (aTr,aSt) is as good or better than (bTr,bSt) under selected priority
-		const pr = getPriority();
-		if (pr === 'stops') {
-			return (aSt < bSt) || (aSt === bSt && aTr <= bTr);
-		}
-		return (aTr < bTr) || (aTr === bTr && aSt <= bSt);
-	}
-
 	const BIG_M = 1000000;
 	function weightOf(tr, st) {
 		const pr = getPriority();
@@ -480,20 +450,30 @@
 			const line = lines[leg.lineId] || {};
 			let rel = line.relation || '';
 			if (typeof rel === 'string') rel = rel.split(/\n|\r/)[0];
-			const name = `${leg.lineId}: ${rel}`;
+			const name = `${leg.lineId}: ${rel}`.trim().replace(/:\s*$/, '');
 			const tkey = typeKeyFor(leg.lineId, line);
-			const tlabel = typeLabelMap[tkey] || tkey;
 			const board = leg.stations[0];
 			const alight = leg.stations[leg.stations.length - 1];
-			return { id: leg.lineId, name, typeKey: tkey, typeLabel: tlabel, board: fmtStation(board), alight: fmtStation(alight), stations: leg.stations };
+			return { id: leg.lineId, name, typeKey: tkey, board, alight, stations: leg.stations };
 		};
+
 		const htmlCards = routes.map((r, idx) => {
 			const firstLineId = r.legs[0]?.lineId;
 			const routeColor = firstLineId ? getColor(firstLineId) : '#999';
-			const header = `<div class=\"itinerary-header\">\n        <div>Trasa</div>\n        <div class=\"itinerary-meta\">Przesiadki: ${r.transfers} • Przystanki: ${r.steps}</div>\n      </div>`;
+			const startId = r.legs[0]?.stations[0];
+			const endId = r.legs[r.legs.length-1]?.stations[r.legs[r.legs.length-1].stations.length-1];
+			const header = `<div class=\"itinerary-header\">\n        <div>${fmtStation(startId)} – ${fmtStation(endId)}</div>\n        <div class=\"itinerary-meta\">Stacje: ${r.steps} | Przesiadki: ${r.transfers}</div>\n      </div>`;
 			const legs = r.legs.map(leg => fmtLeg(leg));
-			const body = legs.map((lg, lidx) => {
-				// For IC, hide intermediate stations marked as skipped
+
+			const timelineParts = [];
+			// Start node (label = actual station name)
+			timelineParts.push(
+				`<div class=\"timeline-node start\" style=\"--node-color:${routeColor}\">\n          <div class=\"node-icon\"></div>\n          <div class=\"node-label\">${fmtStation(startId)}</div>\n        </div>`
+			);
+
+			legs.forEach((lg, lidx) => {
+				const legColor = getColor(lg.id);
+				// Stations sequence; for IC hide skipped intermediates
 				const seq = lg.typeKey === 'IC'
 					? lg.stations.filter((s, i) => {
 							const isEnd = (i === 0) || (i === lg.stations.length - 1);
@@ -503,24 +483,40 @@
 				const stationsHtml = seq.map((s, i) => {
 					const label = stations[s]?.name || s;
 					if (lg.typeKey === 'IC') {
-						// For IC we don't render skipped at all, so no class
 						return `<span class=\"station\">${label}</span>`;
 					}
 					const isEnd = (i === 0) || (i === seq.length - 1);
 					const sk = !isEnd && isSkipped(lg.id, s);
 					return `<span class=\"station${sk ? ' skipped' : ''}\">${label}</span>`;
 				}).join(' <span class=\"sep\">→</span> ');
-				return (
-					`<div class=\"leg\">\n            <div class=\"leg-index\">${lidx+1}.</div>\n            <div class=\"line\">\n              <span class=\"line-pill\" data-line-id=\"${lg.id}\"><span class=\"line-dot\"></span>${lg.name}</span>\n              <span class=\"type-badge\" data-type=\"${lg.typeKey}\">${lg.typeLabel}</span>\n            </div>\n            <div class=\"stations\">${stationsHtml}</div>\n            <div class=\"board\">Wsiąść: ${lg.board}</div>\n            <div class=\"alight\">Wysiąść: ${lg.alight}</div>\n          </div>`
-				);
-			}).join('');
+
+				const legHeader = `
+				  <div class=\"leg-header\">\n            <div class=\"line\">\n              <span class=\"line-pill\" data-line-id=\"${lg.id}\"><span class=\"line-dot\"></span>${lg.name}</span>\n            </div>\n            <details class=\"leg-details\">\n              <summary class=\"count-chip\">Stacje: ${seq.length}</summary>\n              <div class=\"leg-stations-box\">${stationsHtml}</div>\n            </details>\n          </div>`;
+
+				timelineParts.push(`<div class=\"timeline-leg\" style=\"--leg-color:${legColor}\">${legHeader}</div>`);
+				// Add transfer node between legs
+				if (lidx < legs.length - 1) {
+					const transferId = lg.stations[lg.stations.length - 1];
+					const nextColor = getColor(legs[lidx+1].id);
+					timelineParts.push(`
+					  <div class=\"timeline-node transfer\" style=\"--node-color:${nextColor}\">\n                <div class=\"node-icon\"></div>\n                <div class=\"node-label\">${fmtStation(transferId)}</div>\n              </div>`);
+				}
+			});
+
+			// End node (label = destination station name)
+			timelineParts.push(
+				`<div class=\"timeline-node end\" style=\"--node-color:${getColor(legs[legs.length-1]?.id || firstLineId)}\">\n          <div class=\"node-icon\"></div>\n          <div class=\"node-label\">${fmtStation(endId)}</div>\n        </div>`
+			);
+
+			const body = `<div class=\"timeline\">${timelineParts.join('')}</div>`;
 			const isSel = idx === selectedIndex;
 			const footer = `<div class=\"itinerary-footer\">\n        <button class=\"btn-choose\" data-index=\"${idx}\" aria-pressed=\"${isSel}\">${isSel ? 'Wybrano' : 'Wybierz'}</button>\n      </div>`;
 			return `<div class=\"itinerary${isSel ? ' selected' : ''}\" id=\"itinerary-${idx}\" data-index=\"${idx}\" style=\"--route-color:${routeColor}\" role=\"listitem\" aria-selected=\"${isSel}\" tabindex=\"0\">${header}${body}${footer}</div>`;
 		}).join('');
+
 		resultsEl.innerHTML = `<div class=\"results-grid\" role=\"list\">${htmlCards}</div>`;
 		// Color the dots in pills according to the line color
-		resultsEl.querySelectorAll('.leg .line .line-pill').forEach((pill) => {
+		resultsEl.querySelectorAll('.line .line-pill').forEach((pill) => {
 			const id = pill.getAttribute('data-line-id');
 			if (!id) return;
 			const dot = pill.querySelector('.line-dot');
@@ -592,7 +588,7 @@
 	// when theme changes, refresh results (pill colors)
 	const moTheme = new MutationObserver(() => {
 		// refresh currently rendered results without changing content (recolor)
-		resultsEl.querySelectorAll('.leg .line .line-pill').forEach((pill) => {
+		resultsEl.querySelectorAll('.line .line-pill').forEach((pill) => {
 			const id = pill.getAttribute('data-line-id');
 			if (!id) return;
 			const dot = pill.querySelector('.line-dot');
@@ -704,6 +700,10 @@
 	// Delegate click on the "Choose" button
 	resultsEl.addEventListener('click', (e) => {
 		const target = e.target;
+		// if clicking inside details (stacje), don't select the card
+		if (target && target.closest && target.closest('details.leg-details')) {
+			return; // allow native toggle to proceed
+		}
     
 		// click on the button
 		const btn = target && target.closest ? target.closest('.btn-choose') : null;
@@ -731,6 +731,8 @@
 
 	// Keyboard: Enter/Space choose a card; arrows change selection
 	resultsEl.addEventListener('keydown', (e) => {
+		// if focus is within details, let native toggle/scroll work
+		if (e.target && e.target.closest && e.target.closest('details.leg-details')) return;
 		const card = e.target && e.target.closest ? e.target.closest('.itinerary') : null;
 		if (!card) return;
 		const idx = Number(card.getAttribute('data-index'));

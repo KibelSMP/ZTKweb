@@ -14,8 +14,8 @@
     <meta name="twitter:card" content="summary">
     <meta name="twitter:title" content="ZTKweb – mapa połączeń świata KibelSMP">
     <meta name="twitter:description" content="Stacje i linie (REGIO, METRO, IC), wyszukiwanie tras i legenda.">
-    <meta name="theme-color" content="#FFFFFF" media="(prefers-color-scheme: light)">
-    <meta name="theme-color" content="#181A21" media="(prefers-color-scheme: dark)">
+    <meta name="theme-color" content="#3D6CC8" media="(prefers-color-scheme: light)">
+    <meta name="theme-color" content="#3D6CC8" media="(prefers-color-scheme: dark)">
     <link rel="manifest" href="/manifest.json">
     <link rel="apple-touch-icon" href="assets/icons/ios/180.png" sizes="180x180">
     <link rel="apple-touch-icon" href="assets/icons/ios/167.png" sizes="167x167">
@@ -160,29 +160,29 @@
     <script src="assets/map-layers.js"></script>
     <script src="assets/pwa-install.js"></script>
     <script src="assets/contributors.js"></script>
-        <script>
-            if ('serviceWorker' in navigator) {
-                window.addEventListener('load', async () => {
-                    const isStandalone = window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone === true;
-                    if (isStandalone) {
+    <script>
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', async () => {
+                const isStandalone = window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone === true;
+                if (isStandalone) {
+                    navigator.serviceWorker.register('/sw.js').catch(() => {});
+                } else {
+                    // In regular browser: ensure no SW is controlling, to avoid caching side-effects
+                    try {
+                        const regs = await navigator.serviceWorker.getRegistrations();
+                        for (const r of regs) { try { await r.unregister(); } catch {} }
+                    } catch {}
+                    // When the app gets installed or switches to standalone, register SW then
+                    window.addEventListener('appinstalled', () => {
                         navigator.serviceWorker.register('/sw.js').catch(() => {});
-                    } else {
-                        // In regular browser: ensure no SW is controlling, to avoid caching side-effects
-                        try {
-                            const regs = await navigator.serviceWorker.getRegistrations();
-                            for (const r of regs) { try { await r.unregister(); } catch {} }
-                        } catch {}
-                        // When the app gets installed or switches to standalone, register SW then
-                        window.addEventListener('appinstalled', () => {
-                            navigator.serviceWorker.register('/sw.js').catch(() => {});
-                        });
-                        const mq = window.matchMedia('(display-mode: standalone)');
-                        const onChange = (ev) => { if (ev.matches) navigator.serviceWorker.register('/sw.js').catch(() => {}); };
-                        if (mq && mq.addEventListener) mq.addEventListener('change', onChange);
-                        else if (mq && mq.addListener) mq.addListener(onChange);
-                    }
-                });
-            }
-        </script>
+                    });
+                    const mq = window.matchMedia('(display-mode: standalone)');
+                    const onChange = (ev) => { if (ev.matches) navigator.serviceWorker.register('/sw.js').catch(() => {}); };
+                    if (mq && mq.addEventListener) mq.addEventListener('change', onChange);
+                    else if (mq && mq.addListener) mq.addListener(onChange);
+                }
+            });
+        }
+    </script>
 </body>
 </html>

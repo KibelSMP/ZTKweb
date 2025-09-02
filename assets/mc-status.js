@@ -2,6 +2,25 @@
 	const el = document.getElementById('mc-status');
 	if (!el) return;
 	const text = el.querySelector('.text');
+
+	// Zarządzanie cyklicznym odświeżaniem i widocznością względem łączności
+	let intervalId = null;
+	function startTimer(){ if (!intervalId) intervalId = setInterval(check, 60000); }
+	function stopTimer(){ if (intervalId){ clearInterval(intervalId); intervalId = null; } }
+	function applyConnectivityState(){
+		if (navigator.onLine) {
+			// pokaż widżet i wykonaj natychmiastowy check
+			el.hidden = false;
+			check();
+			startTimer();
+		} else {
+			// ukryj widżet offline i wstrzymaj odświeżanie
+			stopTimer();
+			el.hidden = true;
+			el.classList.remove('online','offline');
+			if (text) text.textContent = '';
+		}
+	}
 	// Java server – configuration from data-* attributes, if provided
 	const HOST = (el.dataset && el.dataset.host) ? String(el.dataset.host) : 'kibel.csrv.gg';
 	const FORCED_PORT = (el.dataset && el.dataset.port) ? String(el.dataset.port) : null;
@@ -92,6 +111,8 @@
 	}
 
 	async function check() {
+		// Nie próbuj odpytywać zewnętrznych API, gdy urządzenie jest offline
+		if (!navigator.onLine) return;
 		try {
 			if (text) text.textContent = 'Sprawdzanie statusu…';
 			el.classList.remove('online','offline');
@@ -123,7 +144,8 @@
 		}
 	}
 
-	// initial check + refresh every 60s
-	check();
-	setInterval(check, 60000);
+	// Inicjalizacja i nasłuch zmian łączności
+	applyConnectivityState();
+	window.addEventListener('online', applyConnectivityState);
+	window.addEventListener('offline', applyConnectivityState);
 })();
