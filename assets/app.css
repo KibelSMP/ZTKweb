@@ -1001,7 +1001,7 @@ details.leg-details:not([open]) .leg-stations-box { display: none; }
 }
 
 .dropdown-value::before {
-    content: '— ';
+    content: '';
     color: var(--muted);
 }
 
@@ -1143,29 +1143,7 @@ details.leg-details:not([open]) .leg-stations-box { display: none; }
     }
 }
 
-/* Editor-specific pieces (kept for internal pages) */
-.station-marker.view-only {
-    /* keep default gray unless type overrides below */
-    background-color: #808080;
-    border-color: #fff;
-}
 
-.station-marker.view-only.hub {
-    background-color: #444444;
-    width: 12px;
-    height: 12px;
-}
-
-/* Ensure type colors win over .view-only defaults (legend matching) */
-.station-marker.view-only.type-end {
-    background-color: #7b1fa2;
-}
-
-.station-marker.view-only.type-metro {
-    background-color: #d32f2f;
-}
-
-/* (Editor panels removed) */
 
 .btn {
     padding: 6px 10px;
