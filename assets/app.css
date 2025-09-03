@@ -287,15 +287,31 @@ html[data-theme="dark"] .locality-marker::before {
     left: 8px;
     background: var(--label-bg);
     color: var(--label-text);
-    font-size: calc(var(--station-label-font-size, 11px) * 0.95);
-    padding: 2px 4px;
+    /* Slightly larger base size and stronger weight for readability; scale with zoom */
+    font-size: calc(
+        var(--station-label-font-size, 11px)
+        * clamp(1, calc(var(--map-scale, 1) * 0.6), 1.5)
+    );
+    font-weight: 600;
+    padding: 2px 5px;
     border-radius: 3px;
+    border: 1px solid var(--glass-stroke);
     white-space: nowrap;
     box-shadow: 0 0 4px rgba(0,0,0,0.2);
     transform: translate(0, -100%);
     pointer-events: none;
-    opacity: 0.65;
+    /* Improve contrast without being too intrusive */
+    opacity: 0.85;
+    text-shadow: 0 0 1px rgba(0,0,0,0.35);
 }
+
+/* Stronger contrast for dark theme: invert subtle text glow */
+html[data-theme="dark"] .locality-label {
+    text-shadow: 0 0 1px rgba(255,255,255,0.25);
+}
+
+/* At higher zoom (>=2x), increase opacity further */
+#map[data-zoom-level="gte2"] .locality-label { opacity: 0.95; }
 
 /* Highlighting for selected search target */
 .station-marker.highlighted-station::after {
@@ -1692,7 +1708,7 @@ html[data-theme="dark"] .modal-content {
 /* Desktop – compact window in the top-right corner */
 @media (min-width: 981px) {
     .pwa-banner {
-        top: 16px;
+        top: 64px;
         right: 16px;
         left: auto;
         bottom: auto;
