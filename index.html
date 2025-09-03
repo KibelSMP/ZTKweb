@@ -22,6 +22,7 @@
     <link rel="apple-touch-icon" href="assets/icons/ios/152.png" sizes="152x152">
     <link rel="preload" as="fetch" href="assets/stations.json" crossorigin="anonymous">
     <link rel="preload" as="fetch" href="assets/lines.json" crossorigin="anonymous">
+    <link rel="preload" as="fetch" href="assets/localities.json" crossorigin="anonymous">
     <link rel="stylesheet" href="assets/app.css">
     <link rel="icon" type="image/png" href="assets/favicon.png">
 </head>
@@ -34,7 +35,6 @@
             </div>
             <div class="topbar-actions">
                 <a class="btn-secondary link-plain" href="export.html" title="Eksport">Eksport</a>
-                <a class="btn-secondary link-plain" href="https://github.com/KibelSMP/ZTKweb/issues/new?template=bug_report.yml" target="_blank" rel="noopener noreferrer" title="Zgłoś błąd w repozytorium (otworzy się w nowej karcie)">🐞 Zgłoś błąd</a>
                 <button id="theme-toggle" class="theme-toggle" aria-label="Przełącz motyw" title="Przełącz motyw">
                     <span class="theme-icon" data-light>☀️</span>
                     <span class="theme-icon" data-dark>🌙</span>
@@ -52,10 +52,11 @@
             <div id="data-error" class="alert hidden" role="alert" aria-live="assertive"></div>
             <section id="search-panel" aria-label="Wyszukiwarka połączeń">
                 <datalist id="stations-list"></datalist>
-                <div class="station-search-row" aria-label="Szukaj stacji">
+                <datalist id="global-list"></datalist>
+                <div class="station-search-row" aria-label="Wyszukiwarka ogólna">
                     <div class="field">
-                        <label for="station"><span class="label-icon" aria-hidden="true"></span>Szukaj stacji</label>
-                        <input id="station" list="stations-list" placeholder="Nazwa stacji" />
+                        <label for="station"><span class="label-icon" aria-hidden="true"></span>Szukaj</label>
+                        <input id="station" list="global-list" placeholder="Stacja lub miejscowość" />
                     </div>
                     <button id="station-clear" class="btn-clear" title="Wyczyść" aria-label="Wyczyść">✕</button>
                     <button id="station-search" class="btn-station-search" title="Pokaż na mapie" aria-label="Pokaż na mapie">Pokaż</button>
@@ -119,6 +120,11 @@
                                 <label class="map-menu-option"><input type="checkbox" name="map-layer-satellite" value="satellite"> Satelitarna</label>
                                 <label class="map-menu-option"><input type="checkbox" name="map-layer-political" value="political"> Polityczna</label>
                             </div>
+                            <div class="map-menu-row"><strong>Warstwy danych</strong></div>
+                            <div class="map-menu-row" role="group" aria-label="Wybierz warstwy danych">
+                                <label class="map-menu-option"><input type="checkbox" name="map-layer-network" value="network" checked> Stacje i linie</label>
+                                <label class="map-menu-option"><input type="checkbox" name="map-layer-localities" value="localities"> Miejscowości</label>
+                            </div>
                         </div>
                     </div>
                     <div id="map-controls">
@@ -135,6 +141,7 @@
             <div class="container footer-inner">
                 <div class="footer-left">
                     <button id="contributors-open" class="link-plain btn-secondary" aria-haspopup="dialog" aria-controls="contributors-modal">Autorzy i wkład</button>
+                    <a class="btn-secondary link-plain" href="https://github.com/KibelSMP/ZTKweb/issues/new?template=bug_report.yml" target="_blank" rel="noopener noreferrer" title="Zgłoś błąd w repozytorium (otworzy się w nowej karcie)">🐞 Zgłoś błąd</a>
                 </div>
                 <div class="footer-right">Strona nie jest w żaden sposób powiązana z firmą Microsoft, Mojang lub grą Minecraft.</div>
             </div>

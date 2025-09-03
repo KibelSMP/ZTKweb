@@ -7,6 +7,10 @@
 	let lines = {};
 	/** @type {Set<string>} */
 	let allowedTypes = new Set(['REGIO','METRO','ON_DEMAND','IC']);
+	/** Localities layer visibility (controls legend section) */
+	let localitiesVisible = false;
+	/** Network visibility (controls stations and lines sections) */
+	let networkVisible = true;
 
 	function isDark(){
 		return document.documentElement.getAttribute('data-theme') === 'dark';
@@ -53,7 +57,7 @@
 
 	function render(){
 		// Stations section
-		const stationsGroup = `
+		const stationsGroup = !networkVisible ? '' : `
 			<div class="legend-group">
 				<div class="legend-title">Stacje</div>
 				<div class="legend-row">
@@ -61,6 +65,17 @@
 					<div class="legend-item"><span class="legend-dot" style="background:#444444; width:12px; height:12px; border-radius:2px;"></span><span>węzeł przesiadkowy</span></div>
 					<div class="legend-item"><span class="legend-dot" style="background:#7b1fa2; width:8px; height:8px; display:inline-block; border-radius:2px; transform: rotate(45deg);"></span><span>możliwa przesiadka do Endu</span></div>
 					<div class="legend-item"><span class="legend-dot" style="background:#d32f2f; width:12px; height:12px; border-radius:2px;"></span><span>stacja metra</span></div>
+				</div>
+			</div>`;
+
+		// Localities section (render only if layer visible)
+		const localitiesGroup = !localitiesVisible ? '' : `
+			<div class="legend-group">
+				<div class="legend-title">Miejscowości</div>
+				<div class="legend-row">
+					<div class="legend-item"><span class="legend-dot" style="background:#1976d2; width:6px; height:6px;"></span><span>miejscowość (mała)</span></div>
+					<div class="legend-item"><span class="legend-dot" style="background:#1565c0; width:8px; height:8px;"></span><span>miejscowość (duża)</span></div>
+					<div class="legend-item"><span class="legend-dot" style="background:#0d47a1; width:10px; height:10px;"></span><span>stolica</span></div>
 				</div>
 			</div>`;
 
@@ -72,11 +87,13 @@
 		});
 		Object.values(groups).forEach(arr => arr.sort((a,b)=> a[0].localeCompare(b[0],'pl')));
 
-		const parts = [stationsGroup];
-		if (groups.REGIO.length) parts.push(section('Linie REGIO', groups.REGIO));
-		if (groups.METRO.length) parts.push(section('Linie METRO', groups.METRO));
-		if (groups.ON_DEMAND.length) parts.push(section('Linie NA ŻĄDANIE', groups.ON_DEMAND));
-		if (groups.IC.length) parts.push(section('Linie INTERCITY', groups.IC));
+		const parts = [stationsGroup, localitiesGroup];
+		if (networkVisible) {
+			if (groups.REGIO.length) parts.push(section('Linie REGIO', groups.REGIO));
+			if (groups.METRO.length) parts.push(section('Linie METRO', groups.METRO));
+			if (groups.ON_DEMAND.length) parts.push(section('Linie NA ŻĄDANIE', groups.ON_DEMAND));
+			if (groups.IC.length) parts.push(section('Linie INTERCITY', groups.IC));
+		}
 		const html = parts.join('');
 		el.innerHTML = html;
 	}
@@ -97,6 +114,16 @@
 			} else {
 				allowedTypes = new Set(['REGIO','METRO','ON_DEMAND','IC']);
 			}
+			render();
+		});
+		// React to localities visibility toggles
+		window.addEventListener('localities:visibility', (ev) => {
+			localitiesVisible = !!ev?.detail?.visible;
+			render();
+		});
+		// React to network visibility toggles
+		window.addEventListener('network:visibility', (ev) => {
+			networkVisible = !!ev?.detail?.visible;
 			render();
 		});
 	} catch (e) {

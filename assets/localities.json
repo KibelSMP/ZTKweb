@@ -1,0 +1,800 @@
+[
+  {
+    "name": "papaje",
+    "x": 30.683797909407666,
+    "y": 38.95055259146341,
+    "voivodeship": "Wielkokabaczckie"
+  },
+  {
+    "name": "Jusznica",
+    "x": 39.23513917884318,
+    "y": 35.30427108356853,
+    "type": "large",
+    "voivodeship": "Wielkokabaczckie"
+  },
+  {
+    "name": "Polanica",
+    "type": "large",
+    "voivodeship": "Wielkokabaczckie",
+    "x": 41.82345710883947,
+    "y": 37.93429207868442
+  },
+  {
+    "name": "Kwiecień",
+    "type": "small",
+    "voivodeship": "Wielkokabaczckie",
+    "x": 38.21278796130203,
+    "y": 38.71853835724367
+  },
+  {
+    "name": "Kiszenie Zdrój",
+    "type": "small",
+    "voivodeship": "Wielkokabaczckie",
+    "x": 25.05832866666391,
+    "y": 37.43906219814735
+  },
+  {
+    "name": "Jajecznica",
+    "type": "small",
+    "voivodeship": "Wielkokabaczckie",
+    "x": 27.471733271854898,
+    "y": 38.20929771044235
+  },
+  {
+    "name": "Góra Duji",
+    "type": "small",
+    "voivodeship": "Wielkokabaczckie",
+    "x": 29.75676529166339,
+    "y": 35.641846002792356
+  },
+  {
+    "name": "Kerfusiowo",
+    "type": "small",
+    "voivodeship": "Wielkokabaczckie",
+    "x": 42.49851457311099,
+    "y": 44.120750909269354
+  },
+  {
+    "name": "Jasternia",
+    "type": "small",
+    "voivodeship": "Wielkokabaczckie",
+    "x": 34.76303933282982,
+    "y": 36.32314333774095
+  },
+  {
+    "name": "Dębina",
+    "type": "small",
+    "voivodeship": "Wielkokabaczckie",
+    "x": 35.07436096811977,
+    "y": 38.74982192634511
+  },
+  {
+    "name": "Akacjów",
+    "type": "small",
+    "voivodeship": "Wielkokabaczckie",
+    "x": 32.295296167247386,
+    "y": 29.227120535714285
+  },
+  {
+    "name": "Sztetin",
+    "type": "small",
+    "voivodeship": "Wielkokabaczckie",
+    "x": 39.2820115747307,
+    "y": 25.95970874101754
+  },
+  {
+    "name": "Łachowo",
+    "type": "small",
+    "voivodeship": "Wielkokabaczckie",
+    "x": 42.946465417412064,
+    "y": 30.837867041147494
+  },
+  {
+    "name": "Rokietownik",
+    "type": "small",
+    "voivodeship": "Wielkokabaczckie",
+    "x": 46.24346689895471,
+    "y": 36.63130172038328
+  },
+  {
+    "name": "Gorzyca",
+    "type": "large",
+    "voivodeship": "Wielkokabaczckie",
+    "x": 45.97258786236203,
+    "y": 45.639578953859825
+  },
+  {
+    "name": "Spawnowice",
+    "type": "capital",
+    "voivodeship": "Międzyrzeckie",
+    "x": 47.63099228588411,
+    "y": 49.73104734840806
+  },
+  {
+    "name": "Pieścirogi",
+    "type": "large",
+    "voivodeship": "Wielkokabaczckie",
+    "x": 43.26001742160279,
+    "y": 46.256737260452965
+  },
+  {
+    "name": "Przedmorze",
+    "type": "small",
+    "voivodeship": "Złowieckie",
+    "x": 13.556184668989546,
+    "y": 6.295935866724739
+  },
+  {
+    "name": "Bartnice",
+    "type": "small",
+    "voivodeship": "Złowieckie",
+    "x": 9.070121951219512,
+    "y": 23.684873148954704
+  },
+  {
+    "name": "Ziemiokoty",
+    "type": "large",
+    "voivodeship": "Złowieckie",
+    "x": 24.793118466898957,
+    "y": 26.788096145470387
+  },
+  {
+    "name": "Niewiedź",
+    "type": "large",
+    "voivodeship": "Złowieckie",
+    "x": 33.7042702571025,
+    "y": 26.641081857261938
+  },
+  {
+    "name": "Diuna",
+    "type": "large",
+    "voivodeship": "Złowieckie",
+    "x": 27.488022940372087,
+    "y": 30.592777165459044
+  },
+  {
+    "name": "Zamesie",
+    "type": "large",
+    "voivodeship": "Złowieckie",
+    "x": 50.69847820807818,
+    "y": 19.491800152330722
+  },
+  {
+    "name": "Rozkopane",
+    "type": "small",
+    "voivodeship": "Somsiedzkie",
+    "x": 51.33928571428571,
+    "y": 5.9039498040069684
+  },
+  {
+    "name": "Wiowiśnia",
+    "type": "small",
+    "voivodeship": "Somsiedzkie",
+    "x": 47.17987804878049,
+    "y": 8.430082208188153
+  },
+  {
+    "name": "Krindżawa",
+    "type": "small",
+    "voivodeship": "Somsiedzkie",
+    "x": 62.22234386720391,
+    "y": 3.9311915161046844
+  },
+  {
+    "name": "Bromberg",
+    "type": "large",
+    "voivodeship": "Somsiedzkie",
+    "x": 73.80218411910225,
+    "y": 4.30581058189646
+  },
+  {
+    "name": "Leoben",
+    "type": "small",
+    "voivodeship": "Somsiedzkie",
+    "x": 74.67878999268844,
+    "y": 9.16529435921693
+  },
+  {
+    "name": "Tomhetowo Wookskie",
+    "type": "large",
+    "voivodeship": "Somsiedzkie",
+    "x": 69.15781360423475,
+    "y": 17.953927415923875
+  },
+  {
+    "name": "Czarny Brzeg",
+    "type": "small",
+    "voivodeship": "Somsiedzkie",
+    "x": 86.30920739474814,
+    "y": 6.762834147486298
+  },
+  {
+    "name": "Wiśniówka",
+    "type": "small",
+    "voivodeship": "Somsiedzkie",
+    "x": 89.0410041541495,
+    "y": 2.8397975152336867
+  },
+  {
+    "name": "Revenstad",
+    "type": "small",
+    "voivodeship": "Suchomeskie",
+    "x": 49.3140243902439,
+    "y": 23.5759881315331
+  },
+  {
+    "name": "Kekałtów",
+    "type": "large",
+    "voivodeship": "Suchomeskie",
+    "x": 61.85278999087389,
+    "y": 38.049437108430155
+  },
+  {
+    "name": "Piaszczyna",
+    "type": "small",
+    "voivodeship": "Suchomeskie",
+    "x": 62.191561096014134,
+    "y": 34.795124390153546
+  },
+  {
+    "name": "Nowa Paqownia",
+    "type": "small",
+    "voivodeship": "Suchomeskie",
+    "x": 68.66289198606272,
+    "y": 34.50804388066202
+  },
+  {
+    "name": "Kuktosów",
+    "type": "small",
+    "voivodeship": "Suchomeskie",
+    "x": 73.5191637630662,
+    "y": 36.18487314895471
+  },
+  {
+    "name": "Chodorów",
+    "type": "small",
+    "voivodeship": "Brzóskie",
+    "x": 69.61808164448333,
+    "y": 41.651932710581264
+  },
+  {
+    "name": "Dolina Śmierdzi",
+    "type": "small",
+    "voivodeship": "Somsiedzkie",
+    "x": 65.5328801395221,
+    "y": 42.11045843253783
+  },
+  {
+    "name": "Brzynia",
+    "type": "small",
+    "voivodeship": "Brzóskie",
+    "x": 66.19120209059234,
+    "y": 48.412660605400696
+  },
+  {
+    "name": "Patusiowo",
+    "type": "small",
+    "voivodeship": "Brzóskie",
+    "x": 70.2852787456446,
+    "y": 48.652207643728225
+  },
+  {
+    "name": "Draków",
+    "type": "large",
+    "voivodeship": "Brzóskie",
+    "x": 72.18761910571344,
+    "y": 54.669241178163105
+  },
+  {
+    "name": "Keknia",
+    "type": "large",
+    "voivodeship": "Brzóskie",
+    "x": 67.62667797950076,
+    "y": 54.46126701986679
+  },
+  {
+    "name": "Nowy Tasmańsk",
+    "type": "large",
+    "voivodeship": "Kresowickie",
+    "x": 75.53824866697299,
+    "y": 38.19813808776609
+  },
+  {
+    "name": "Borg Cube",
+    "type": "small",
+    "voivodeship": "Kresowickie",
+    "x": 81.75530115557498,
+    "y": 32.405457782686426
+  },
+  {
+    "name": "Zgagóra",
+    "type": "small",
+    "voivodeship": "Kresowickie",
+    "x": 81.20361731699597,
+    "y": 38.87713358140181
+  },
+  {
+    "name": "Tasmańsk",
+    "type": "small",
+    "voivodeship": "Bideckie",
+    "x": 69.47781683674783,
+    "y": 62.55569291587155
+  },
+  {
+    "name": "Kanarowice",
+    "type": "large",
+    "voivodeship": "Bideckie",
+    "x": 68.61852732364314,
+    "y": 69.11337247261172
+  },
+  {
+    "name": "Krowodrza Górka",
+    "type": "small",
+    "voivodeship": "Bideckie",
+    "x": 66.5210116253412,
+    "y": 69.26431166284644
+  },
+  {
+    "name": "Perkelin",
+    "type": "large",
+    "voivodeship": "Bideckie",
+    "x": 65.13762754519446,
+    "y": 71.59630196937951
+  },
+  {
+    "name": "Pałkizland",
+    "type": "large",
+    "voivodeship": "Bideckie",
+    "x": 70.22321092554338,
+    "y": 68.53968190657912
+  },
+  {
+    "name": "Bida z Nędzą",
+    "type": "large",
+    "voivodeship": "Bideckie",
+    "x": 74.17573686881975,
+    "y": 68.30253034998253
+  },
+  {
+    "name": "Różewo",
+    "type": "large",
+    "voivodeship": "Bideckie",
+    "x": 79.25740418118467,
+    "y": 69.64523900261324
+  },
+  {
+    "name": "Międzygórze",
+    "type": "large",
+    "voivodeship": "Międzywódzkie",
+    "x": 36.74280184880094,
+    "y": 48.18697728052177
+  },
+  {
+    "name": "Twierdza Wieżowiec",
+    "type": "large",
+    "voivodeship": "Międzywódzkie",
+    "x": 34.51168628688297,
+    "y": 46.35124928653863
+  },
+  {
+    "name": "Podgórze",
+    "type": "large",
+    "voivodeship": "Międzywódzkie",
+    "x": 37.87248061432902,
+    "y": 51.604255546244225
+  },
+  {
+    "name": "Nagórze",
+    "type": "large",
+    "voivodeship": "Międzywódzkie",
+    "x": 35.36585365853659,
+    "y": 54.074681511324044
+  },
+  {
+    "name": "Nilplep",
+    "type": "capital",
+    "voivodeship": "Międzywódzkie",
+    "x": 42.717795185380695,
+    "y": 51.61240383755016
+  },
+  {
+    "name": "Susy",
+    "type": "large",
+    "voivodeship": "Międzywódzkie",
+    "x": 46.9560082061232,
+    "y": 53.282931765532346
+  },
+  {
+    "name": "Kawarda-Zdrój",
+    "type": "large",
+    "voivodeship": "Międzywódzkie",
+    "x": 46.00740197973687,
+    "y": 55.77302310979646
+  },
+  {
+    "name": "Międzylesie",
+    "type": "small",
+    "voivodeship": "Międzywódzkie",
+    "x": 49.23780487804878,
+    "y": 60.89088360191638
+  },
+  {
+    "name": "Lisia Nora",
+    "type": "small",
+    "voivodeship": "Międzywódzkie",
+    "x": 48.78048780487805,
+    "y": 57.972765135017426
+  },
+  {
+    "name": "Enkha'ganrae",
+    "type": "large",
+    "voivodeship": "Międzywódzkie",
+    "x": 26.164667246151584,
+    "y": 57.07255569830573
+  },
+  {
+    "name": "Prot'enra'khastr",
+    "type": "large",
+    "voivodeship": "Międzywódzkie",
+    "x": 50.51328155507192,
+    "y": 55.232844564215355
+  },
+  {
+    "name": "Ciechocinek",
+    "type": "large",
+    "voivodeship": "Międzywódzkie",
+    "x": 39.43435285819037,
+    "y": 70.29225932631792
+  },
+  {
+    "name": "Siedziba CBŚ",
+    "type": "small",
+    "voivodeship": "Międzywódzkie",
+    "x": 27.504355400696863,
+    "y": 46.76849684233449
+  },
+  {
+    "name": "Kuria Toruńska",
+    "type": "small",
+    "voivodeship": "Międzywódzkie",
+    "x": 33.20253671375015,
+    "y": 67.14736606272831
+  },
+  {
+    "name": "Góra Stryciulska",
+    "type": "small",
+    "voivodeship": "Międzywódzkie",
+    "x": 29.98693379790941,
+    "y": 65.60560485627178
+  },
+  {
+    "name": "Śrym",
+    "type": "large",
+    "voivodeship": "Międzywódzkie",
+    "x": 45.971254355400696,
+    "y": 59.56248638937283
+  },
+  {
+    "name": "Swarzync",
+    "type": "large",
+    "voivodeship": "Międzywódzkie"
+  },
+  {
+    "name": "Przemytnica",
+    "type": "large",
+    "voivodeship": "Międzywódzkie",
+    "x": 52.36498313520992,
+    "y": 67.21951971520103
+  },
+  {
+    "name": "Przynorze",
+    "type": "large",
+    "voivodeship": "Międzywódzkie",
+    "x": 46.705681563049026,
+    "y": 76.8136362145043
+  },
+  {
+    "name": "Śpiulkowice-Zdrój",
+    "type": "large",
+    "voivodeship": "Grzegórzeckie",
+    "x": 23.6342853122487,
+    "y": 47.929921516061974
+  },
+  {
+    "name": "Wilkowyje",
+    "type": "large",
+    "voivodeship": "Grzegórzeckie",
+    "x": 22.44477493401023,
+    "y": 45.33098703044743
+  },
+  {
+    "name": "Baraharad",
+    "type": "large",
+    "voivodeship": "Grzegórzeckie",
+    "x": 18.73094212191463,
+    "y": 50.271421061445274
+  },
+  {
+    "name": "Baraharad Bór",
+    "type": "large",
+    "voivodeship": "Grzegórzeckie",
+    "x": 21.81031438644478,
+    "y": 53.11947304305645
+  },
+  {
+    "name": "Jądrowo",
+    "type": "large",
+    "voivodeship": "Grzegórzeckie",
+    "x": 6.898092732289059,
+    "y": 57.50688329856586
+  },
+  {
+    "name": "Wysoki Kącik",
+    "type": "large",
+    "voivodeship": "Grzegórzeckie",
+    "x": 7.023083623693379,
+    "y": 64.86518673780488
+  },
+  {
+    "name": "Batmanowice",
+    "type": "small",
+    "voivodeship": "Grzegórzeckie",
+    "x": 12.456445993031359,
+    "y": 64.59297419425087
+  },
+  {
+    "name": "Granice Zachodnie",
+    "type": "large",
+    "voivodeship": "Zasiedmiogórskie",
+    "x": 17.998693379790943,
+    "y": 63.58034353222997
+  },
+  {
+    "name": "Zagłębie Dziury",
+    "type": "large",
+    "voivodeship": "Zasiedmiogórskie",
+    "x": 20.927308168771372,
+    "y": 66.37925849143684
+  },
+  {
+    "name": "Kaźmirz Dolny",
+    "type": "large",
+    "voivodeship": "Zasiedmiogórskie",
+    "x": 22.999749351689864,
+    "y": 69.24879243701629
+  },
+  {
+    "name": "Księstwo Nexonii",
+    "type": "large",
+    "voivodeship": "Zasiedmiogórskie",
+    "x": 14.62302904590742,
+    "y": 80.0457762221511
+  },
+  {
+    "name": "Wklejalin",
+    "type": "large",
+    "voivodeship": "Zasiedmiogórskie"
+  },
+  {
+    "name": "Wioksal",
+    "type": "small",
+    "voivodeship": "Zasiedmiogórskie",
+    "x": 22.354094076655052,
+    "y": 80.6752912674216
+  },
+  {
+    "name": "Yuriowice",
+    "type": "small",
+    "voivodeship": "Zasiedmiogórskie",
+    "x": 30.226480836236934,
+    "y": 97.12781739982579
+  },
+  {
+    "name": "Zakład Karyny",
+    "type": "small",
+    "voivodeship": "Złowieckie",
+    "x": 18.29268292682927,
+    "y": 18.327730291811847
+  },
+  {
+    "name": "Promno",
+    "type": "large",
+    "voivodeship": "Międzywódzkie",
+    "x": 53.104394375297574,
+    "y": 64.23873950454431
+  },
+  {
+    "name": "Rudowice",
+    "type": "large",
+    "voivodeship": "Międzywódzkie",
+    "x": 65.34842892883587,
+    "y": 67.14312273995479
+  },
+  {
+    "name": "Ryśkowice",
+    "type": "large",
+    "voivodeship": "Międzywódzkie",
+    "x": 53.059668989547035,
+    "y": 72.49802645905923
+  },
+  {
+    "name": "Górka Flaterska",
+    "type": "small",
+    "voivodeship": "Międzywódzkie",
+    "x": 57.622560442545,
+    "y": 72.69803020998555
+  },
+  {
+    "name": "Brecht Tower",
+    "type": "small",
+    "voivodeship": "Międzywódzkie",
+    "x": 59.666016434094004,
+    "y": 66.65461780944699
+  },
+  {
+    "name": "Bordalowice",
+    "type": "large",
+    "voivodeship": "Międzywódzkie",
+    "x": 57.83863301919686,
+    "y": 67.73454585308164
+  },
+  {
+    "name": "Kotkowice",
+    "type": "large",
+    "voivodeship": "Międzywódzkie",
+    "x": 65.69033101045297,
+    "y": 64.33165015243902
+  },
+  {
+    "name": "Bregovice",
+    "type": "large",
+    "voivodeship": "Kampinowskie",
+    "x": 58.00304878048781,
+    "y": 84.03983830574913
+  },
+  {
+    "name": "DonkCo",
+    "type": "small",
+    "voivodeship": "Kampinowskie",
+    "x": 52.09798481086755,
+    "y": 87.9547058248879
+  },
+  {
+    "name": "Śmiechowice",
+    "type": "small",
+    "voivodeship": "Kampinowskie",
+    "x": 49.005264782315436,
+    "y": 91.14307698834368
+  },
+  {
+    "name": "Dzbanszynek",
+    "type": "small",
+    "voivodeship": "Kampinowskie",
+    "x": 61.76480540693198,
+    "y": 93.63822164638403
+  },
+  {
+    "name": "Stawowice",
+    "type": "large",
+    "voivodeship": "Kampinowskie",
+    "x": 63.69495803445303,
+    "y": 89.248574481964
+  },
+  {
+    "name": "Krzywy Las",
+    "type": "small",
+    "voivodeship": "Pyrskie",
+    "x": 71.82530421359482,
+    "y": 85.85730709173374
+  },
+  {
+    "name": "Fart Dolina",
+    "type": "small",
+    "voivodeship": "Pyrskie",
+    "x": 76.85104529616724,
+    "y": 89.40786966463415
+  },
+  {
+    "name": "Smreków",
+    "type": "large",
+    "voivodeship": "Pyrskie",
+    "x": 81.22483592617209,
+    "y": 89.78057699490411
+  },
+  {
+    "name": "Dentgino",
+    "type": "large",
+    "voivodeship": "Pyrskie",
+    "x": 85.66573309252603,
+    "y": 90.69783405043847
+  },
+  {
+    "name": "Narządnik",
+    "type": "small",
+    "voivodeship": "Pyrskie",
+    "x": 89.61236933797909,
+    "y": 90.98670241724739
+  },
+  {
+    "name": "Enklawa",
+    "type": "small",
+    "voivodeship": "Pyrskie",
+    "x": 92.84625435540069,
+    "y": 90.52938534407666
+  },
+  {
+    "name": "Promontorio",
+    "type": "large",
+    "voivodeship": "Pyrskie",
+    "x": 94.74085365853658,
+    "y": 87.80725990853658
+  },
+  {
+    "name": "Niewimsk",
+    "type": "small",
+    "voivodeship": "Pyrskie",
+    "x": 88.09886759581882,
+    "y": 86.05421112804879
+  },
+  {
+    "name": "Nowe Sucharowice",
+    "type": "small",
+    "voivodeship": "Pyrskie",
+    "x": 92.19294425087108,
+    "y": 74.8063888283972
+  },
+  {
+    "name": "Prawdopodobieństwo Stoczniowców",
+    "type": "small",
+    "voivodeship": "Pyrskie",
+    "x": 82.13244117062106,
+    "y": 69.20708338376788
+  },
+  {
+    "name": "Wolvenhol",
+    "type": "large",
+    "voivodeship": "Pyrskie",
+    "x": 71.47212543554006,
+    "y": 73.41266060540069
+  },
+  {
+    "name": "Hertzburg",
+    "type": "large",
+    "voivodeship": "Pyrskie",
+    "x": 75.42465156794425,
+    "y": 75.59036095383276
+  },
+  {
+    "name": "Zimowy Domek Kawy",
+    "type": "small",
+    "voivodeship": "Pyrskie",
+    "x": 77.37369337979094,
+    "y": 82.18879300958189
+  },
+  {
+    "name": "Schronisko Turystyczne",
+    "type": "small",
+    "voivodeship": "Pyrskie",
+    "x": 76.99259581881533,
+    "y": 80.02198116289199
+  },
+  {
+    "name": "Płaszki",
+    "type": "large",
+    "x": 76.83223150050887,
+    "y": 60.02639686748812
+  },
+  {
+    "name": "Ser Corp",
+    "type": "small",
+    "x": 65.22600460738062,
+    "y": 80.46560756658918
+  },
+  {
+    "name": "Pawłogród",
+    "type": "small",
+    "x": 55.400696864111495,
+    "y": 39.778078723867594,
+    "voivodeship": "Wielkokabaczckie"
+  }
+]
