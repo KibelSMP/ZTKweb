@@ -1,4 +1,4 @@
-const CACHE_VERSION = 'ztkweb-v11';
+const CACHE_VERSION = 'ztkweb-v12';
 const STATIC_CACHE = CACHE_VERSION + '-static';
 const DATA_CACHE = CACHE_VERSION + '-data';
 const REMOTE_CACHE = CACHE_VERSION + '-remote';
@@ -20,6 +20,7 @@ const STATIC_ASSETS = [
   '/assets/map-layers.js',
   '/assets/pwa-install.js',
   '/assets/contributors.js',
+  '/assets/outage-banner.js',
   '/assets/vendor/html2pdf.bundle.min.js',
   '/assets/logo_ztk.png',
   '/assets/favicon.png',
