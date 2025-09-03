@@ -5,6 +5,7 @@
 	const swapBtn = document.getElementById('swap');
 	const searchBtn = document.getElementById('search');
 	const list = document.getElementById('stations-list');
+	const globalList = document.getElementById('global-list');
 	const stationInput = document.getElementById('station');
 	const stationSearchBtn = document.getElementById('station-search');
 	const stationClearBtn = document.getElementById('station-clear');
@@ -35,15 +36,19 @@
 		}
 	}
 
-	// Load stations and lines independently
-	const [stRes, lnRes] = await Promise.all([
+	// Load stations, lines and localities independently
+	const [stRes, lnRes, locRes] = await Promise.all([
 		fetch('assets/stations.json', { cache: 'no-store' }),
-		fetch('assets/lines.json', { cache: 'no-store' })
+		fetch('assets/lines.json', { cache: 'no-store' }),
+		fetch('assets/localities.json', { cache: 'no-store' }).catch(() => new Response('[]', { headers: { 'Content-Type': 'application/json' } }))
 	]);
 	/** @type {Record<string, {name?:string, voivodeship?:string, coordinates?:[number,number]|null, type?:string}>} */
 	const stations = await stRes.json();
 	/** @type {Record<string, {color?:string|null, category?:string, relation?:string, stations?:string[]}>} */
 	const lines = await lnRes.json();
+	/** @type {Array<{name:string, x:number, y:number, type?:string}>} */
+	let localities = [];
+	try { localities = await locRes.json(); } catch { localities = []; }
 	// helper: check if a station is marked as skipped on a given line
 	function isSkipped(lineId, stationId) {
 		const arr = lines?.[lineId]?.skipped;
@@ -85,10 +90,20 @@
 		return 'REGIO';
 	}
 
-	// build datalist (both name and id)
+	// build datalist (both name and id) for route fields
 	const items = Object.entries(stations).map(([id, st]) => ({ id, name: st.name || id })).sort((a,b)=>a.name.localeCompare(b.name,'pl'));
 	// Do not show IDs in suggestions
 	list.innerHTML = items.map(({id, name}) => `<option value="${name}"></option>`).join('');
+
+	// build global datalist (stations + localities)
+	if (globalList) {
+		const locItems = (Array.isArray(localities) ? localities : []).map((l, idx) => ({ key: `loc:${idx}`, name: String(l.name||'').trim() })).filter(x => x.name);
+		const stItems = items.map(({id, name}) => ({ key: `st:${id}`, name }));
+		const combined = [...stItems, ...locItems]
+			.sort((a,b)=> a.name.localeCompare(b.name,'pl'))
+			.reduce((acc, cur) => { if (!acc.seen.has(cur.name.toLowerCase())) { acc.seen.add(cur.name.toLowerCase()); acc.list.push(cur); } return acc; }, { seen: new Set(), list: [] }).list;
+		globalList.innerHTML = combined.map(it => `<option value="${it.name}"></option>`).join('');
+	}
 
 	// Helper: format input field value as "Name (ID)"
 	function formatStationValue(id) {
@@ -96,6 +111,25 @@
 		const st = stations[id];
 		const name = st?.name || id;
 		return `${name}`;
+	}
+
+	function getActiveLayersState() {
+		// read checkboxes
+		const cbLoc = /** @type {HTMLInputElement|null} */ (document.querySelector('#map-layers-menu input[name="map-layer-localities"]'));
+		const cbNet = /** @type {HTMLInputElement|null} */ (document.querySelector('#map-layers-menu input[name="map-layer-network"]'));
+		return { localities: !!(cbLoc && cbLoc.checked), network: !!(cbNet && cbNet.checked) };
+	}
+
+	function ensureLayerVisibility(opts){
+		// opts: { localities?:boolean, network?:boolean }
+		if (opts.network === true) window.dispatchEvent(new CustomEvent('network:visibility', { detail: { visible: true } }));
+		if (opts.localities === true) window.dispatchEvent(new CustomEvent('localities:visibility', { detail: { visible: true } }));
+	}
+
+	function findLocalityByName(name){
+		if (!name) return null;
+		const nm = String(name).trim().toLowerCase();
+		return (Array.isArray(localities) ? localities : []).find(l => String(l.name||'').trim().toLowerCase() === nm) || null;
 	}
 
 	// URL helpers
@@ -259,24 +293,76 @@
 		const [top, left] = stations[id].coordinates.map(Number);
 		// send event to zoom.js to center and slightly zoom in
 		window.dispatchEvent(new CustomEvent('center-on-station', { detail: { top, left, scale: 2.5 } }));
-		// remove previous highlight
+		// remove previous highlights
 		document.querySelectorAll('.station-marker.highlighted-station').forEach(el => el.classList.remove('highlighted-station'));
-		// add highlight to the selected station
+		document.querySelectorAll('.locality-marker.highlighted-locality').forEach(el => el.classList.remove('highlighted-locality'));
+		// add highlight to the selected station (persistent until next search/clear)
 		const el = document.querySelector(`.station-marker[data-station-id="${id}"]`);
 		if (el) {
 			el.classList.add('highlighted-station');
-			// auto-fade after a few seconds; keep label visible on hover
-			setTimeout(() => {
-				el.classList.remove('highlighted-station');
-			}, 3500);
 		}
+		// ensure network layer is visible when focusing a station
+		window.dispatchEvent(new CustomEvent('network:visibility', { detail: { visible: true } }));
 		// update URL, remove route params
 		updateURL(sp => {
 			sp.set('station', id);
 			sp.delete('from');
 			sp.delete('to');
 			sp.delete('sel');
+			sp.delete('locality');
 		});
+	}
+
+	function focusLocalityByName(name){
+		const loc = findLocalityByName(name);
+		if (!loc) return;
+		const top = Number(loc.y), left = Number(loc.x);
+		if (!Number.isFinite(top) || !Number.isFinite(left)) return;
+		// center on locality
+		window.dispatchEvent(new CustomEvent('center-on-station', { detail: { top, left, scale: 2.5 } }));
+		// ensure localities layer is visible
+		window.dispatchEvent(new CustomEvent('localities:visibility', { detail: { visible: true } }));
+		// remove previous highlights
+		document.querySelectorAll('.station-marker.highlighted-station').forEach(el => el.classList.remove('highlighted-station'));
+		document.querySelectorAll('.locality-marker.highlighted-locality').forEach(el => el.classList.remove('highlighted-locality'));
+		// highlight the locality marker by normalized name
+		const target = document.querySelector(`.locality-marker[data-locality-name="${String(loc.name||'').trim().toLowerCase()}"]`);
+		if (target) target.classList.add('highlighted-locality');
+		// update URL
+		updateURL(sp => {
+			sp.set('locality', String(loc.name||''));
+			['station','from','to','sel','st','f','t','q'].forEach(k=>sp.delete(k));
+		});
+	}
+
+	function runGlobalSearch(){
+		const q = (stationInput?.value || '').trim();
+		if (!q) return;
+		const layers = getActiveLayersState();
+		// resolve ambiguity: prefer station, unless localities ON and network OFF
+		const preferLocality = (layers.localities && !layers.network);
+		const stId = parseStation(q);
+		const loc = findLocalityByName(q);
+		if (!preferLocality && stId) {
+			// prefer station
+			// auto-enable network if needed
+			ensureLayerVisibility({ network: true });
+			if (stationInput) stationInput.value = formatStationValue(stId);
+			focusStation();
+			return;
+		}
+		if (loc) {
+			// prefer locality or only match
+			ensureLayerVisibility({ localities: true });
+			focusLocalityByName(q);
+			return;
+		}
+		// fallback: if only station matched but preferLocality was true and no locality exists
+		if (stId) {
+			ensureLayerVisibility({ network: true });
+			if (stationInput) stationInput.value = formatStationValue(stId);
+			focusStation();
+		}
 	}
 
 	// maintain a set of active line types (IC/REGIO/METRO/ON_DEMAND)
@@ -446,6 +532,15 @@
 	function renderResults(routes) {
 		if (!routes.length) { resultsEl.textContent = 'Brak połączenia.'; return; }
 		const fmtStation = (id) => `${stations[id]?.name || id}`;
+		const iconSrcForType = (typeKey) => {
+			switch (typeKey) {
+				case 'IC': return 'assets/icns_transit/ic.svg';
+				case 'METRO': return 'assets/icns_transit/metro.svg';
+				case 'ON_DEMAND': return 'assets/icns_transit/on_demand.svg';
+				case 'REGIO': return 'assets/icns_transit/regio.svg';
+				default: return '';
+			}
+		};
 		const fmtLeg = (leg) => {
 			const line = lines[leg.lineId] || {};
 			let rel = line.relation || '';
@@ -490,10 +585,24 @@
 					return `<span class=\"station${sk ? ' skipped' : ''}\">${label}</span>`;
 				}).join(' <span class=\"sep\">→</span> ');
 
+				// Decide icon and contrast color for glyph
+				const icon = iconSrcForType(lg.typeKey);
+				// Perceived luminance (simple sRGB approx) to choose black/white icon
+				const hex = legColor.startsWith('#') ? legColor.slice(1) : null;
+				let iconColor = '#111';
+				if (hex && (hex.length === 6 || hex.length === 3)) {
+					const h = hex.length === 3 ? hex.split('').map(ch => ch+ch).join('') : hex;
+					const r = parseInt(h.slice(0,2),16), g = parseInt(h.slice(2,4),16), b = parseInt(h.slice(4,6),16);
+					const L = 0.2126*r + 0.7152*g + 0.0722*b; // 0..255
+					iconColor = L > 160 ? '#111' : '#fff';
+				}
 				const legHeader = `
 				  <div class=\"leg-header\">\n            <div class=\"line\">\n              <span class=\"line-pill\" data-line-id=\"${lg.id}\"><span class=\"line-dot\"></span>${lg.name}</span>\n            </div>\n            <details class=\"leg-details\">\n              <summary class=\"count-chip\">Stacje: ${seq.length}</summary>\n              <div class=\"leg-stations-box\">${stationsHtml}</div>\n            </details>\n          </div>`;
 
-				timelineParts.push(`<div class=\"timeline-leg\" style=\"--leg-color:${legColor}\">${legHeader}</div>`);
+				// Render with CSS mask as line-colored icon, and mark that leg has an icon for rail split
+				const hasIconCls = icon ? ' has-icon' : '';
+				const glyph = icon ? `<span class=\"leg-glyph\" aria-hidden=\"true\" style=\"-webkit-mask-image:url('${icon}'); mask-image:url('${icon}')\"></span>` : '';
+				timelineParts.push(`<div class=\"timeline-leg${hasIconCls}\" data-line-id=\"${lg.id}\" style=\"--leg-color:${legColor}\">\n            ${glyph}${legHeader}\n          </div>`);
 				// Add transfer node between legs
 				if (lidx < legs.length - 1) {
 					const transferId = lg.stations[lg.stations.length - 1];
@@ -597,6 +706,13 @@
 			pill.style.borderColor = col + '33';
 			pill.style.background = `color-mix(in oklab, ${col} 12%, transparent)`;
 		});
+			// recolor timeline legs (rail and glyph background)
+		resultsEl.querySelectorAll('.timeline-leg').forEach((legEl) => {
+			const id = legEl.getAttribute('data-line-id');
+			if (!id) return;
+			const col = getColor(id);
+			legEl.style.setProperty('--leg-color', col);
+		});
 	});
 	moTheme.observe(document.documentElement, { attributes: true, attributeFilter: ['data-theme'] });
 
@@ -615,6 +731,8 @@
 		const src = parseStation(fromInput.value);
 		const dst = parseStation(toInput.value);
 		if (!src || !dst) { resultsEl.textContent = 'Wybierz poprawne stacje.'; return; }
+		// ensure network layer is visible when running a search
+		window.dispatchEvent(new CustomEvent('network:visibility', { detail: { visible: true } }));
 		// clear previous important station markings
 		document.querySelectorAll('.station-marker.important').forEach(el => el.classList.remove('important'));
 		currentRoutes = findRoutes(src, dst, 3);
@@ -687,12 +805,13 @@
 	}));
 
 	// Station search handling
-	stationSearchBtn?.addEventListener('click', focusStation);
-	stationInput?.addEventListener('keydown', (e) => { if (e.key === 'Enter') focusStation(); });
+	stationSearchBtn?.addEventListener('click', runGlobalSearch);
+	stationInput?.addEventListener('keydown', (e) => { if (e.key === 'Enter') runGlobalSearch(); });
 	stationClearBtn?.addEventListener('click', () => {
 		if (stationInput) stationInput.value = '';
-		// remove station highlight
+		// remove highlights
 		document.querySelectorAll('.station-marker.highlighted-station').forEach(el => el.classList.remove('highlighted-station'));
+		document.querySelectorAll('.locality-marker.highlighted-locality').forEach(el => el.classList.remove('highlighted-locality'));
 		// remove station from URL
 		updateURL(sp => { sp.delete('station'); sp.delete('st'); sp.delete('q'); });
 	});
@@ -781,6 +900,12 @@
 				// delay focusStation to next frame so DOM is ready
 				setTimeout(() => focusStation(), 0);
 			}
+		}
+		// locality on load
+		const locParam = sp.get('locality');
+		if (locParam) {
+			if (stationInput) stationInput.value = String(locParam);
+			setTimeout(() => focusLocalityByName(String(locParam)), 0);
 		}
 		// route
 		const f = sp.get('f') || sp.get('from');

@@ -80,6 +80,7 @@
     const title = String(fd.get('title') || '').trim();
     const sat = fd.get('sat') === 'on';
   const pol = fd.get('pol') === 'on';
+  const showLocalities = fd.get('localities') === 'on';
     const showLegend = fd.get('legend') === 'on';
     const legendScale = parseFloat(fd.get('legendScale') || '0.8') || 0.8;
   const labelScale = parseFloat(fd.get('labelScale') || '1') || 1;
@@ -92,6 +93,9 @@
   mapEl.classList.toggle('political-active', !!pol);
   const polOpacity = pol ? (sat ? 0.7 : 1) : 0;
   mapEl.style.setProperty('--political-overlay-opacity', String(polOpacity));
+
+  // localities visibility
+  window.dispatchEvent(new CustomEvent('localities:visibility', { detail: { visible: !!showLocalities } }));
 
   // legend visibility and scale (layout-aware)
   legendEl.style.display = showLegend ? '' : 'none';

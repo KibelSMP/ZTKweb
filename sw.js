@@ -1,4 +1,4 @@
-const CACHE_VERSION = 'ztkweb-v9';
+const CACHE_VERSION = 'ztkweb-v10';
 const STATIC_CACHE = CACHE_VERSION + '-static';
 const DATA_CACHE = CACHE_VERSION + '-data';
 const REMOTE_CACHE = CACHE_VERSION + '-remote';
@@ -32,6 +32,7 @@ const STATIC_ASSETS = [
 const DATA_ASSETS = [
   '/assets/stations.json',
   '/assets/lines.json',
+  '/assets/localities.json',
   '/contributors.md'
 ];
 
@@ -68,7 +69,7 @@ self.addEventListener('fetch', (event) => {
   const isSameOrigin = url.origin === self.location.origin;
   const isRemoteRaw = url.origin === 'https://raw.githubusercontent.com';
 
-  if (isSameOrigin && /\/assets\/(stations|lines)\.json$/i.test(url.pathname)) {
+  if (isSameOrigin && /\/assets\/(stations|lines|localities)\.json$/i.test(url.pathname)) {
     event.respondWith(staleWhileRevalidate(req, DATA_CACHE, event));
     return;
   }
