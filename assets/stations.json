@@ -92,7 +92,7 @@
     "BBL": {
         "name": "Brzozowy Las",
         "voivodeship": "Brzóskie",
-        "coordinates": [59.0, 70.78],
+        "coordinates": [59, 70.78],
         "type": "passenger"
     },
     "BCH": {
@@ -350,7 +350,7 @@
     "MML": {
         "name": "Międzylesie",
         "voivodeship": "Międzyrzeckie",
-        "coordinates": [61.0, 49.42],
+        "coordinates": [61, 49.42],
         "type": "passenger"
     },
     "MMZ": {
@@ -405,7 +405,7 @@
         "name": "Susy",
         "voivodeship": "Międzyrzeckie",
         "coordinates": [53.51, 47.82],
-        "type": "metro"
+        "type": "hub"
     },
     "MWI": {
         "name": "Plac Wilsona",
@@ -766,5 +766,35 @@
         "voivodeship": "Zasiedmiogórskie",
         "coordinates": [65.59, 20.87],
         "type": "passenger"
+    },
+    "ZDZ": {
+        "name": "Dzikie",
+        "type": "passenger",
+        "coordinates": [87.03, 27.07]
+    },
+    "ZZA": {
+        "name": "Zapora",
+        "type": "passenger",
+        "coordinates": [87.24, 33.21]
+    },
+    "CPA": {
+        "name": "Paciulów",
+        "type": "passenger",
+        "coordinates": [90.15, 39.87]
+    },
+    "CSM": {
+        "name": "Śmiechowice",
+        "type": "passenger",
+        "coordinates": [89.91, 49.17]
+    },
+    "CSW": {
+        "name": "Sucha Wyspa",
+        "type": "passenger",
+        "coordinates": [92.59, 56.75]
+    },
+    "CST": {
+        "name": "Stawowice",
+        "type": "passenger",
+        "coordinates": [89.94, 63.39]
     }
 }
