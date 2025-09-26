@@ -98,7 +98,7 @@
             "MNI",
             "MPO",
             "MMZ",
-            "GBA",
+            "GBM",
             "MMZ",
             "MPO",
             "MNI",
@@ -340,7 +340,7 @@
         "relation": "Podkazie - Wioksal",
         "hexLightMode": "#5fa81a",
         "hexDarkMode": "#dce775",
-        "stations": ["ZPO", "ZKD", "ZWI", "ZKD", "ZPO"]
+        "stations": ["ZPO", "ZKD", "ZWI", "ZDZ", "ZWI", "ZKD", "ZPO"]
     },
     "R11": {
         "color": "Yellow",
