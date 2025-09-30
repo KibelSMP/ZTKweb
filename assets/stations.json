@@ -32,8 +32,8 @@
     "APL": {
         "name": "Perkelin Port Lotniczy",
         "voivodeship": "Bideckie",
-        "coordinates": null,
-        "type": "metro"
+        "coordinates": [72.18, 63.49],
+        "type": "hub"
     },
     "ATA": {
         "name": "Tasmańsk",
@@ -87,7 +87,7 @@
         "name": "Perkelin Port Lotniczy",
         "voivodeship": "Bideckie",
         "coordinates": [72.18, 63.49],
-        "type": "passenger"
+        "type": "hub"
     },
     "BBL": {
         "name": "Brzozowy Las",
@@ -438,7 +438,7 @@
         "type": "passenger"
     },
     "PFD": {
-        "name": "Fartodolina",
+        "name": "Fartdolina",
         "voivodeship": "Pyrskie",
         "coordinates": [89.55, 76.37],
         "type": "passenger"
@@ -510,7 +510,7 @@
         "type": "passenger"
     },
     "PZM": {
-        "name": "Żwirownia \"Żwirow & Muchomorow\"",
+        "name": "Żwirownia „Żwirow & Muchomorow”",
         "voivodeship": "Pyrskie",
         "coordinates": [89.55, 72.38],
         "type": "passenger"
@@ -796,5 +796,9 @@
         "name": "Stawowice",
         "type": "passenger",
         "coordinates": [89.94, 63.39]
+    },
+    "ZMI": {
+        "name": "Mierzyce",
+        "coordinates": [74.51, 21.44]
     }
 }
